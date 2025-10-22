@@ -1,8 +1,8 @@
-# SnapStock - Implementation Summary
+# SnapPChart - Implementation Summary
 
 ## 🎉 All Features Successfully Implemented!
 
-This document summarizes all the features, improvements, and systems that have been implemented for SnapStock.
+This document summarizes all the features, improvements, and systems that have been implemented for SnapPChart.
 
 ---
 

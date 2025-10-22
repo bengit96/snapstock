@@ -19,11 +19,8 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
     )}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link href={ROUTES.home} className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold">{APP_NAME}</span>
+        <Link href={ROUTES.home} className="flex items-center">
+          <img src="/logo.svg" alt="SnapPChart" className="h-10" />
         </Link>
 
         {/* Navigation Links */}

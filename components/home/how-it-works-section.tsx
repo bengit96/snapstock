@@ -28,7 +28,7 @@ export function HowItWorksSection() {
     {
       number: 1,
       title: 'Upload Your Chart',
-      description: 'Simply screenshot any stock chart from your preferred trading platform and upload it to SnapStock.'
+      description: 'Simply screenshot any stock chart from your preferred trading platform and upload it to SnapPChart.'
     },
     {
       number: 2,

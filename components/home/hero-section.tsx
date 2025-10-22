@@ -53,7 +53,7 @@ export function HeroSection({ className }: HeroSectionProps) {
 
         {/* Description */}
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-          SnapStock uses advanced AI and Ross Cameron's proven strategy to analyze your charts in seconds.
+          SnapPChart uses advanced AI and Ross Cameron's proven strategy to analyze your charts in seconds.
           Get instant grades, precise entry points, and professional risk management—all with a simple screenshot.
         </p>
 

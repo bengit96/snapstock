@@ -42,7 +42,7 @@ class EmailNotificationService {
           <body>
             <div class="container">
               <div class="header">
-                <h1 style="margin: 0;">🔴 SnapStock Error Alert</h1>
+                <h1 style="margin: 0;">🔴 SnapPChart Error Alert</h1>
               </div>
               <div class="content">
                 <div class="field">
@@ -77,7 +77,7 @@ class EmailNotificationService {
                 ` : ''}
 
                 <div class="footer">
-                  This is an automated error notification from SnapStock.
+                  This is an automated error notification from SnapPChart.
                 </div>
               </div>
             </div>
@@ -88,7 +88,7 @@ class EmailNotificationService {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: ADMIN_EMAIL,
-        subject: `🔴 SnapStock Error: ${data.error.substring(0, 50)}...`,
+        subject: `🔴 SnapPChart Error: ${data.error.substring(0, 50)}...`,
         html: htmlContent,
       })
     } catch (error) {
@@ -147,7 +147,7 @@ class EmailNotificationService {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: ADMIN_EMAIL,
-        subject: `⚠️ SnapStock Alert: ${data.title}`,
+        subject: `⚠️ SnapPChart Alert: ${data.title}`,
         html: htmlContent,
       })
     } catch (error) {

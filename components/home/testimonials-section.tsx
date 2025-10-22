@@ -39,7 +39,7 @@ function TestimonialCard({ quote, author, role, rating }: TestimonialProps) {
 export function TestimonialsSection() {
   const testimonials: TestimonialProps[] = [
     {
-      quote: "SnapStock transformed my trading. The AI catches patterns I would have missed. My win rate improved by 40%!",
+      quote: "SnapPChart transformed my trading. The AI catches patterns I would have missed. My win rate improved by 40%!",
       author: "Sarah K.",
       role: "Day Trader",
       rating: 5
@@ -57,7 +57,7 @@ export function TestimonialsSection() {
       rating: 5
     },
     {
-      quote: "As a beginner, SnapStock's grading system helped me avoid costly mistakes. The AI analysis breaks down complex patterns into actionable insights.",
+      quote: "As a beginner, SnapPChart's grading system helped me avoid costly mistakes. The AI analysis breaks down complex patterns into actionable insights.",
       author: "Emma T.",
       role: "New Trader",
       rating: 5
@@ -69,7 +69,7 @@ export function TestimonialsSection() {
       rating: 4
     },
     {
-      quote: "I've tried several trading tools, but SnapStock's AI is on another level. The pattern recognition is incredibly accurate and saves me hours of chart analysis.",
+      quote: "I've tried several trading tools, but SnapPChart's AI is on another level. The pattern recognition is incredibly accurate and saves me hours of chart analysis.",
       author: "Lisa M.",
       role: "Full-Time Trader",
       rating: 5

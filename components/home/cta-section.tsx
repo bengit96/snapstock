@@ -14,7 +14,7 @@ interface CTASectionProps {
 
 export function CTASection({
   title = 'Ready to Transform Your Trading?',
-  description = 'Join thousands of traders who are already making smarter decisions with SnapStock. Start your free trial today—no credit card required.',
+  description = 'Join thousands of traders who are already making smarter decisions with SnapPChart. Start your free trial today—no credit card required.',
   buttonText = 'Start Your Free Trial',
   subtext = 'Free for 7 days, then $19.99/month. Cancel anytime.'
 }: CTASectionProps) {

@@ -1,11 +1,11 @@
-# 📈 SnapStock - AI-Powered Stock Trading Analysis
+# 📈 SnapPChart - AI-Powered Stock Trading Analysis
 
-![SnapStock Banner](https://img.shields.io/badge/Powered%20by-GPT--4%20Vision-purple)
+![SnapPChart Banner](https://img.shields.io/badge/Powered%20by-GPT--4%20Vision-purple)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 
-SnapStock is an advanced AI-powered stock trading analysis platform that uses **OpenAI's GPT-4 Vision** to analyze stock charts and provide instant trading recommendations based on Ross Cameron's proven strategy. Simply upload a screenshot of any stock chart and receive professional-grade analysis in seconds.
+SnapPChart is an advanced AI-powered stock trading analysis platform that uses **OpenAI's GPT-4 Vision** to analyze stock charts and provide instant trading recommendations based on Ross Cameron's proven strategy. Simply upload a screenshot of any stock chart and receive professional-grade analysis in seconds.
 
 ## ✨ Key Features
 
@@ -33,12 +33,12 @@ Before you begin, ensure you have:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/snapstock.git
+git clone https://github.com/yourusername/snappchart.git
 
 # Navigate to the project directory
-cd snapstock
+cd snappchart
 
-# The project is already in the snapstock folder
+# The project is already in the snappchart folder
 ```
 
 #### 2️⃣ Install Dependencies
@@ -96,7 +96,7 @@ Update `.env.local` with your actual values:
 
 ```env
 # Database (keep as is for local development)
-DATABASE_URL="postgresql://snapstock:snapstock_password_2024@localhost:5432/snapstock?sslmode=disable"
+DATABASE_URL="postgresql://snappchart:snappchart_password_2024@localhost:5432/snappchart?sslmode=disable"
 
 # NextAuth (generate a random secret)
 NEXTAUTH_URL="http://localhost:3000"
@@ -139,7 +139,7 @@ docker-compose up -d
 # Verify it's running
 docker ps
 
-# You should see snapstock_postgres container running
+# You should see snappchart_postgres container running
 ```
 
 #### 6️⃣ Initialize the Database
@@ -240,7 +240,7 @@ npm run dev
 ## 🏗️ Project Structure
 
 ```
-snapstock/
+snappchart/
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes
 │   │   ├── analysis/      # Chart analysis endpoint
@@ -268,8 +268,8 @@ snapstock/
 ### Issue: "OPENAI_API_KEY not configured"
 **Solution**: Make sure you've added your OpenAI API key to `.env.local` and restarted the dev server
 
-### Issue: "No such file or directory: snapstock"
-**Solution**: The project is already in a snapstock folder. Don't create another one.
+### Issue: "No such file or directory: snappchart"
+**Solution**: The project is already in a snappchart folder. Don't create another one.
 
 ### Issue: Database connection failed
 **Solution**:
@@ -391,7 +391,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 If you encounter any issues:
 1. Check the [Common Issues](#-common-issues--solutions) section
-2. Search existing [GitHub Issues](https://github.com/yourusername/snapstock/issues)
+2. Search existing [GitHub Issues](https://github.com/yourusername/snappchart/issues)
 3. Create a new issue with:
    - Error message/screenshot
    - Steps to reproduce
@@ -399,7 +399,7 @@ If you encounter any issues:
 
 ## 🎉 Ready to Trade Smarter!
 
-You're all set! Your SnapStock platform is ready to analyze charts and help you make better trading decisions. Remember to:
+You're all set! Your SnapPChart platform is ready to analyze charts and help you make better trading decisions. Remember to:
 
 1. ✅ Test thoroughly in development
 2. ✅ Use Stripe test mode for payments

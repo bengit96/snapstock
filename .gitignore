@@ -48,3 +48,6 @@ postgres_data/
 
 # OS
 Thumbs.db
+
+# project files
+*.bak*

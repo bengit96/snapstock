@@ -1,0 +1,45 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient circle -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: Camera with chart -->
+  <g transform="translate(5, 10)">
+    <!-- Camera body -->
+    <rect x="2" y="12" width="36" height="26" rx="4" fill="url(#gradient1)"/>
+    <!-- Camera lens -->
+    <circle cx="20" cy="25" r="8" fill="white" opacity="0.3"/>
+    <circle cx="20" cy="25" r="5" fill="white" opacity="0.6"/>
+    <!-- Camera flash -->
+    <rect x="30" y="14" width="4" height="4" rx="1" fill="white" opacity="0.8"/>
+
+    <!-- Chart overlay -->
+    <g transform="translate(8, 16)">
+      <!-- Candlestick chart -->
+      <line x1="4" y1="10" x2="4" y2="18" stroke="white" stroke-width="1.5" opacity="0.9"/>
+      <rect x="2.5" y="12" width="3" height="4" fill="#10b981" opacity="0.9"/>
+
+      <line x1="10" y1="8" x2="10" y2="14" stroke="white" stroke-width="1.5" opacity="0.9"/>
+      <rect x="8.5" y="9" width="3" height="3" fill="#10b981" opacity="0.9"/>
+
+      <line x1="16" y1="6" x2="16" y2="16" stroke="white" stroke-width="1.5" opacity="0.9"/>
+      <rect x="14.5" y="8" width="3" height="6" fill="#10b981" opacity="0.9"/>
+
+      <line x1="22" y1="4" x2="22" y2="12" stroke="white" stroke-width="1.5" opacity="0.9"/>
+      <rect x="20.5" y="5" width="3" height="5" fill="#10b981" opacity="0.9"/>
+    </g>
+  </g>
+
+  <!-- Text: SnapPChart -->
+  <text x="52" y="38" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="23" font-weight="700" fill="#1f2937">
+    Snap<tspan fill="url(#gradient2)">PChart</tspan>
+  </text>
+</svg>

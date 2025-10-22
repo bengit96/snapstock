@@ -6,8 +6,33 @@ import { Providers } from '@/components/providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SnapStock - AI-Powered Stock Trading Analysis',
+  title: 'SnapPChart - AI-Powered Stock Trading Analysis',
   description: 'Analyze stock charts and get AI-powered trade recommendations based on Ross Cameron\'s proven trading strategy',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/site.webmanifest',
+  themeColor: '#667eea',
+  openGraph: {
+    title: 'SnapPChart - AI-Powered Stock Trading Analysis',
+    description: 'Analyze stock charts and get AI-powered trade recommendations based on Ross Cameron\'s proven trading strategy',
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'SnapPChart',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SnapPChart - AI-Powered Stock Trading Analysis',
+    description: 'Analyze stock charts and get AI-powered trade recommendations',
+  },
 }
 
 export default function RootLayout({
