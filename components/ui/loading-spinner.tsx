@@ -1,0 +1,31 @@
+import { cn } from '@/lib/utils'
+
+interface LoadingSpinnerProps {
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+  message?: string
+}
+
+export function LoadingSpinner({ size = 'md', className, message }: LoadingSpinnerProps) {
+  const sizeClasses = {
+    sm: 'h-4 w-4 border-2',
+    md: 'h-8 w-8 border-2',
+    lg: 'h-12 w-12 border-3',
+  }
+
+  return (
+    <div className={cn('flex flex-col items-center justify-center gap-3', className)}>
+      <div
+        className={cn(
+          'animate-spin rounded-full border-purple-600 border-t-transparent',
+          sizeClasses[size]
+        )}
+        role="status"
+        aria-label="Loading"
+      />
+      {message && (
+        <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
+      )}
+    </div>
+  )
+}

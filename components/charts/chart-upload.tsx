@@ -1,0 +1,144 @@
+'use client'
+
+import { useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { ErrorMessage } from '@/components/ui/error-message'
+import { Upload, Brain, Sparkles } from 'lucide-react'
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+
+interface ChartUploadProps {
+  onDrop: (files: File[]) => void
+  uploadedImage?: string | null
+  isUploading?: boolean
+  error?: string | null
+  onErrorDismiss?: () => void
+  className?: string
+}
+
+export function ChartUpload({
+  onDrop,
+  uploadedImage,
+  isUploading = false,
+  error,
+  onErrorDismiss,
+  className
+}: ChartUploadProps) {
+  const handleDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        onDrop(acceptedFiles)
+      }
+    },
+    [onDrop]
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleDrop,
+    accept: ACCEPTED_IMAGE_TYPES,
+    maxFiles: 1,
+    maxSize: MAX_FILE_SIZE,
+    disabled: isUploading
+  })
+
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="w-5 h-5 text-purple-600" />
+          AI-Powered Chart Analysis
+        </CardTitle>
+        <CardDescription>
+          Upload a stock chart screenshot for instant GPT-4 Vision analysis
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div
+          {...getRootProps()}
+          className={cn(
+            'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all',
+            isDragActive && 'border-purple-500 bg-purple-50 dark:bg-purple-900/20',
+            !isDragActive && 'border-gray-300 dark:border-gray-700 hover:border-purple-400',
+            isUploading && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          <input {...getInputProps()} />
+
+          {uploadedImage ? (
+            <UploadedImagePreview
+              image={uploadedImage}
+              isAnalyzing={isUploading}
+            />
+          ) : (
+            <UploadPrompt isDragActive={isDragActive} />
+          )}
+        </div>
+
+        {error && (
+          <ErrorMessage
+            message={error}
+            onDismiss={onErrorDismiss}
+            className="mt-4"
+          />
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+/**
+ * Upload prompt component
+ */
+function UploadPrompt({ isDragActive }: { isDragActive: boolean }) {
+  return (
+    <div className="space-y-3">
+      <Upload className="mx-auto h-12 w-12 text-gray-400" />
+      <div>
+        <p className="text-lg font-medium">
+          {isDragActive ? 'Drop the chart here' : 'Drag & drop a stock chart'}
+        </p>
+        <p className="text-sm text-gray-500 mt-1">
+          or click to select from your computer
+        </p>
+      </div>
+      <div className="flex items-center justify-center gap-2 text-xs text-purple-600">
+        <Sparkles className="w-3 h-3" />
+        Powered by GPT-4 Vision
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Uploaded image preview component
+ */
+function UploadedImagePreview({
+  image,
+  isAnalyzing
+}: {
+  image: string
+  isAnalyzing: boolean
+}) {
+  return (
+    <div className="space-y-4">
+      <img
+        src={image}
+        alt="Uploaded chart"
+        className="max-h-64 mx-auto rounded-lg shadow-md"
+      />
+      {isAnalyzing ? (
+        <LoadingSpinner
+          size="sm"
+          message="Analyzing with GPT-4 Vision..."
+          className="mt-4"
+        />
+      ) : (
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Click or drag to upload a new chart
+        </p>
+      )}
+    </div>
+  )
+}
