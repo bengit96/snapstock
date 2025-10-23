@@ -1,0 +1,17 @@
+Contact: mailto:ben@snappchart.app
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://snappchart.app/.well-known/security.txt
+
+# Security Policy
+# If you discover a security vulnerability, please report it to ben@snappchart.app
+# We take security seriously and will respond within 48 hours.
+# Please do not publicly disclose the issue until we have addressed it.
+#
+# What to include in your report:
+# - Description of the vulnerability
+# - Steps to reproduce
+# - Potential impact
+# - Suggested fix (if any)
+#
+# We appreciate responsible disclosure and will acknowledge your contribution.

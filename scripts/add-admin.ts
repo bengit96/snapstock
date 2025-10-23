@@ -1,11 +1,9 @@
-import { config } from 'dotenv'
-import { resolve } from 'path'
+// Load environment variables before anything else
+import 'dotenv/config'
+
 import { db } from '../lib/db'
 import { users } from '../lib/db/schema'
 import { eq } from 'drizzle-orm'
-
-// Load environment variables
-config({ path: resolve(__dirname, '../.env') })
 
 async function addAdmin(email: string) {
   try {

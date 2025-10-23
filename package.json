@@ -11,7 +11,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "tsx lib/db/migrate.ts",
-    "add-admin": "tsx scripts/add-admin.ts"
+    "add-admin": "tsx scripts/add-admin.ts",
+    "generate:og": "tsx scripts/generate-og-image.ts",
+    "seo:test": "echo 'Test your SEO at: https://search.google.com/test/rich-results?url=https://snappchart.app'"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.0.0",
