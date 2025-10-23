@@ -8,7 +8,7 @@ import { TradeDecision } from './trade-decision'
 import { AnalysisDetails } from './analysis-details'
 import { Brain, BarChart } from 'lucide-react'
 import type { DetailedAnalysisResult } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 interface AnalysisResultsProps {
   result: DetailedAnalysisResult | null
@@ -21,7 +21,7 @@ export function AnalysisResults({ result, className }: AnalysisResultsProps) {
       <CardHeader>
         <CardTitle>Analysis Results</CardTitle>
         <CardDescription>
-          AI-powered trade recommendations based on Ross Cameron's strategy
+          AI-powered trade recommendations using momentum trading strategies
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -39,57 +39,91 @@ export function AnalysisResults({ result, className }: AnalysisResultsProps) {
  * Result content component
  */
 function ResultContent({ result }: { result: DetailedAnalysisResult }) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  }
+
   return (
-    <div className="space-y-4">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-4"
+    >
       {/* Stock Symbol & AI Confidence */}
       {(result.stockSymbol || result.aiConfidence) && (
-        <StockInfo
-          symbol={result.stockSymbol}
-          confidence={result.aiConfidence}
-        />
+        <motion.div variants={itemVariants}>
+          <StockInfo
+            symbol={result.stockSymbol}
+            confidence={result.aiConfidence}
+          />
+        </motion.div>
       )}
 
       {/* Grade Display */}
-      <GradeDisplay
-        grade={result.grade}
-        label={result.gradeLabel}
-        description={result.gradeDescription}
-      />
+      <motion.div variants={itemVariants}>
+        <GradeDisplay
+          grade={result.grade}
+          label={result.gradeLabel}
+          description={result.gradeDescription}
+        />
+      </motion.div>
 
       {/* Trade Decision */}
-      <TradeDecision shouldEnter={result.shouldEnter} />
+      <motion.div variants={itemVariants}>
+        <TradeDecision shouldEnter={result.shouldEnter} />
+      </motion.div>
 
       {/* Trade Parameters */}
       {result.shouldEnter && (
-        <TradeParameters
-          entryPrice={result.entryPrice}
-          stopLoss={result.stopLoss}
-          takeProfit={result.takeProfit}
-          riskRewardRatio={result.riskRewardRatio}
-        />
+        <motion.div variants={itemVariants}>
+          <TradeParameters
+            entryPrice={result.entryPrice}
+            stopLoss={result.stopLoss}
+            takeProfit={result.takeProfit}
+            riskRewardRatio={result.riskRewardRatio}
+          />
+        </motion.div>
       )}
 
       {/* Detected Signals */}
       {result.detectedSignals && (
-        <DetectedSignals
-          bullish={result.detectedSignals.bullish}
-          bearish={result.detectedSignals.bearish}
-          noGo={result.detectedSignals.noGo}
-        />
+        <motion.div variants={itemVariants}>
+          <DetectedSignals
+            bullish={result.detectedSignals.bullish}
+            bearish={result.detectedSignals.bearish}
+            noGo={result.detectedSignals.noGo}
+          />
+        </motion.div>
       )}
 
       {/* Chart Description */}
       {result.chartDescription && (
-        <ChartDescription description={result.chartDescription} />
+        <motion.div variants={itemVariants}>
+          <ChartDescription description={result.chartDescription} />
+        </motion.div>
       )}
 
       {/* Analysis Details */}
-      <AnalysisDetails
-        reasons={result.reasons}
-        totalScore={result.totalScore}
-        confluenceCount={result.confluenceCount}
-      />
-    </div>
+      <motion.div variants={itemVariants}>
+        <AnalysisDetails
+          reasons={result.reasons}
+          totalScore={result.totalScore}
+          confluenceCount={result.confluenceCount}
+        />
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -102,7 +136,7 @@ function EmptyState() {
       <BarChart className="mx-auto h-12 w-12 text-gray-300 mb-4" />
       <p>Upload a stock chart to see AI-powered analysis</p>
       <p className="text-sm mt-2 text-purple-600">
-        GPT-4 Vision will analyze your chart instantly
+        AI will analyze your chart instantly
       </p>
     </div>
   )

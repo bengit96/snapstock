@@ -7,6 +7,7 @@ import { ErrorMessage } from '@/components/ui/error-message'
 import { getGradeBadgeClass } from '@/lib/utils/grade.utils'
 import type { DetailedAnalysisResult } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 interface RecentAnalysesProps {
   className?: string
@@ -46,8 +47,8 @@ export function RecentAnalyses({ className }: RecentAnalysesProps) {
 function AnalysesList({ analyses }: { analyses: DetailedAnalysisResult[] }) {
   return (
     <div className="space-y-3">
-      {analyses.map((analysis) => (
-        <AnalysisItem key={analysis.id} analysis={analysis} />
+      {analyses.map((analysis, index) => (
+        <AnalysisItem key={analysis.id} analysis={analysis} index={index} />
       ))}
     </div>
   )
@@ -56,16 +57,27 @@ function AnalysesList({ analyses }: { analyses: DetailedAnalysisResult[] }) {
 /**
  * Analysis item component
  */
-function AnalysisItem({ analysis }: { analysis: DetailedAnalysisResult }) {
+function AnalysisItem({ analysis, index }: { analysis: DetailedAnalysisResult; index: number }) {
   return (
-    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+      whileHover={{ scale: 1.02, x: 5 }}
+      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+    >
       <div className="flex items-center gap-3">
-        <div className={cn(
-          'px-3 py-1 rounded text-white font-bold text-sm',
-          getGradeBadgeClass(analysis.grade)
-        )}>
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: index * 0.05 + 0.1, duration: 0.3, type: 'spring' }}
+          className={cn(
+            'px-3 py-1 rounded text-white font-bold text-sm',
+            getGradeBadgeClass(analysis.grade)
+          )}
+        >
           {analysis.grade}
-        </div>
+        </motion.div>
         <div>
           <p className="font-medium">
             {analysis.stockSymbol || 'Unknown Symbol'}
@@ -88,7 +100,7 @@ function AnalysisItem({ analysis }: { analysis: DetailedAnalysisResult }) {
           </p>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

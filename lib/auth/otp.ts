@@ -32,7 +32,7 @@ export async function sendOTP(email: string): Promise<{ success: boolean; error?
 
     // Send email with OTP
     const { error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@snappchart.com',
+      from: process.env.EMAIL_FROM || 'noreply@snappchart.app',
       to: email,
       subject: 'Your SnapPChart verification code',
       html: `

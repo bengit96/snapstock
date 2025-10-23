@@ -58,7 +58,7 @@ Sends real-time notifications for:
 ### 4. **Email Notifications**
 
 #### Email Service (`lib/services/email-notification.service.ts`)
-Sends emails to **benlohtechbiz@gmail.com** for:
+Sends emails to **ben@snappchart.app** for:
 - 🔴 Critical errors (with full stack trace)
 - ⚠️ System alerts
 - 💳 Payment failures
@@ -505,7 +505,7 @@ Before going live, test:
 
 ## 📧 **Contact & Support**
 
-**Admin Email**: benlohtechbiz@gmail.com
+**Admin Email**: ben@snappchart.app
 
 All critical errors and payment failures will be sent to this email automatically.
 

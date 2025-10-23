@@ -110,7 +110,7 @@ export default function PrivacyPage() {
 
           <h3>7.3 Deletion</h3>
           <p>
-            You can request deletion of your account and associated data by contacting us at benlohtechbiz@gmail.com.
+            You can request deletion of your account and associated data by contacting us at ben@snappchart.app.
             We will delete your information within 30 days, except where required by law to retain it.
           </p>
 
@@ -153,7 +153,7 @@ export default function PrivacyPage() {
             <li>Right to request deletion of personal information</li>
           </ul>
           <p>
-            To exercise these rights, contact us at benlohtechbiz@gmail.com with "California Privacy Rights" in the subject line.
+            To exercise these rights, contact us at ben@snappchart.app with "California Privacy Rights" in the subject line.
           </p>
 
           <h2>12. European Privacy Rights (GDPR)</h2>
@@ -189,7 +189,7 @@ export default function PrivacyPage() {
             If you have questions or concerns about this Privacy Policy or our data practices, please contact us at:
           </p>
           <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-            <p><strong>Email:</strong> benlohtechbiz@gmail.com</p>
+            <p><strong>Email:</strong> ben@snappchart.app</p>
             <p><strong>Subject Line:</strong> Privacy Inquiry - {APP_NAME}</p>
           </div>
 

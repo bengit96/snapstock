@@ -55,8 +55,7 @@ export function Footer() {
       links: [
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact' },
-        { href: '/blog', label: 'Blog' },
-        { href: '/careers', label: 'Careers' }
+        { href: '/blog', label: 'Blog' }
       ]
     },
     {
@@ -64,8 +63,7 @@ export function Footer() {
       links: [
         { href: '/privacy', label: 'Privacy Policy' },
         { href: '/terms', label: 'Terms of Service' },
-        { href: '/disclaimer', label: 'Disclaimer' },
-        { href: '/refund', label: 'Refund Policy' }
+        { href: '/disclaimer', label: 'Disclaimer' }
       ]
     }
   ]

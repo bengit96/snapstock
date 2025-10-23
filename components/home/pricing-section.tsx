@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { PricingCard } from '@/components/pricing/pricing-card'
 import { Shield, Lock } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
+import { motion } from 'framer-motion'
 
 interface PricingPlan {
   tier: 'monthly' | 'yearly' | 'lifetime'
@@ -93,24 +94,6 @@ export function PricingSection() {
       savings: 'Save 58%',
       buttonVariant: 'default',
       buttonText: 'Start Yearly - Best Value'
-    },
-    {
-      tier: 'lifetime',
-      title: 'Lifetime',
-      price: 599,
-      period: 'one-time payment',
-      description: 'Ultimate value for committed traders',
-      features: [
-        'Everything in Yearly',
-        'Lifetime updates',
-        'Early access features',
-        'Priority support',
-        '1-on-1 onboarding'
-      ],
-      badge: 'LIFETIME ACCESS',
-      badgeVariant: 'lifetime',
-      buttonVariant: 'outline',
-      buttonText: 'Get Lifetime Access'
     }
   ]
 
@@ -118,32 +101,42 @@ export function PricingSection() {
     <section id="pricing" className="py-20 px-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto text-center">
         {/* Header */}
-        <div className="mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px", amount: 0.5 }}
+          transition={{ duration: 0.5 }}
+          className="mb-12"
+        >
           <h2 className="text-4xl font-bold mb-4">
             Simple, Transparent Pricing
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
             Choose the plan that fits your trading style
           </p>
-        </div>
+        </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <PricingCard
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {plans.map((plan, index) => (
+            <motion.div
               key={plan.tier}
-              {...plan}
-              onSubscribe={() => handleSubscribe(plan.tier)}
-              isLoading={loadingTier === plan.tier}
-            />
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px", amount: 0.3 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <PricingCard
+                {...plan}
+                onSubscribe={() => handleSubscribe(plan.tier)}
+                isLoading={loadingTier === plan.tier}
+              />
+            </motion.div>
           ))}
         </div>
 
         {/* Footer Info */}
         <div className="mt-12 text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            All plans include a 7-day money-back guarantee
-          </p>
           <div className="flex justify-center items-center gap-4">
             <Shield className="w-5 h-5 text-gray-400" />
             <span className="text-sm text-gray-500">Secure payment via Stripe</span>

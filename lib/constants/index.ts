@@ -4,7 +4,7 @@
 
 // Application Config
 export const APP_NAME = 'SnapPChart'
-export const APP_DESCRIPTION = 'AI-powered stock trading analysis based on Ross Cameron\'s proven strategy'
+export const APP_DESCRIPTION = 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential.'
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 // Authentication
@@ -26,6 +26,45 @@ export const MIN_CONFIDENCE_THRESHOLD = 50
 export const AI_MODEL = 'gpt-4-vision-preview'
 export const AI_MAX_TOKENS = 1500
 export const AI_TEMPERATURE = 0.2
+export const EXPECTED_ANALYSIS_TIME = 5 // seconds
+
+// Stock Selection Criteria (Momentum Trading Focus)
+export const STOCK_SELECTION_CRITERIA = {
+  priceRange: {
+    min: 2,
+    max: 20,
+    label: '$2-$20',
+    description: 'Price range: $2-$20'
+  },
+  float: {
+    max: 10000000, // 10 million
+    label: 'Less than 10M float',
+    description: 'Float under 10 million shares'
+  },
+  movePercentage: {
+    min: 20,
+    label: 'At least 20% move',
+    description: 'Minimum 20% intraday move'
+  },
+  relativeVolume: {
+    min: 5,
+    label: '5x average volume',
+    description: '5x or more of average daily volume'
+  },
+  catalyst: {
+    required: true,
+    label: 'News catalyst present',
+    description: 'Active news event or catalyst'
+  }
+} as const
+
+export const STOCK_SELECTION_CHECKLIST = [
+  STOCK_SELECTION_CRITERIA.priceRange.label,
+  STOCK_SELECTION_CRITERIA.float.label,
+  STOCK_SELECTION_CRITERIA.movePercentage.label,
+  STOCK_SELECTION_CRITERIA.relativeVolume.label,
+  STOCK_SELECTION_CRITERIA.catalyst.label,
+] as const
 
 // Trading Rules
 export const MIN_RISK_REWARD_RATIO = 2.0
@@ -44,6 +83,22 @@ export const GRADE_THRESHOLDS = {
   'F': { score: 0, bullishCount: 0, confluenceCount: 0 },
 }
 
+// Subscription Limits
+export const SUBSCRIPTION_LIMITS = {
+  free: {
+    monthlyAnalyses: 0, // Free users get freeAnalysesLimit (default 1) total, not monthly
+  },
+  monthly: {
+    monthlyAnalyses: 100,
+  },
+  yearly: {
+    monthlyAnalyses: 300,
+  },
+  lifetime: {
+    monthlyAnalyses: null, // null = unlimited
+  },
+} as const
+
 // Pricing
 export const PRICING = {
   monthly: {
@@ -51,8 +106,8 @@ export const PRICING = {
     label: 'Monthly',
     description: 'Perfect for trying out the platform',
     features: [
-      'Unlimited chart analyses',
-      'GPT-4 Vision AI analysis',
+      '100 chart analyses per month',
+      'Advanced AI analysis',
       'All 40+ trading signals',
       'Trade history tracking',
       'Cancel anytime'
@@ -64,6 +119,7 @@ export const PRICING = {
     description: 'Most popular choice for serious traders',
     savings: '58%',
     features: [
+      '300 chart analyses per month',
       'Everything in Monthly',
       'Priority AI processing',
       'Advanced analytics',
@@ -76,6 +132,7 @@ export const PRICING = {
     label: 'Lifetime',
     description: 'Ultimate value for committed traders',
     features: [
+      'Unlimited chart analyses',
       'Everything in Yearly',
       'Lifetime updates',
       'Early access features',
@@ -105,6 +162,7 @@ export const API_ROUTES = {
 // Page Routes
 export const ROUTES = {
   home: '/',
+  analyze: '/analyze',
   dashboard: '/dashboard',
   login: '/auth/login',
   pricing: '/pricing',
@@ -146,7 +204,7 @@ export const SUCCESS_MESSAGES = {
 // Chart Analysis Messages
 export const ANALYSIS_MESSAGES = {
   uploading: 'Uploading chart...',
-  analyzing: 'Analyzing with GPT-4 Vision...',
+  analyzing: 'Analyzing chart with AI...',
   processing: 'Processing results...',
   complete: 'Analysis complete!',
 } as const

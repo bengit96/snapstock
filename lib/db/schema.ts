@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, serial, boolean, decimal, jsonb, uuid, varchar, index, primaryKey } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, integer, boolean, decimal, jsonb, index, primaryKey } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 
 // Users table
@@ -8,6 +8,7 @@ export const users = pgTable('users', {
   emailVerified: timestamp('email_verified'),
   name: text('name'),
   image: text('image'),
+  role: text('role').$type<'user' | 'admin'>().default('user').notNull(),
 
   // Subscription details
   subscriptionStatus: text('subscription_status').$type<'active' | 'inactive' | 'cancelled' | 'past_due'>().default('inactive'),
@@ -115,8 +116,11 @@ export const chartAnalyses = pgTable('chart_analyses', {
   riskRewardRatio: decimal('risk_reward_ratio', { precision: 5, scale: 2 }),
 
   // Detailed analysis
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   activeBullishSignals: jsonb('active_bullish_signals').$type<any[]>().default([]),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   activeBearishSignals: jsonb('active_bearish_signals').$type<any[]>().default([]),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   activeNoGoConditions: jsonb('active_no_go_conditions').$type<any[]>().default([]),
   confluenceCount: integer('confluence_count'),
   confluenceCategories: jsonb('confluence_categories').$type<string[]>().default([]),

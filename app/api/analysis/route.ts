@@ -7,7 +7,8 @@ import { analyzeChartWithAI } from '@/lib/openai'
 import { discordService } from '@/lib/services/discord.service'
 import { analyticsService } from '@/lib/services/analytics.service'
 import { emailNotificationService } from '@/lib/services/email-notification.service'
-import { eq } from 'drizzle-orm'
+import { SUBSCRIPTION_LIMITS } from '@/lib/constants'
+import { eq, and, gte } from 'drizzle-orm'
 import { put } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
@@ -46,12 +47,48 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: 'Free trial limit reached',
-            message: 'You have used your free analysis. Please subscribe to continue and get unlimited analyses.',
+            message: 'You have used your free analysis. Please subscribe to continue.',
             freeAnalysesUsed: user.freeAnalysesUsed,
             freeAnalysesLimit: user.freeAnalysesLimit,
           },
           { status: 402 }
         )
+      }
+    } else {
+      // Check monthly limits for paid users
+      const tier = user.subscriptionTier as 'monthly' | 'yearly' | 'lifetime'
+      const monthlyLimit = SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses
+
+      // Only check if there's a limit (null = unlimited for lifetime)
+      if (monthlyLimit !== null && monthlyLimit !== undefined) {
+        // Get start of current month
+        const monthStart = new Date()
+        monthStart.setDate(1)
+        monthStart.setHours(0, 0, 0, 0)
+
+        // Count analyses this month
+        const thisMonthAnalyses = await db
+          .select()
+          .from(chartAnalyses)
+          .where(
+            and(
+              eq(chartAnalyses.userId, session.user.id),
+              gte(chartAnalyses.createdAt, monthStart)
+            )
+          )
+
+        if (thisMonthAnalyses.length >= monthlyLimit) {
+          return NextResponse.json(
+            {
+              error: 'Monthly limit reached',
+              message: `You have reached your monthly limit of ${monthlyLimit} analyses. Your limit will reset on the 1st of next month.`,
+              monthlyLimit,
+              monthlyUsed: thisMonthAnalyses.length,
+              tier,
+            },
+            { status: 402 }
+          )
+        }
       }
     }
 

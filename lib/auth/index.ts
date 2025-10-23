@@ -4,8 +4,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '@/lib/db'
 import { users, accounts, sessions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import bcrypt from 'bcryptjs'
-import { sendOTP, verifyOTP } from './otp'
+import { verifyOTP } from './otp'
 
 declare module "next-auth" {
   interface Session {
@@ -14,6 +13,7 @@ declare module "next-auth" {
       email: string
       name?: string | null
       image?: string | null
+      role?: 'user' | 'admin'
       subscriptionStatus?: string | null
       subscriptionTier?: string | null
     }
@@ -24,6 +24,7 @@ declare module "next-auth" {
     email: string
     name?: string | null
     image?: string | null
+    role?: 'user' | 'admin'
     subscriptionStatus?: string | null
     subscriptionTier?: string | null
   }
@@ -92,6 +93,7 @@ export const authConfig: NextAuthConfig = {
           email: user.email,
           name: user.name,
           image: user.image,
+          role: user.role,
           subscriptionStatus: user.subscriptionStatus,
           subscriptionTier: user.subscriptionTier,
         }
@@ -116,6 +118,7 @@ export const authConfig: NextAuthConfig = {
 
         if (userData[0]) {
           session.user.id = userData[0].id
+          session.user.role = userData[0].role
           session.user.subscriptionStatus = userData[0].subscriptionStatus
           session.user.subscriptionTier = userData[0].subscriptionTier
         }
@@ -123,10 +126,25 @@ export const authConfig: NextAuthConfig = {
       return session
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.sub = user.id
+        token.role = user.role
       }
+
+      // Refresh role on update
+      if (trigger === 'update' && token.sub) {
+        const userData = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, token.sub as string))
+          .limit(1)
+
+        if (userData[0]) {
+          token.role = userData[0].role
+        }
+      }
+
       return token
     },
   },

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db/client'
 import { chartAnalyses, users } from '@/lib/db/schema'
+import { SUBSCRIPTION_LIMITS } from '@/lib/constants'
 import { eq, and, gte, desc } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
         freeAnalysesUsed: users.freeAnalysesUsed,
         freeAnalysesLimit: users.freeAnalysesLimit,
         subscriptionStatus: users.subscriptionStatus,
+        subscriptionTier: users.subscriptionTier,
       })
       .from(users)
       .where(eq(users.id, session.user.id))
@@ -79,6 +81,10 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(chartAnalyses.createdAt))
       .limit(10)
 
+    const isFreeUser = !user.subscriptionStatus || user.subscriptionStatus !== 'active'
+    const tier = user.subscriptionTier as 'monthly' | 'yearly' | 'lifetime' | null
+    const monthlyLimit = tier ? SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses : null
+
     return NextResponse.json({
       totalAnalyses: totalAnalyses.length,
       thisMonth: thisMonth.length,
@@ -88,9 +94,16 @@ export async function GET(request: NextRequest) {
         createdAt: a.createdAt.toISOString(),
       })),
       // Include free trial stats if user is on free plan
-      ...((!user.subscriptionStatus || user.subscriptionStatus !== 'active') && {
+      ...(isFreeUser && {
         freeAnalysesUsed: user.freeAnalysesUsed,
         freeAnalysesLimit: user.freeAnalysesLimit,
+      }),
+      // Include monthly limit info for paid users
+      ...(!isFreeUser && {
+        subscriptionTier: tier,
+        monthlyLimit: monthlyLimit,
+        monthlyUsed: thisMonth.length,
+        monthlyRemaining: monthlyLimit === null ? null : Math.max(0, monthlyLimit - thisMonth.length),
       }),
     })
   } catch (error) {

@@ -225,7 +225,7 @@ export default function DisclaimerPage() {
 
           <h2>15. Questions and Concerns</h2>
           <p>
-            If you have questions about this disclaimer, contact us at: benlohtechbiz@gmail.com
+            If you have questions about this disclaimer, contact us at: ben@snappchart.app
           </p>
 
           <div className="bg-red-100 dark:bg-red-900/30 border-2 border-red-300 dark:border-red-700 p-6 rounded-lg mt-8">

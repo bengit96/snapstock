@@ -5,7 +5,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 
-SnapPChart is an advanced AI-powered stock trading analysis platform that uses **OpenAI's GPT-4 Vision** to analyze stock charts and provide instant trading recommendations based on Ross Cameron's proven strategy. Simply upload a screenshot of any stock chart and receive professional-grade analysis in seconds.
+SnapPChart is an advanced AI-powered stock trading analysis platform that uses **OpenAI's GPT-4 Vision** to analyze stock charts and provide instant trading recommendations using proven momentum trading strategies. Simply upload a screenshot of any stock chart and receive professional-grade analysis in seconds.
 
 ## ✨ Key Features
 

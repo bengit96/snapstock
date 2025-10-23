@@ -34,7 +34,7 @@ export async function analyzeChartWithAI(imageBase64: string): Promise<ChartAnal
       .map(c => `- ${c.name} (${c.id}): ${c.description}`)
       .join('\n')
 
-    const prompt = `You are a professional stock chart analyst using Ross Cameron's trading strategy. Analyze this stock chart image and provide a detailed technical analysis.
+    const prompt = `You are a professional stock chart analyst using proven momentum trading strategies. Analyze this stock chart image and provide a detailed technical analysis.
 
 IMPORTANT: First determine if this is a valid stock chart. A valid stock chart must have:
 - Price action (candlesticks, bars, or line chart)

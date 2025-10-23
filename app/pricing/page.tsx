@@ -8,6 +8,7 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ROUTES } from '@/lib/constants'
 import { usePageTracking } from '@/lib/hooks/usePageTracking'
+import { ProductSchema } from '@/components/seo/product-schema'
 
 interface PricingPlan {
   tier: 'monthly' | 'yearly' | 'lifetime'
@@ -121,8 +122,17 @@ export default function PricingPage() {
     }
   ]
 
+  const productOffers = plans.map(plan => ({
+    name: plan.title,
+    price: plan.price,
+    priceCurrency: 'USD',
+    description: plan.description,
+    features: plan.features,
+  }))
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+      <ProductSchema offers={productOffers} />
       <div className="container mx-auto">
         {/* Back Link */}
         <Link

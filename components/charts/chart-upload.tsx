@@ -8,6 +8,7 @@ import { ErrorMessage } from '@/components/ui/error-message'
 import { Upload, Brain, Sparkles } from 'lucide-react'
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ChartUploadProps {
   onDrop: (files: File[]) => void
@@ -51,8 +52,39 @@ export function ChartUpload({
           AI-Powered Chart Analysis
         </CardTitle>
         <CardDescription>
-          Upload a stock chart screenshot for instant GPT-4 Vision analysis
+          Upload a stock chart screenshot for instant AI analysis
         </CardDescription>
+        <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+          <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">
+            Required Indicators:
+          </p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-purple-800 dark:text-purple-200">
+            <div className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+              MACD
+            </div>
+            <div className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+              EMA 9
+            </div>
+            <div className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+              Volume Profile
+            </div>
+            <div className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+              EMA 20
+            </div>
+            <div className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+              VWAP
+            </div>
+            <div className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+              EMA 200
+            </div>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div
@@ -66,14 +98,32 @@ export function ChartUpload({
         >
           <input {...getInputProps()} />
 
-          {uploadedImage ? (
-            <UploadedImagePreview
-              image={uploadedImage}
-              isAnalyzing={isUploading}
-            />
-          ) : (
-            <UploadPrompt isDragActive={isDragActive} />
-          )}
+          <AnimatePresence mode="wait">
+            {uploadedImage ? (
+              <motion.div
+                key="preview"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              >
+                <UploadedImagePreview
+                  image={uploadedImage}
+                  isAnalyzing={isUploading}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="prompt"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <UploadPrompt isDragActive={isDragActive} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {error && (
@@ -103,10 +153,6 @@ function UploadPrompt({ isDragActive }: { isDragActive: boolean }) {
           or click to select from your computer
         </p>
       </div>
-      <div className="flex items-center justify-center gap-2 text-xs text-purple-600">
-        <Sparkles className="w-3 h-3" />
-        Powered by GPT-4 Vision
-      </div>
     </div>
   )
 }
@@ -131,7 +177,7 @@ function UploadedImagePreview({
       {isAnalyzing ? (
         <LoadingSpinner
           size="sm"
-          message="Analyzing with GPT-4 Vision..."
+          message="Analyzing chart with AI..."
           className="mt-4"
         />
       ) : (

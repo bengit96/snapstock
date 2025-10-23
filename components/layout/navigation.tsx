@@ -12,6 +12,14 @@ interface NavigationProps {
 }
 
 export function Navigation({ className, showAuth = true }: NavigationProps) {
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault()
+    const element = document.querySelector(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   return (
     <nav className={cn(
       'fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b',
@@ -25,24 +33,27 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
 
         {/* Navigation Links */}
         <div className="flex items-center gap-4">
-          <Link
+          <a
             href="#features"
-            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition"
+            onClick={(e) => handleScrollTo(e, '#features')}
+            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition cursor-pointer"
           >
             Features
-          </Link>
-          <Link
+          </a>
+          <a
             href="#pricing"
-            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition"
+            onClick={(e) => handleScrollTo(e, '#pricing')}
+            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition cursor-pointer"
           >
             Pricing
-          </Link>
-          <Link
+          </a>
+          <a
             href="#how-it-works"
-            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition"
+            onClick={(e) => handleScrollTo(e, '#how-it-works')}
+            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition cursor-pointer"
           >
             How it Works
-          </Link>
+          </a>
 
           {/* Auth Buttons */}
           {showAuth && (
@@ -50,9 +61,9 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
               <Link href={ROUTES.login}>
                 <Button variant="outline" size="sm">Sign In</Button>
               </Link>
-              <Link href={ROUTES.login}>
+              <Link href={ROUTES.analyze}>
                 <Button size="sm" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                  Start Free Trial
+                  Get Started
                 </Button>
               </Link>
             </>

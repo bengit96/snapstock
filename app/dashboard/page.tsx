@@ -11,6 +11,7 @@ import { RecentAnalyses } from '@/components/dashboard/recent-analyses'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { ErrorBoundary } from '@/components/common/error-boundary'
 import { ROUTES } from '@/lib/constants'
+import { motion } from 'framer-motion'
 
 function DashboardContent() {
   const { data: session, status } = useSession()
@@ -55,22 +56,45 @@ function DashboardContent() {
       <Header user={session.user as any} />
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="grid lg:grid-cols-2 gap-8"
+        >
           {/* Upload Section */}
-          <ChartUpload
-            onDrop={handleDrop}
-            uploadedImage={uploadedImage}
-            isUploading={isAnalyzing}
-            error={error}
-            onErrorDismiss={reset}
-          />
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+          >
+            <ChartUpload
+              onDrop={handleDrop}
+              uploadedImage={uploadedImage}
+              isUploading={isAnalyzing}
+              error={error}
+              onErrorDismiss={reset}
+            />
+          </motion.div>
 
           {/* Analysis Results */}
-          <AnalysisResults result={analysisResult} />
-        </div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <AnalysisResults result={analysisResult} />
+          </motion.div>
+        </motion.div>
 
         {/* Recent Analyses */}
-        <RecentAnalyses className="mt-8" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <RecentAnalyses className="mt-8" />
+        </motion.div>
       </main>
     </div>
   )

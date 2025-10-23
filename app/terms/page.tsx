@@ -201,7 +201,7 @@ export default function TermsPage() {
 
           <h2>18. Contact Information</h2>
           <p>
-            For questions about these Terms, please contact us at: benlohtechbiz@gmail.com
+            For questions about these Terms, please contact us at: ben@snappchart.app
           </p>
 
           <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-8">
