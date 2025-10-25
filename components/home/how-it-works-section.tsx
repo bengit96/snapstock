@@ -53,8 +53,8 @@ export function HowItWorksSection() {
     },
     {
       number: 2,
-      title: 'AI Analyzes in Under 5 Seconds',
-      description: 'Our advanced AI examines 40+ signals, patterns, and confluence zones instantly.'
+      title: 'AI Analyzes Rapidly',
+      description: 'Our advanced AI examines multiple signals, patterns, and confluence zones to provide comprehensive analysis.'
     },
     {
       number: 3,

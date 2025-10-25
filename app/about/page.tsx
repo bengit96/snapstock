@@ -59,7 +59,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold">What We Do</h2>
             </div>
             <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-6">
-              SnapPChart uses GPT-4 Vision AI to analyze stock charts and provide instant, actionable trading recommendations.
+              SnapPChart uses advanced AI to analyze stock charts and provide instant, actionable trading recommendations.
               Our platform evaluates over 40 technical signals, identifies chart patterns, and calculates optimal entry points,
               stop losses, and profit targets.
             </p>

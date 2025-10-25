@@ -81,7 +81,7 @@ export function FeaturesSection() {
     {
       icon: Target,
       title: 'Precision Grading System',
-      description: 'Get instant A-F grades based on 40+ proven signals',
+      description: 'Get instant A-F grades based on proven technical signals',
       features: [
         'Multi-factor confluence analysis',
         'Automatic no-go zone detection',
@@ -103,8 +103,8 @@ export function FeaturesSection() {
   const additionalFeatures: SimpleFeatureProps[] = [
     {
       icon: Clock,
-      title: 'Real-Time Analysis',
-      description: 'Get results in under 3 seconds'
+      title: 'Fast Analysis',
+      description: 'Quick AI-powered chart evaluation'
     },
     {
       icon: Shield,
@@ -137,14 +137,14 @@ export function FeaturesSection() {
         </div>
 
         {/* Main Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           {mainFeatures.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}
         </div>
 
         {/* Additional Features Grid */}
-        <div className="grid md:grid-cols-4 gap-6 mt-12">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-12">
           {additionalFeatures.map((feature, index) => (
             <SimpleFeature key={index} {...feature} index={index} />
           ))}
@@ -163,7 +163,7 @@ export function FeaturesSection() {
             <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
               For optimal AI analysis, ensure your chart includes these indicators:
             </p>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
               <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
                 <div className="font-semibold text-purple-600 mb-1">MACD</div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">Moving Average Convergence Divergence</div>

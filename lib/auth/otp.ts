@@ -2,12 +2,13 @@ import { db } from '@/lib/db'
 import { otpCodes } from '@/lib/db/schema'
 import { eq, and, gte } from 'drizzle-orm'
 import { Resend } from 'resend'
+import { randomInt } from 'crypto'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export function generateOTP(): string {
-  // Generate 6 digit OTP
-  return Math.floor(100000 + Math.random() * 900000).toString()
+  // Generate cryptographically secure 6-digit OTP
+  return randomInt(100000, 1000000).toString()
 }
 
 export async function sendOTP(email: string): Promise<{ success: boolean; error?: string }> {
@@ -83,36 +84,39 @@ export async function sendOTP(email: string): Promise<{ success: boolean; error?
 
 export async function verifyOTP(email: string, code: string): Promise<boolean> {
   try {
-    // Find the OTP record
-    const otpRecords = await db
-      .select()
-      .from(otpCodes)
-      .where(
-        and(
-          eq(otpCodes.email, email),
-          eq(otpCodes.code, code),
-          gte(otpCodes.expiresAt, new Date())
+    // Use transaction to prevent race conditions
+    return await db.transaction(async (tx) => {
+      // Find and lock the OTP record
+      const otpRecords = await tx
+        .select()
+        .from(otpCodes)
+        .where(
+          and(
+            eq(otpCodes.email, email),
+            eq(otpCodes.code, code),
+            gte(otpCodes.expiresAt, new Date())
+          )
         )
-      )
-      .limit(1)
+        .limit(1)
 
-    if (otpRecords.length === 0) {
-      return false
-    }
+      if (otpRecords.length === 0) {
+        return false
+      }
 
-    const otp = otpRecords[0]
+      const otp = otpRecords[0]
 
-    // Check attempts
-    if ((otp.attempts ?? 0) >= 3) {
-      // Delete the OTP if max attempts reached
-      await db.delete(otpCodes).where(eq(otpCodes.id, otp.id))
-      return false
-    }
+      // Check attempts
+      if ((otp.attempts ?? 0) >= 3) {
+        // Delete the OTP if max attempts reached
+        await tx.delete(otpCodes).where(eq(otpCodes.id, otp.id))
+        return false
+      }
 
-    // Delete the OTP after successful verification
-    await db.delete(otpCodes).where(eq(otpCodes.id, otp.id))
+      // Delete the OTP immediately within transaction to prevent reuse
+      await tx.delete(otpCodes).where(eq(otpCodes.id, otp.id))
 
-    return true
+      return true
+    })
   } catch (error) {
     console.error('Error verifying OTP:', error)
     return false

@@ -1,14 +1,21 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#667eea',
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://snappchart.app'),
   title: 'SnapPChart - AI-Powered Stock Trading Analysis',
-  description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential. Get instant trade recommendations with GPT-4 Vision analysis.',
+  description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential. Get instant trade recommendations with advanced AI analysis.',
   keywords: [
     'stock trading analysis',
     'AI chart analysis',
@@ -18,7 +25,7 @@ export const metadata: Metadata = {
     'technical analysis AI',
     'stock chart patterns',
     'trading signals',
-    'GPT-4 stock analysis',
+    'AI stock analysis',
     'chart pattern recognition',
     'momentum stock scanner',
     'MACD analysis',
@@ -50,12 +57,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/site.webmanifest',
-  themeColor: '#667eea',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
   openGraph: {
     title: 'SnapPChart - AI-Powered Stock Trading Analysis',
     description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential.',

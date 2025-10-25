@@ -10,7 +10,7 @@ import { FAQSchema } from '@/components/seo/faq-schema'
 const faqs = [
   {
     question: 'What is SnapPChart?',
-    answer: 'SnapPChart is an AI-powered trading analysis tool that uses GPT-4 Vision to analyze stock charts and provide instant trade recommendations based on momentum trading strategies.',
+    answer: 'SnapPChart is an AI-powered trading analysis tool that analyzes stock charts and provides instant trade recommendations based on momentum trading strategies.',
   },
   {
     question: 'How does the free analysis work?',
@@ -135,7 +135,7 @@ export default function ContactPage() {
               <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <h3 className="font-semibold text-lg mb-2">What is SnapPChart?</h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  SnapPChart is an AI-powered trading analysis tool that uses GPT-4 Vision to analyze stock charts
+                  SnapPChart is an AI-powered trading analysis tool that analyzes stock charts
                   and provide instant trade recommendations based on momentum trading strategies.
                 </p>
               </div>

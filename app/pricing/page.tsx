@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { ROUTES } from '@/lib/constants'
 import { usePageTracking } from '@/lib/hooks/usePageTracking'
 import { ProductSchema } from '@/components/seo/product-schema'
+import { PageLoading } from '@/components/ui/page-loading'
 
 interface PricingPlan {
   tier: 'monthly' | 'yearly' | 'lifetime'
@@ -74,7 +75,7 @@ export default function PricingPage() {
       description: 'Perfect for trying out the platform',
       features: [
         'Unlimited chart analyses',
-        'GPT-4 Vision AI analysis',
+        'Advanced AI analysis',
         'All 40+ trading signals',
         'Trade history tracking',
         'Cancel anytime'
@@ -149,7 +150,7 @@ export default function PricingPage() {
             Choose Your Trading Edge
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Unlock AI-powered analysis with GPT-4 Vision
+            Unlock AI-powered chart analysis
           </p>
         </div>
 

@@ -26,9 +26,21 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    // User pages
     '/dashboard/:path*',
+    '/home/:path*',
+    '/billing/:path*',
+    '/settings/:path*',
+    // API routes
     '/api/analysis/:path*',
+    '/api/analyses/:path*',
+    '/api/billing/:path*',
+    '/api/stripe/checkout',
+    '/api/stripe/portal',
     '/api/trades/:path*',
+    '/api/usage/:path*',
+    '/api/referrals/:path*',
+    // Admin routes
     '/admin/:path*',
     '/api/admin/:path*',
   ],

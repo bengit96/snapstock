@@ -16,7 +16,7 @@ interface FooterSectionProps {
 
 function FooterLink({ href, children }: FooterLinkProps) {
   return (
-    <Link href={href} className="hover:text-white transition">
+    <Link href={href} className="inline-block py-2 hover:text-white transition">
       {children}
     </Link>
   )
@@ -71,7 +71,7 @@ export function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-400 py-12 px-4">
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div>
             <div className="flex items-center space-x-2 mb-4">

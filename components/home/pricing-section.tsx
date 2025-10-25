@@ -67,8 +67,8 @@ export function PricingSection() {
       description: 'Perfect for trying out the platform',
       features: [
         'Unlimited chart analyses',
-        'All 40+ trading signals',
-        'Real-time GPT-4 analysis',
+        'All trading signals',
+        'Real-time AI analysis',
         'Trade history tracking',
         'Cancel anytime'
       ],

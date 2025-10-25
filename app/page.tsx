@@ -4,7 +4,7 @@ import { StockCriteriaSection } from '@/components/home/stock-criteria-section'
 import { FeaturesSection } from '@/components/home/features-section'
 import { HowItWorksSection } from '@/components/home/how-it-works-section'
 import { VideoSection } from '@/components/home/video-section'
-import { TestimonialsSection } from '@/components/home/testimonials-section'
+import { DisclaimerSection } from '@/components/home/disclaimer-section'
 import { PricingSection } from '@/components/home/pricing-section'
 import { CTASection } from '@/components/home/cta-section'
 import { Footer } from '@/components/layout/footer'
@@ -20,7 +20,7 @@ export default function Home() {
       <FeaturesSection />
       <HowItWorksSection />
       <VideoSection />
-      <TestimonialsSection />
+      <DisclaimerSection />
       <PricingSection />
       <CTASection />
       <Footer />

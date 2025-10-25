@@ -24,6 +24,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Apply rate limiting: 10 analyses per hour per user
+    const { withRateLimit, RATE_LIMITS } = await import('@/lib/utils/rate-limit')
+    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.analysis, session.user.id)
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Too many analysis requests. Please try again later.',
+          retryAfter: rateLimitResult.reset,
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+          },
+        }
+      )
+    }
+
     // Get user details
     const userResult = await db
       .select()
@@ -102,18 +123,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Upload image to Vercel Blob Storage
+    // Validate image file
+    const { validateImageFile, generateSecureFilename } = await import('@/lib/utils/file-validation')
+    const validationResult = await validateImageFile(imageFile)
+
+    if (!validationResult.valid) {
+      return NextResponse.json(
+        { error: validationResult.error || 'Invalid image file' },
+        { status: 400 }
+      )
+    }
+
+    // Upload image to Vercel Blob Storage with sanitized filename
     let imageUrl: string
     try {
-      const blob = await put(`charts/${session.user.id}/${Date.now()}-${imageFile.name}`, imageFile, {
+      const secureFilename = generateSecureFilename(session.user.id, imageFile.name)
+      const blob = await put(secureFilename, imageFile, {
         access: 'public',
       })
       imageUrl = blob.url
       console.log('Image uploaded to blob storage:', imageUrl)
     } catch (uploadError) {
       console.error('Failed to upload image to blob storage:', uploadError)
-      // Fallback: proceed without storing the image
-      imageUrl = 'upload-failed'
+      return NextResponse.json(
+        { error: 'Failed to upload image. Please try again.' },
+        { status: 500 }
+      )
     }
 
     // Convert file to base64 for OpenAI

@@ -56,7 +56,7 @@ export function ChartUpload({
         </CardDescription>
         <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
           <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">
-            Required Indicators:
+            Recommended Indicators:
           </p>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-purple-800 dark:text-purple-200">
             <div className="flex items-center">
@@ -69,7 +69,7 @@ export function ChartUpload({
             </div>
             <div className="flex items-center">
               <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              Volume Profile
+              Volume Chart
             </div>
             <div className="flex items-center">
               <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
@@ -84,6 +84,12 @@ export function ChartUpload({
               EMA 200
             </div>
           </div>
+          <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mt-3 mb-1">
+            Recommended Time Frame:
+          </p>
+          <p className="text-xs text-purple-800 dark:text-purple-200">
+            1min or 5min charts for best results
+          </p>
         </div>
       </CardHeader>
       <CardContent>

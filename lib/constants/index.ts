@@ -161,9 +161,11 @@ export const API_ROUTES = {
 
 // Page Routes
 export const ROUTES = {
-  home: '/',
+  landing: '/',
+  home: '/home',
   analyze: '/analyze',
   dashboard: '/dashboard',
+  billing: '/billing',
   login: '/auth/login',
   pricing: '/pricing',
   settings: '/settings',

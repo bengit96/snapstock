@@ -13,7 +13,7 @@ function LoginContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <Link
-            href={ROUTES.home}
+            href={ROUTES.landing}
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -27,7 +27,7 @@ function LoginContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LoginForm redirectTo={ROUTES.dashboard} />
+          <LoginForm redirectTo={ROUTES.home} />
 
           <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
             By signing in, you agree to our{' '}

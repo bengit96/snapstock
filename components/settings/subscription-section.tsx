@@ -155,7 +155,7 @@ export function SubscriptionSection({ user }: SubscriptionSectionProps) {
                 </li>
                 <li className="flex items-center text-sm">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                  GPT-4 Vision AI analysis
+                  Advanced AI analysis
                 </li>
                 <li className="flex items-center text-sm">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-3" />
