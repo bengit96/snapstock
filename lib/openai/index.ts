@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import { TRADING_SIGNALS, NO_GO_CONDITIONS } from '@/lib/trading/signals'
+import { logger } from '@/lib/utils/logger'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -124,11 +125,11 @@ Be precise and only include signals you can clearly identify in the chart. Look 
 
       return result
     } catch (parseError) {
-      console.error('Failed to parse AI response:', content)
+      logger.error('Failed to parse AI response', parseError, { content })
       throw new Error('Failed to parse AI analysis')
     }
   } catch (error) {
-    console.error('Error in AI chart analysis:', error)
+    logger.error('Error in AI chart analysis', error)
 
     // Fallback to basic analysis if AI fails
     return {
@@ -168,7 +169,7 @@ export async function extractTextFromChart(imageBase64: string): Promise<string>
 
     return response.choices[0]?.message?.content || ''
   } catch (error) {
-    console.error('Error extracting text from chart:', error)
+    logger.error('Error extracting text from chart', error)
     return ''
   }
 }

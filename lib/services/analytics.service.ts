@@ -7,12 +7,14 @@ import { db } from '@/lib/db/client'
 import { analyticsEvents } from '@/lib/db/schema'
 import { NextRequest } from 'next/server'
 import { discordService } from './discord.service'
+import { eq, gte, and } from 'drizzle-orm'
+import { logger } from '@/lib/utils/logger'
 
 interface AnalyticsEventData {
   eventType: string
   userId?: string
   sessionId?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 interface RequestInfo {
@@ -60,7 +62,7 @@ class AnalyticsService {
         ...requestInfo,
       })
     } catch (error) {
-      console.error('Failed to track analytics event:', error)
+      logger.error('Failed to track analytics event', error)
       // Don't throw - analytics failures shouldn't break the app
     }
   }
@@ -235,33 +237,37 @@ class AnalyticsService {
       const since = new Date()
       since.setDate(since.getDate() - days)
 
-      // Use db directly
-
       // Count landing page visits
       const visitsResult = await db
         .select()
         .from(analyticsEvents)
-        .where((eb: any) =>
-          eb('event_type', '=', 'landing_page_visit')
-            .and(eb('created_at', '>=', since))
+        .where(
+          and(
+            eq(analyticsEvents.eventType, 'landing_page_visit'),
+            gte(analyticsEvents.createdAt, since)
+          )
         )
 
       // Count signups
       const signupsResult = await db
         .select()
         .from(analyticsEvents)
-        .where((eb: any) =>
-          eb('event_type', '=', 'signup')
-            .and(eb('created_at', '>=', since))
+        .where(
+          and(
+            eq(analyticsEvents.eventType, 'signup'),
+            gte(analyticsEvents.createdAt, since)
+          )
         )
 
       // Count conversions
       const conversionsResult = await db
         .select()
         .from(analyticsEvents)
-        .where((eb: any) =>
-          eb('event_type', '=', 'conversion')
-            .and(eb('created_at', '>=', since))
+        .where(
+          and(
+            eq(analyticsEvents.eventType, 'conversion'),
+            gte(analyticsEvents.createdAt, since)
+          )
         )
 
       const totalVisits = visitsResult.length
@@ -277,7 +283,7 @@ class AnalyticsService {
         conversionRate,
       }
     } catch (error) {
-      console.error('Failed to get analytics summary:', error)
+      logger.error('Failed to get analytics summary', error)
       return {
         totalVisits: 0,
         totalSignups: 0,

@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { chartAnalyses } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
+import { logger } from '@/lib/utils/logger'
 
 export async function GET() {
   try {
@@ -35,7 +36,7 @@ export async function GET() {
 
     return NextResponse.json({ analyses })
   } catch (error) {
-    console.error('Error fetching analyses:', error)
+    logger.error('Error fetching analyses', error)
     return NextResponse.json(
       { error: 'Failed to fetch analyses' },
       { status: 500 }

@@ -1,51 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { chartAnalyses, userActivity, users } from '@/lib/db/schema'
-import { analyzeChart } from '@/lib/trading/analysis'
-import { analyzeChartWithAI } from '@/lib/openai'
+import { analysisService } from '@/lib/services/analysis.service'
 import { discordService } from '@/lib/services/discord.service'
 import { analyticsService } from '@/lib/services/analytics.service'
 import { emailNotificationService } from '@/lib/services/email-notification.service'
-import { SUBSCRIPTION_LIMITS } from '@/lib/constants'
-import { eq, and, gte } from 'drizzle-orm'
-import { put } from '@vercel/blob'
+import { withRateLimit, RATE_LIMITS } from '@/lib/utils/rate-limit'
+import { logger } from '@/lib/utils/logger'
+import { ApiResponse } from '@/lib/utils/api-response'
+import type { Session } from 'next-auth'
 
 export async function POST(request: NextRequest) {
-  let session: any = null
+  let session: Session | null = null
 
   try {
     session = await auth()
 
     if (!session || !session.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return ApiResponse.unauthorized('Please sign in to continue')
     }
 
-    // Apply rate limiting: 10 analyses per hour per user
-    const { withRateLimit, RATE_LIMITS } = await import('@/lib/utils/rate-limit')
-    const rateLimitResult = await withRateLimit(request, RATE_LIMITS.analysis, session.user.id)
+    // Get user details to check admin status and subscription
+    const { db } = await import('@/lib/db')
+    const { users } = await import('@/lib/db/schema')
+    const { eq } = await import('drizzle-orm')
 
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        {
-          error: 'Too many analysis requests. Please try again later.',
-          retryAfter: rateLimitResult.reset,
-        },
-        {
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
-            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
-          },
-        }
-      )
-    }
-
-    // Get user details
     const userResult = await db
       .select()
       .from(users)
@@ -53,21 +31,51 @@ export async function POST(request: NextRequest) {
       .limit(1)
 
     if (userResult.length === 0) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      return ApiResponse.notFound('User not found')
     }
 
     const user = userResult[0]
+    const isAdmin = user.role === 'admin'
     const isFreeUser = !user.subscriptionStatus || user.subscriptionStatus !== 'active'
 
-    // Check free trial limits
-    if (isFreeUser) {
-      if ((user.freeAnalysesUsed || 0) >= (user.freeAnalysesLimit || 1)) {
+    // Apply rate limiting only for non-admin users
+    if (!isAdmin) {
+      const rateLimitResult = await withRateLimit(
+        request,
+        RATE_LIMITS.analysis,
+        session.user.id
+      )
+
+      if (!rateLimitResult.success) {
         return NextResponse.json(
           {
-            error: 'Free trial limit reached',
+            error: 'Too many analysis requests. Please try again later.',
+            retryAfter: rateLimitResult.reset,
+          },
+          {
+            status: 429,
+            headers: {
+              'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+              'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            },
+          }
+        )
+      }
+    }
+
+    // Check analysis limits
+    const limitsResult = await analysisService.checkAnalysisLimits(
+      session.user.id,
+      isAdmin,
+      isFreeUser
+    )
+
+    if (!limitsResult.allowed) {
+      if (limitsResult.reason === 'Free trial limit reached') {
+        return NextResponse.json(
+          {
+            error: limitsResult.reason,
             message: 'You have used your free analysis. Please subscribe to continue.',
             freeAnalysesUsed: user.freeAnalysesUsed,
             freeAnalysesLimit: user.freeAnalysesLimit,
@@ -75,169 +83,49 @@ export async function POST(request: NextRequest) {
           { status: 402 }
         )
       }
-    } else {
-      // Check monthly limits for paid users
-      const tier = user.subscriptionTier as 'monthly' | 'yearly' | 'lifetime'
-      const monthlyLimit = SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses
 
-      // Only check if there's a limit (null = unlimited for lifetime)
-      if (monthlyLimit !== null && monthlyLimit !== undefined) {
-        // Get start of current month
-        const monthStart = new Date()
-        monthStart.setDate(1)
-        monthStart.setHours(0, 0, 0, 0)
-
-        // Count analyses this month
-        const thisMonthAnalyses = await db
-          .select()
-          .from(chartAnalyses)
-          .where(
-            and(
-              eq(chartAnalyses.userId, session.user.id),
-              gte(chartAnalyses.createdAt, monthStart)
-            )
-          )
-
-        if (thisMonthAnalyses.length >= monthlyLimit) {
-          return NextResponse.json(
-            {
-              error: 'Monthly limit reached',
-              message: `You have reached your monthly limit of ${monthlyLimit} analyses. Your limit will reset on the 1st of next month.`,
-              monthlyLimit,
-              monthlyUsed: thisMonthAnalyses.length,
-              tier,
-            },
-            { status: 402 }
-          )
-        }
+      if (limitsResult.reason === 'Monthly limit reached') {
+        return NextResponse.json(
+          {
+            error: limitsResult.reason,
+            message: `You have reached your monthly limit of ${limitsResult.monthlyLimit} analyses. Your limit will reset on the 1st of next month.`,
+            monthlyLimit: limitsResult.monthlyLimit,
+            monthlyUsed: limitsResult.monthlyUsed,
+            tier: user.subscriptionTier,
+          },
+          { status: 402 }
+        )
       }
+
+      return ApiResponse.error(limitsResult.reason || 'Analysis limit reached', 402)
     }
 
+    // Get image from form data
     const formData = await request.formData()
     const imageFile = formData.get('image') as File
 
     if (!imageFile) {
-      return NextResponse.json(
-        { error: 'No image provided' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('No image provided')
     }
 
-    // Validate image file
-    const { validateImageFile, generateSecureFilename } = await import('@/lib/utils/file-validation')
-    const validationResult = await validateImageFile(imageFile)
-
-    if (!validationResult.valid) {
-      return NextResponse.json(
-        { error: validationResult.error || 'Invalid image file' },
-        { status: 400 }
-      )
-    }
-
-    // Upload image to Vercel Blob Storage with sanitized filename
-    let imageUrl: string
-    try {
-      const secureFilename = generateSecureFilename(session.user.id, imageFile.name)
-      const blob = await put(secureFilename, imageFile, {
-        access: 'public',
-      })
-      imageUrl = blob.url
-      console.log('Image uploaded to blob storage:', imageUrl)
-    } catch (uploadError) {
-      console.error('Failed to upload image to blob storage:', uploadError)
-      return NextResponse.json(
-        { error: 'Failed to upload image. Please try again.' },
-        { status: 500 }
-      )
-    }
-
-    // Convert file to base64 for OpenAI
-    const bytes = await imageFile.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const base64Image = buffer.toString('base64')
-
-    // Analyze chart with OpenAI GPT-4 Vision
-    console.log('Analyzing chart with OpenAI...')
-    const aiAnalysis = await analyzeChartWithAI(base64Image)
-
-    // Check if it's a valid chart
-    if (!aiAnalysis.isValidChart) {
-      return NextResponse.json(
-        {
-          error: 'Invalid chart',
-          message: 'The uploaded image does not appear to be a valid stock chart. Please upload a screenshot of a stock chart with visible price action, volume bars, and technical indicators.',
-          confidence: aiAnalysis.confidence
-        },
-        { status: 400 }
-      )
-    }
-
-    // Run trading strategy analysis on the detected signals
-    const analysisResult = analyzeChart({
-      activeSignalIds: aiAnalysis.activeSignals,
-      activeNoGoIds: aiAnalysis.activeNoGoConditions,
-      currentPrice: aiAnalysis.currentPrice,
-      supportLevel: aiAnalysis.supportLevel,
-      resistanceLevel: aiAnalysis.resistanceLevel,
-    })
-
-    // Save to database
-    const [savedAnalysis] = await db
-      .insert(chartAnalyses)
-      .values({
-        userId: session.user.id,
-        imageUrl: imageUrl, // Store blob URL instead of base64
-        stockSymbol: aiAnalysis.stockSymbol || 'UNKNOWN',
-        isValidChart: true,
-        grade: analysisResult.grade,
-        gradeLabel: analysisResult.gradeLabel,
-        gradeColor: analysisResult.gradeColor,
-        totalScore: analysisResult.totalScore,
-        shouldEnter: analysisResult.shouldEnter,
-        entryPrice: analysisResult.entryPrice?.toString(),
-        stopLoss: analysisResult.stopLoss?.toString(),
-        takeProfit: analysisResult.takeProfit?.toString(),
-        riskRewardRatio: analysisResult.riskRewardRatio?.toString(),
-        activeBullishSignals: analysisResult.activeBullishSignals,
-        activeBearishSignals: analysisResult.activeBearishSignals,
-        activeNoGoConditions: analysisResult.activeNoGoConditions,
-        confluenceCount: analysisResult.confluenceCount,
-        confluenceCategories: analysisResult.confluenceCategories,
-        analysisReason: analysisResult.reasons.join('. '),
-      })
-      .returning()
-
-    // Log activity
-    await db.insert(userActivity).values({
+    // Process analysis using service
+    logger.info('Processing chart analysis', { userId: session.user.id })
+    const analysisData = await analysisService.processAnalysis({
       userId: session.user.id,
-      action: 'chart_analysis',
-      metadata: {
-        analysisId: savedAnalysis.id,
-        stockSymbol: aiAnalysis.stockSymbol,
-        grade: analysisResult.grade,
-        confidence: aiAnalysis.confidence
-      },
+      imageFile,
+      session,
     })
 
-    // Update free analyses count for free users
-    if (isFreeUser) {
-      await db
-        .update(users)
-        .set({
-          freeAnalysesUsed: (user.freeAnalysesUsed || 0) + 1,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, session.user.id))
-    }
+    const { analysisId, result: analysisResult, aiAnalysis, isFreeUser: isFree, freeAnalysesRemaining, user: updatedUser } = analysisData
 
     // Track analytics
     await analyticsService.trackAnalysis(
       session.user.id,
       {
-        analysisId: savedAnalysis.id,
+        analysisId,
         stockSymbol: aiAnalysis.stockSymbol,
         grade: analysisResult.grade,
-        isFree: isFreeUser,
+        isFree,
       },
       request
     )
@@ -245,63 +133,69 @@ export async function POST(request: NextRequest) {
     // Send Discord notification
     await discordService.notifyAnalysis({
       userId: session.user.id,
-      email: user.email,
+      email: updatedUser.email,
       stockSymbol: aiAnalysis.stockSymbol,
       grade: analysisResult.grade,
       shouldEnter: analysisResult.shouldEnter,
       confidence: aiAnalysis.confidence,
-      isFree: isFreeUser,
+      isFree,
     })
 
-    // Prepare response with enhanced information
+    // Prepare response
     const response = {
-      id: savedAnalysis.id,
+      id: analysisId,
       ...analysisResult,
       stockSymbol: aiAnalysis.stockSymbol,
       chartDescription: aiAnalysis.chartDescription,
       aiConfidence: aiAnalysis.confidence,
-      isFreeUser,
-      freeAnalysesRemaining: isFreeUser
-        ? (user.freeAnalysesLimit || 1) - ((user.freeAnalysesUsed || 0) + 1)
-        : undefined,
+      isFreeUser: isFree,
+      freeAnalysesRemaining,
       detectedSignals: {
-        bullish: analysisResult.activeBullishSignals.map(s => ({
+        bullish: analysisResult.activeBullishSignals.map((s) => ({
           name: s.name,
-          points: s.points
+          points: s.points,
+          explanation: s.explanation,
         })),
-        bearish: analysisResult.activeBearishSignals.map(s => ({
+        bearish: analysisResult.activeBearishSignals.map((s) => ({
           name: s.name,
-          points: Math.abs(s.points)
+          points: Math.abs(s.points),
+          explanation: s.explanation,
         })),
-        noGo: analysisResult.activeNoGoConditions.map(c => c.name)
-      }
+        noGo: analysisResult.activeNoGoConditions.map((c) => c.name),
+      },
+      disclaimer:
+        'This analysis is for educational and informational purposes only. The recommendations are based on technical analysis patterns and historical probability, but do not guarantee future market performance. Markets are inherently unpredictable and volatile. This is NOT financial advice. Always conduct your own research, consider your risk tolerance, and consult with a licensed financial advisor before making any investment decisions. Trading stocks involves substantial risk of loss.',
     }
 
     return NextResponse.json(response)
-  } catch (error: any) {
-    console.error('Error in analysis route:', error)
+  } catch (error) {
+    logger.error('Error in analysis route', error, { userId: session?.user?.id })
 
     // Send email notification for critical errors
     await emailNotificationService.sendErrorNotification({
-      error: error.message || 'Unknown error in analysis route',
+      error: error instanceof Error ? error.message : 'Unknown error in analysis route',
       context: 'Chart Analysis API',
-      stackTrace: error.stack,
+      stackTrace: error instanceof Error ? error.stack : undefined,
       userId: session?.user?.id,
     })
 
-    // Check if it's an OpenAI API error
+    // Check for specific error types
     if (error instanceof Error) {
       if (error.message.includes('API key')) {
-        return NextResponse.json(
-          { error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.' },
-          { status: 500 }
+        return ApiResponse.serverError(
+          'OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.'
         )
+      }
+
+      if (error.message.includes('Invalid chart')) {
+        return ApiResponse.badRequest(error.message)
+      }
+
+      if (error.message.includes('Invalid image')) {
+        return ApiResponse.badRequest(error.message)
       }
     }
 
-    return NextResponse.json(
-      { error: 'Analysis failed. Please try again.' },
-      { status: 500 }
-    )
+    return ApiResponse.serverError('Analysis failed. Please try again.')
   }
 }

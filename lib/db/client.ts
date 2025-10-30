@@ -54,7 +54,8 @@ class DatabaseClient {
       await this.client`SELECT 1`
       return true
     } catch (error) {
-      console.error('Database health check failed:', error)
+      const { logger } = await import('@/lib/utils/logger')
+      logger.error('Database health check failed', error)
       return false
     }
   }

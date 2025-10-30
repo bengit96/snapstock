@@ -3,6 +3,8 @@
  * Sends notifications to Discord for important events
  */
 
+import { logger } from '@/lib/utils/logger'
+
 interface DiscordEmbed {
   title: string
   description?: string
@@ -36,7 +38,7 @@ class DiscordService {
    */
   private async send(message: DiscordMessage): Promise<void> {
     if (!this.isConfigured()) {
-      console.warn('Discord webhook not configured')
+      logger.warn('Discord webhook not configured')
       return
     }
 
@@ -53,7 +55,7 @@ class DiscordService {
         throw new Error(`Discord API error: ${response.statusText}`)
       }
     } catch (error) {
-      console.error('Failed to send Discord notification:', error)
+      logger.error('Failed to send Discord notification', error)
       // Don't throw - we don't want Discord failures to break the app
     }
   }
