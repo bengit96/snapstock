@@ -10,19 +10,16 @@ import { emailNotificationService } from '@/lib/services/email-notification.serv
 import { SUBSCRIPTION_LIMITS } from '@/lib/constants'
 import { eq, and, gte } from 'drizzle-orm'
 import { put } from '@vercel/blob'
+import { requireAuth } from '@/lib/utils/security'
+import { ApiResponse } from '@/lib/utils/api-response'
+import { logger } from '@/lib/utils/logger'
+import type { Session } from 'next-auth'
 
 export async function POST(request: NextRequest) {
-  let session: any = null
+  let session: Session | null = null
 
   try {
-    session = await auth()
-
-    if (!session || !session.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    session = await requireAuth()
 
     // Apply rate limiting: 10 analyses per hour per user
     const { withRateLimit, RATE_LIMITS } = await import('@/lib/utils/rate-limit')
@@ -53,10 +50,7 @@ export async function POST(request: NextRequest) {
       .limit(1)
 
     if (userResult.length === 0) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      return ApiResponse.notFound('User not found')
     }
 
     const user = userResult[0]
@@ -65,20 +59,19 @@ export async function POST(request: NextRequest) {
     // Check free trial limits
     if (isFreeUser) {
       if ((user.freeAnalysesUsed || 0) >= (user.freeAnalysesLimit || 1)) {
-        return NextResponse.json(
+        return ApiResponse.paymentRequired(
+          'Free trial limit reached',
           {
-            error: 'Free trial limit reached',
             message: 'You have used your free analysis. Please subscribe to continue.',
             freeAnalysesUsed: user.freeAnalysesUsed,
             freeAnalysesLimit: user.freeAnalysesLimit,
-          },
-          { status: 402 }
+          }
         )
       }
     } else {
       // Check monthly limits for paid users
-      const tier = user.subscriptionTier as 'monthly' | 'yearly' | 'lifetime'
-      const monthlyLimit = SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses
+      const tier = user.subscriptionTier as 'monthly' | 'yearly' | 'lifetime' | null
+      const monthlyLimit = tier ? SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses : null
 
       // Only check if there's a limit (null = unlimited for lifetime)
       if (monthlyLimit !== null && monthlyLimit !== undefined) {
@@ -99,15 +92,14 @@ export async function POST(request: NextRequest) {
           )
 
         if (thisMonthAnalyses.length >= monthlyLimit) {
-          return NextResponse.json(
+          return ApiResponse.paymentRequired(
+            'Monthly limit reached',
             {
-              error: 'Monthly limit reached',
               message: `You have reached your monthly limit of ${monthlyLimit} analyses. Your limit will reset on the 1st of next month.`,
               monthlyLimit,
               monthlyUsed: thisMonthAnalyses.length,
               tier,
-            },
-            { status: 402 }
+            }
           )
         }
       }
@@ -117,10 +109,7 @@ export async function POST(request: NextRequest) {
     const imageFile = formData.get('image') as File
 
     if (!imageFile) {
-      return NextResponse.json(
-        { error: 'No image provided' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('No image provided')
     }
 
     // Validate image file
@@ -128,10 +117,7 @@ export async function POST(request: NextRequest) {
     const validationResult = await validateImageFile(imageFile)
 
     if (!validationResult.valid) {
-      return NextResponse.json(
-        { error: validationResult.error || 'Invalid image file' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest(validationResult.error || 'Invalid image file')
     }
 
     // Upload image to Vercel Blob Storage with sanitized filename
@@ -142,13 +128,10 @@ export async function POST(request: NextRequest) {
         access: 'public',
       })
       imageUrl = blob.url
-      console.log('Image uploaded to blob storage:', imageUrl)
+      logger.info('Image uploaded to blob storage', { imageUrl, userId: session.user.id })
     } catch (uploadError) {
-      console.error('Failed to upload image to blob storage:', uploadError)
-      return NextResponse.json(
-        { error: 'Failed to upload image. Please try again.' },
-        { status: 500 }
-      )
+      logger.error('Failed to upload image to blob storage', uploadError, { userId: session.user.id })
+      return ApiResponse.serverError('Failed to upload image. Please try again.')
     }
 
     // Convert file to base64 for OpenAI
@@ -157,18 +140,17 @@ export async function POST(request: NextRequest) {
     const base64Image = buffer.toString('base64')
 
     // Analyze chart with OpenAI GPT-4 Vision
-    console.log('Analyzing chart with OpenAI...')
+    logger.info('Analyzing chart with OpenAI', { userId: session.user.id })
     const aiAnalysis = await analyzeChartWithAI(base64Image)
 
     // Check if it's a valid chart
     if (!aiAnalysis.isValidChart) {
-      return NextResponse.json(
+      return ApiResponse.badRequest(
+        'Invalid chart',
         {
-          error: 'Invalid chart',
           message: 'The uploaded image does not appear to be a valid stock chart. Please upload a screenshot of a stock chart with visible price action, volume bars, and technical indicators.',
           confidence: aiAnalysis.confidence
-        },
-        { status: 400 }
+        }
       )
     }
 
@@ -277,31 +259,38 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(response)
-  } catch (error: any) {
-    console.error('Error in analysis route:', error)
-
-    // Send email notification for critical errors
-    await emailNotificationService.sendErrorNotification({
-      error: error.message || 'Unknown error in analysis route',
-      context: 'Chart Analysis API',
-      stackTrace: error.stack,
+    return ApiResponse.success(response)
+  } catch (error: unknown) {
+    logger.error('Error in analysis route', error, {
       userId: session?.user?.id,
     })
 
-    // Check if it's an OpenAI API error
+    // Send email notification for critical errors
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error in analysis route'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    await emailNotificationService.sendErrorNotification({
+      error: errorMessage,
+      context: 'Chart Analysis API',
+      stackTrace: errorStack,
+      userId: session?.user?.id,
+    })
+
+    // Handle specific error types
     if (error instanceof Error) {
+      // Handle authorization errors
+      if (error.message.includes('Unauthorized')) {
+        return ApiResponse.unauthorized(error.message)
+      }
+
+      // Handle OpenAI API errors
       if (error.message.includes('API key')) {
-        return NextResponse.json(
-          { error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.' },
-          { status: 500 }
+        return ApiResponse.serverError(
+          'OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.'
         )
       }
     }
 
-    return NextResponse.json(
-      { error: 'Analysis failed. Please try again.' },
-      { status: 500 }
-    )
+    return ApiResponse.serverError('Analysis failed. Please try again.')
   }
 }

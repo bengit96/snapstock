@@ -8,33 +8,40 @@ import { discordService } from '@/lib/services/discord.service'
 import { analyticsService } from '@/lib/services/analytics.service'
 import { referralService } from '@/lib/services/referral.service'
 import { emailNotificationService } from '@/lib/services/email-notification.service'
+import { requireEnv } from '@/lib/utils/env'
+import { logger } from '@/lib/utils/logger'
+import { ApiResponse } from '@/lib/utils/api-response'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(requireEnv('STRIPE_SECRET_KEY'), {
   apiVersion: '2024-06-20',
 })
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const webhookSecret = requireEnv('STRIPE_WEBHOOK_SECRET')
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
-    const signature = headers().get('stripe-signature')!
+    const signature = headers().get('stripe-signature')
+
+    if (!signature) {
+      logger.warn('Stripe webhook missing signature')
+      return ApiResponse.badRequest('Missing stripe-signature header')
+    }
 
     let event: Stripe.Event
-
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-    } catch (err: any) {
-      console.error('Webhook signature verification failed:', err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      const errorStack = err instanceof Error ? err.stack : undefined
+      
+      logger.error('Webhook signature verification failed', err)
       await emailNotificationService.sendErrorNotification({
         error: 'Stripe webhook signature verification failed',
         context: 'Webhook endpoint',
-        stackTrace: err.stack,
+        stackTrace: errorStack,
       })
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('Invalid signature')
     }
 
     // Use db directly
@@ -43,7 +50,7 @@ export async function POST(request: NextRequest) {
     await db.insert(stripeEvents).values({
       stripeEventId: event.id,
       type: event.type,
-      data: event.data as any,
+      data: event.data as Record<string, unknown>,
       processed: false,
     })
 
@@ -68,7 +75,7 @@ export async function POST(request: NextRequest) {
               .set({
                 stripeCustomerId: session.customer as string,
                 subscriptionStatus: 'active',
-                subscriptionTier: session.metadata.tier as any,
+                subscriptionTier: (session.metadata.tier as 'monthly' | 'yearly' | 'lifetime') || null,
                 updatedAt: new Date(),
               })
               .where(eq(users.id, session.metadata.userId))
@@ -218,9 +225,9 @@ export async function POST(request: NextRequest) {
               // Mark reward as claimed
               await referralService.claimReward(user.id)
 
-              console.log(`Applied ${discount}% discount to user ${user.id}`)
+              logger.info(`Applied ${discount}% discount to user`, { userId: user.id, discount })
             } catch (error) {
-              console.error('Failed to apply referral discount:', error)
+              logger.error('Failed to apply referral discount', error, { userId: user.id })
               await emailNotificationService.sendErrorNotification({
                 error: 'Failed to apply referral discount',
                 context: `User ID: ${user.id}`,
@@ -230,7 +237,7 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        console.log('Payment succeeded for invoice:', invoice.id)
+        logger.info('Payment succeeded for invoice', { invoiceId: invoice.id })
         break
       }
 
@@ -270,7 +277,7 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        logger.info('Unhandled Stripe webhook event', { eventType: event.type })
     }
 
     // Mark event as processed
@@ -280,19 +287,17 @@ export async function POST(request: NextRequest) {
       .where(eq(stripeEvents.stripeEventId, event.id))
 
     return NextResponse.json({ received: true })
-  } catch (error: any) {
-    console.error('Error processing webhook:', error)
+  } catch (error: unknown) {
+    logger.error('Error processing webhook', error)
 
     // Send email notification for webhook processing errors
+    const errorStack = error instanceof Error ? error.stack : undefined
     await emailNotificationService.sendErrorNotification({
       error: 'Stripe webhook processing failed',
       context: 'Webhook endpoint',
-      stackTrace: error.stack,
+      stackTrace: errorStack,
     })
 
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    )
+    return ApiResponse.serverError('Webhook processing failed')
   }
 }

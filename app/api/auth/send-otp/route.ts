@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendOTP } from '@/lib/auth/otp'
 import { withRateLimit, RATE_LIMITS } from '@/lib/utils/rate-limit'
+import { ApiResponse } from '@/lib/utils/api-response'
+import { logger } from '@/lib/utils/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,10 +31,7 @@ export async function POST(request: NextRequest) {
     const validation = await parseRequestBody(request, sendOTPRequestSchema)
 
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest(validation.error || 'Invalid request')
     }
 
     const { email } = validation.data
@@ -40,21 +39,16 @@ export async function POST(request: NextRequest) {
     const result = await sendOTP(email)
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error || 'Failed to send OTP' },
-        { status: 500 }
-      )
+      logger.warn('Failed to send OTP', { email, error: result.error })
+      return ApiResponse.serverError(result.error || 'Failed to send OTP')
     }
 
-    return NextResponse.json(
+    return ApiResponse.success(
       { message: 'OTP sent successfully' },
-      { status: 200 }
+      'OTP sent successfully'
     )
   } catch (error) {
-    console.error('Error in send-otp route:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    logger.error('Error in send-otp route', error)
+    return ApiResponse.serverError('Internal server error')
   }
 }

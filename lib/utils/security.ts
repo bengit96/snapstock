@@ -63,6 +63,9 @@ export function rateLimitKey(identifier: string, action: string): string {
   return `rate_limit:${action}:${identifier}`
 }
 
+// Note: Use generateSecureFilename from @/lib/utils/file-validation instead
+// This function is kept for backward compatibility but should not be used
+// @deprecated Use generateSecureFilename from file-validation.ts
 export function generateSecureFilename(originalName: string, userId: string): string {
   const timestamp = Date.now()
   const randomString = Math.random().toString(36).substring(2, 15)
