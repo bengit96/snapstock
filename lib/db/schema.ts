@@ -116,12 +116,25 @@ export const chartAnalyses = pgTable('chart_analyses', {
   riskRewardRatio: decimal('risk_reward_ratio', { precision: 5, scale: 2 }),
 
   // Detailed analysis
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  activeBullishSignals: jsonb('active_bullish_signals').$type<any[]>().default([]),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  activeBearishSignals: jsonb('active_bearish_signals').$type<any[]>().default([]),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  activeNoGoConditions: jsonb('active_no_go_conditions').$type<any[]>().default([]),
+  activeBullishSignals: jsonb('active_bullish_signals').$type<Array<{
+    id: string
+    name: string
+    shortName: string
+    points: number
+    explanation?: string
+  }>>().default([]),
+  activeBearishSignals: jsonb('active_bearish_signals').$type<Array<{
+    id: string
+    name: string
+    shortName: string
+    points: number
+    explanation?: string
+  }>>().default([]),
+  activeNoGoConditions: jsonb('active_no_go_conditions').$type<Array<{
+    id: string
+    name: string
+    description: string
+  }>>().default([]),
   confluenceCount: integer('confluence_count'),
   confluenceCategories: jsonb('confluence_categories').$type<string[]>().default([]),
 

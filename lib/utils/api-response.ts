@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server'
 export type ApiError = {
   error: string
   message?: string
-  details?: any
+  details?: unknown
 }
 
-export type ApiSuccess<T = any> = {
+export type ApiSuccess<T = unknown> = {
   success: true
   data: T
   message?: string
@@ -19,7 +19,7 @@ export class ApiResponse {
   /**
    * Success response
    */
-  static success<T = any>(
+  static success<T = unknown>(
     data: T,
     message?: string,
     status: number = 200
@@ -40,7 +40,7 @@ export class ApiResponse {
   static error(
     error: string,
     status: number = 500,
-    details?: any
+    details?: unknown
   ): NextResponse<ApiError> {
     return NextResponse.json(
       {
@@ -75,7 +75,7 @@ export class ApiResponse {
    */
   static badRequest(
     message: string = 'Bad request',
-    details?: any
+    details?: unknown
   ): NextResponse<ApiError> {
     return this.error(message, 400, details)
   }
@@ -103,7 +103,7 @@ export class ApiResponse {
    */
   static serverError(
     message: string = 'Internal server error',
-    details?: any
+    details?: unknown
   ): NextResponse<ApiError> {
     return this.error(message, 500, details)
   }
@@ -112,7 +112,10 @@ export class ApiResponse {
    * Handle common API errors
    */
   static handleError(error: unknown): NextResponse<ApiError> {
-    console.error('API Error:', error)
+    // Use logger instead of console
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { logger } = require('@/lib/utils/logger')
+    logger.error('API Error', error)
 
     if (error instanceof Error) {
       // Check for specific error types

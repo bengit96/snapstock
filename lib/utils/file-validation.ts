@@ -30,7 +30,7 @@ interface ValidationResult {
  * Validate image file type by checking MIME type
  */
 export function validateMimeType(file: File): ValidationResult {
-  if (!ALLOWED_MIME_TYPES.includes(file.type as any)) {
+  if (!ALLOWED_MIME_TYPES.includes(file.type as (typeof ALLOWED_MIME_TYPES)[number])) {
     return {
       valid: false,
       error: `Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed. Got: ${file.type}`,

@@ -13,8 +13,7 @@ export async function middleware(req: NextRequest) {
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
 
   if (isAdminRoute) {
-    // @ts-ignore - role is added to token via callbacks
-    const userRole = token.role as string | undefined
+    const userRole = (token.role as string | undefined) ?? undefined
 
     if (userRole !== 'admin') {
       return NextResponse.redirect(new URL('/unauthorized', req.url))
