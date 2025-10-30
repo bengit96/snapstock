@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { requireEnv } from '@/lib/utils/env'
+
+// Extend JWT token type to include role
+interface TokenWithRole {
+  sub?: string
+  role?: 'user' | 'admin'
+  [key: string]: unknown
+}
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  const secret = requireEnv('NEXTAUTH_SECRET')
+  const token = (await getToken({ req, secret })) as TokenWithRole | null
 
   if (!token) {
     return NextResponse.redirect(new URL('/auth/login', req.url))
@@ -13,8 +22,7 @@ export async function middleware(req: NextRequest) {
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
 
   if (isAdminRoute) {
-    // @ts-ignore - role is added to token via callbacks
-    const userRole = token.role as string | undefined
+    const userRole = token.role
 
     if (userRole !== 'admin') {
       return NextResponse.redirect(new URL('/unauthorized', req.url))

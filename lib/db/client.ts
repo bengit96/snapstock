@@ -1,6 +1,8 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema'
+import { requireEnv } from '@/lib/utils/env'
+import { logger } from '@/lib/utils/logger'
 
 /**
  * Database Client Singleton
@@ -12,11 +14,7 @@ class DatabaseClient {
   public db: ReturnType<typeof drizzle>
 
   private constructor() {
-    const connectionString = process.env.DATABASE_URL!
-
-    if (!connectionString) {
-      throw new Error('DATABASE_URL environment variable is not set')
-    }
+    const connectionString = requireEnv('DATABASE_URL')
 
     // Create postgres client with connection pooling
     this.client = postgres(connectionString, {
@@ -54,7 +52,7 @@ class DatabaseClient {
       await this.client`SELECT 1`
       return true
     } catch (error) {
-      console.error('Database health check failed:', error)
+      logger.error('Database health check failed', error)
       return false
     }
   }
