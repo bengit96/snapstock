@@ -168,7 +168,6 @@ export default function PricingPage() {
 
         {/* Footer Info */}
         <div className="mt-12 text-center text-gray-600 dark:text-gray-400">
-          <p className="mb-4">All plans include a 7-day money-back guarantee</p>
           <p className="text-sm">Payments are processed securely via Stripe</p>
         </div>
       </div>
