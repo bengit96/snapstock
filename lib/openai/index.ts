@@ -474,6 +474,18 @@ Return ONLY valid JSON (no markdown, no comments):
   "keyConcerns": [
     "Approaching psychological resistance at $155 (whole dollar level)"
   ],
+  "pullbackAnalysis": {
+    "hasPullback": true,
+    "isPullbackEntry": true,
+    "pullbackLevel": 150.25,
+    "pullbackPattern": "Bull flag with 2 red candles on decreasing volume",
+    "pullbackConfirmation": "First green candle closing above 9 EMA with volume increase",
+    "recommendation": "This is an ideal pullback entry opportunity. Price has retraced to the 9 EMA support with decreasing selling volume, indicating a healthy pullback. Enter at current levels with stop below recent swing low.",
+    "entryTrigger": "Enter on break above previous candle high at 150.30 or on first green candle close above 9 EMA",
+    "pullbackStrength": "strong",
+    "supportLevel": 150.00,
+    "waitForPullback": false
+  },
   "bullishSignals": [
     { "id": "macd-green", "confidence": 85, "explanation": "MACD line crossed above signal line (bullish crossover) as price touched 9 EMA support, showing momentum shift at key level" },
     { "id": "high-buy-vol", "confidence": 78, "explanation": "Volume spiked 2x average on the bounce candle, indicating institutional buying interest" },
@@ -501,12 +513,30 @@ Return ONLY valid JSON (no markdown, no comments):
    - This disqualifies the trade completely - return F grade
    - Do not make excuses - if you see a large red volume spike, flag it
 
-2. STOP LOSS IS MANDATORY:
+2. PULLBACK ANALYSIS IS MANDATORY:
+   - You MUST include the pullbackAnalysis object in your response
+   - If there's a visible pullback: set isPullbackEntry=true, provide entry levels
+   - If NO PULLBACK: set waitForPullback=true, recommendation="Price is extended - wait for pullback to [specific support level] before entering. Avoid chasing the move."
+   - Example for no pullback:
+     "pullbackAnalysis": {
+       "hasPullback": false,
+       "isPullbackEntry": false,
+       "pullbackLevel": null,
+       "pullbackPattern": "No pullback - price extended after 5+ green candles",
+       "pullbackConfirmation": null,
+       "recommendation": "Price is extended 8% from 9 EMA support. Wait for pullback to $145-147 zone (9-20 EMA) before entering. Set alerts for these levels and avoid chasing at current prices.",
+       "entryTrigger": "Wait for pullback to support, then enter on first green candle with volume",
+       "pullbackStrength": null,
+       "supportLevel": 145.50,
+       "waitForPullback": true
+     }
+
+3. STOP LOSS IS MANDATORY:
    - You must ALWAYS provide a stopLoss value
    - Stop loss MUST be below the support level you're entering at
    - This is not optional
 
-3. MOMENTUM TRADING PULLBACK RULES:
+4. MOMENTUM TRADING PULLBACK RULES:
    - NO PULLBACK VISIBLE = add "no-pullback" bearish signal with 90+ confidence
    - If price extended from support, state in overallReason: "NOT A PULLBACK - HIGH RISK ENTRY"
    - targetEntry MUST be at support (9 EMA, 20 EMA, VWAP) - NEVER at resistance

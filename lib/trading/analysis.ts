@@ -4,6 +4,7 @@ import {
   TRADING_SIGNALS,
   NO_GO_CONDITIONS,
 } from "./signals";
+import { PullbackRecommendation } from "@/lib/types";
 
 export interface AnalysisResult {
   grade: "A+" | "A" | "B+" | "B" | "C+" | "C" | "D" | "F";
@@ -33,6 +34,7 @@ export interface AnalysisResult {
   stopLoss?: number;
   takeProfit?: number;
   riskRewardRatio?: number;
+  pullbackRecommendation?: PullbackRecommendation;
 }
 
 export interface StrategyAnalysisInput {
@@ -47,6 +49,18 @@ export interface StrategyAnalysisInput {
   tradeThesis?: string;
   overallReason?: string;
   confidence: number;
+  pullbackAnalysis?: {
+    hasPullback: boolean;
+    isPullbackEntry: boolean;
+    pullbackLevel?: number;
+    pullbackPattern?: string;
+    pullbackConfirmation?: string;
+    recommendation: string;
+    entryTrigger?: string;
+    pullbackStrength?: "weak" | "moderate" | "strong";
+    supportLevel?: number;
+    waitForPullback?: boolean;
+  };
 }
 
 export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
@@ -491,6 +505,23 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
     chartSummary += `It's recommended to skip this trade opportunity and wait for a better setup.`;
   }
 
+  // Process pullback recommendation
+  let pullbackRecommendation: PullbackRecommendation | undefined;
+  if (input.pullbackAnalysis) {
+    pullbackRecommendation = {
+      hasPullback: input.pullbackAnalysis.hasPullback,
+      isPullbackEntry: input.pullbackAnalysis.isPullbackEntry,
+      pullbackLevel: input.pullbackAnalysis.pullbackLevel,
+      pullbackPattern: input.pullbackAnalysis.pullbackPattern,
+      pullbackConfirmation: input.pullbackAnalysis.pullbackConfirmation,
+      recommendation: input.pullbackAnalysis.recommendation,
+      entryTrigger: input.pullbackAnalysis.entryTrigger,
+      pullbackStrength: input.pullbackAnalysis.pullbackStrength,
+      supportLevel: input.pullbackAnalysis.supportLevel,
+      waitForPullback: input.pullbackAnalysis.waitForPullback,
+    };
+  }
+
   return {
     grade,
     gradeColor,
@@ -510,6 +541,7 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
     stopLoss,
     takeProfit,
     riskRewardRatio,
+    pullbackRecommendation,
   };
 }
 

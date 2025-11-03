@@ -227,6 +227,7 @@ export async function POST(request: NextRequest) {
       tradeThesis: aiAnalysis.tradeThesis,
       overallReason: aiAnalysis.overallReason,
       confidence: aiAnalysis.confidence,
+      pullbackAnalysis: aiAnalysis.pullbackAnalysis,
     });
 
     console.log("Analysis result grade:", analysisResult.grade);
@@ -264,6 +265,7 @@ export async function POST(request: NextRequest) {
         overallReason: aiAnalysis.overallReason || undefined,
         keyStrengths: aiAnalysis.keyStrengths || [],
         keyConcerns: aiAnalysis.keyConcerns || [],
+        pullbackRecommendation: analysisResult.pullbackRecommendation || undefined,
       })
       .returning();
 
@@ -331,6 +333,7 @@ export async function POST(request: NextRequest) {
       freeAnalysesRemaining: isFreeUser
         ? (user.freeAnalysesLimit || 1) - ((user.freeAnalysesUsed || 0) + 1)
         : undefined,
+      pullbackRecommendation: analysisResult.pullbackRecommendation,
       detectedSignals: {
         bullish: analysisResult.activeBullishSignals.map((s) => ({
           name: s.name,

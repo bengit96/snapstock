@@ -20,6 +20,7 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { PullbackEntryRecommendation } from "@/components/analysis/pullback-entry-recommendation";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { ChartAnalysis } from "@/lib/types";
@@ -590,6 +591,14 @@ export function AnalysisResult({
             </motion.div>
           )}
 
+
+          {/* Pullback Entry Recommendation */}
+          {analysis.pullbackRecommendation && (
+            <PullbackEntryRecommendation
+              recommendation={analysis.pullbackRecommendation}
+              currentPrice={analysis.entryPrice ? parseFloat(analysis.entryPrice) : undefined}
+            />
+          )}
 
           {/* Trade Thesis - For traders with technical knowledge */}
           {analysis.tradeThesis && (
