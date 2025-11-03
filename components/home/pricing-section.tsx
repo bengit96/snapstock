@@ -49,7 +49,7 @@ export function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-20 px-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+      className="py-12 md:py-20 px-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
     >
       <div className="container mx-auto text-center">
         {/* Header */}
@@ -58,18 +58,18 @@ export function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px", amount: 0.3 }}
           transition={{ duration: 0.3 }}
-          className="mb-12"
+          className="mb-8 md:mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
             Choose the plan that fits your trading style
           </p>
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto px-2 md:px-0">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.tier}
@@ -88,14 +88,20 @@ export function PricingSection() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-12 text-center">
-          <div className="flex justify-center items-center gap-4">
-            <Shield className="w-5 h-5 text-gray-400" />
-            <span className="text-sm text-gray-500">
-              Secure payment via Stripe
-            </span>
-            <Lock className="w-5 h-5 text-gray-400" />
-            <span className="text-sm text-gray-500">Cancel anytime</span>
+        <div className="mt-8 md:mt-12 text-center">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+              <span className="text-xs md:text-sm text-gray-500">
+                Secure payment via Stripe
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+              <span className="text-xs md:text-sm text-gray-500">
+                Cancel anytime
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -62,33 +62,34 @@ export function PricingCard({
         </div>
       )}
 
-      <CardHeader className={cn('pb-8', badge && 'pt-8')}>
-        <CardTitle className="text-2xl">{title}</CardTitle>
-        <div className="mt-4">
-          <span className="text-4xl font-bold">${Math.floor(price)}</span>
+      <CardHeader className={cn('pb-6 md:pb-8', badge && 'pt-6 md:pt-8')}>
+        <CardTitle className="text-xl md:text-2xl">{title}</CardTitle>
+        <div className="mt-3 md:mt-4">
+          <span className="text-3xl md:text-4xl font-bold">${Math.floor(price)}</span>
           {price % 1 !== 0 && (
-            <span className="text-xl text-gray-600">
+            <span className="text-lg md:text-xl text-gray-600">
               .{((price % 1) * 100).toFixed(0)}
             </span>
           )}
-          <span className="text-gray-500 block text-sm mt-2">{period}</span>
+          <span className="text-gray-500 block text-xs md:text-sm mt-1 md:mt-2">{period}</span>
           {savings && (
-            <span className="text-green-600 font-semibold text-sm">{savings}</span>
+            <span className="text-green-600 font-semibold text-xs md:text-sm">{savings}</span>
           )}
         </div>
-        <CardDescription className="mt-2">{description}</CardDescription>
+        <CardDescription className="mt-2 text-sm md:text-base">{description}</CardDescription>
       </CardHeader>
 
       <CardContent>
-        <ul className="space-y-3 mb-8">
+        <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8">
           {features.map((feature, index) => (
             <li key={index} className="flex items-center">
               {isLifetime && index >= features.length - 4 ? (
-                <Award className="w-5 h-5 text-purple-500 mr-3 flex-shrink-0" />
+                <Award className="w-4 h-4 md:w-5 md:h-5 text-purple-500 mr-2 md:mr-3 flex-shrink-0" />
               ) : (
-                <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-green-500 mr-2 md:mr-3 flex-shrink-0" />
               )}
               <span className={cn(
+                'text-sm md:text-base',
                 isPopular && index > 0 && 'font-semibold'
               )}>
                 {feature}
@@ -99,7 +100,7 @@ export function PricingCard({
 
         <Button
           className={cn(
-            'w-full',
+            'w-full text-sm md:text-base py-3 md:py-2',
             buttonVariant === 'default' && 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
           )}
           variant={buttonVariant}
