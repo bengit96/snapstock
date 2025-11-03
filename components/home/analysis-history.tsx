@@ -25,11 +25,9 @@ import { cn } from '@/lib/utils'
 import { useAnalyses } from '@/lib/api/hooks/useAnalysis'
 import { Button } from '@/components/ui/button'
 
-interface AnalysisHistoryProps {
-  userId: string
-}
+interface AnalysisHistoryProps {}
 
-export function AnalysisHistory({ userId }: AnalysisHistoryProps) {
+export function AnalysisHistory({}: AnalysisHistoryProps = {}) {
   const router = useRouter()
   const { data: analyses = [], isLoading } = useAnalyses()
   const [sortBy, setSortBy] = useState<'date' | 'newest' | 'oldest'>('newest')

@@ -1,12 +1,10 @@
-import { auth } from '@/lib/auth'
-import { AnalysisHistory } from '@/components/home/analysis-history'
+import { AnalysisHistory } from "@/components/home/analysis-history";
 
-export default async function HomePage() {
-  const session = await auth()
-
+export default function HomePage() {
+  // AnalysisHistory component handles its own data fetching with user session
   return (
     <main className="flex-1 container mx-auto px-4 py-8">
-      <AnalysisHistory userId={session!.user.id} />
+      <AnalysisHistory />
     </main>
-  )
+  );
 }
