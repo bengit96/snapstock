@@ -195,6 +195,8 @@ export function generateSecureFilename(userId: string, originalFilename: string)
   const timestamp = Date.now()
 
   // Use cryptographically secure random string
+  // Using require here since this is a synchronous function
+  // and we're in a Node.js environment
   const { randomBytes } = require('crypto')
   const randomString = randomBytes(8).toString('hex')
 

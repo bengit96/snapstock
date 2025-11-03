@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-import { createCheckoutSession } from '@/lib/stripe'
+import { createCheckoutSession } from '@/lib/stripe/pricing'
 import { withRateLimit, RATE_LIMITS } from '@/lib/utils/rate-limit'
 
 export async function POST(request: NextRequest) {

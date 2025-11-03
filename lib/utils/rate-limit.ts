@@ -109,6 +109,16 @@ export const RATE_LIMITS = {
     interval: 15 * 60 * 1000, // 15 minutes
     uniqueTokenPerInterval: 100,
   },
+  // Quick rate limit: 10 requests per 10 seconds
+  quick: {
+    interval: 10 * 1000, // 10 seconds
+    uniqueTokenPerInterval: 10,
+  },
+  // Image access: 100 per minute per user (generous for normal browsing)
+  imageAccess: {
+    interval: 60 * 1000, // 1 minute
+    uniqueTokenPerInterval: 100,
+  },
 } as const
 
 /**

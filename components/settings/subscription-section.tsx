@@ -64,7 +64,7 @@ export function SubscriptionSection({ user }: SubscriptionSectionProps) {
             {isActive && (
               <div className="text-right">
                 <p className="text-2xl font-bold">
-                  ${tier === 'monthly' ? '19.99' : tier === 'yearly' ? '99.99' : '599'}
+                  ${tier === 'monthly' ? '19.99' : tier === 'yearly' ? '199.99' : '599'}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {tier === 'lifetime' ? 'one-time' : `per ${tier === 'yearly' ? 'year' : 'month'}`}

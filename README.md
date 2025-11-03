@@ -27,6 +27,16 @@ Before you begin, ensure you have:
 - **Git** installed
 - Accounts for required services (detailed below)
 
+### ⚠️ Important: Stripe Customer Portal Setup
+
+**Before users can manage subscriptions, you MUST configure the Stripe Customer Portal:**
+
+1. Go to [Stripe Dashboard → Billing → Customer Portal](https://dashboard.stripe.com/test/settings/billing/portal)
+2. Click **"Activate test link"** to create a default portal configuration
+3. Optionally customize portal features and appearance
+
+Without this setup, the billing portal functionality will not work!
+
 ### 📋 Step-by-Step Setup
 
 #### 1️⃣ Clone the Repository
@@ -242,12 +252,49 @@ npm run dev
 ```
 snappchart/
 ├── app/                    # Next.js App Router pages
+│   ├── (admin)/           # Admin-only pages
+│   │   └── admin/         # Admin dashboard
+│   ├── (app)/             # Authenticated user pages
+│   │   ├── analyze/       # Chart upload & analysis page
+│   │   ├── analysis/[id]/ # Individual analysis results
+│   │   ├── billing/       # Subscription management
+│   │   ├── dashboard/     # Legacy dashboard (redirects to analyze)
+│   │   ├── home/          # User home page
+│   │   └── settings/      # User settings
+│   ├── (auth)/            # Authentication pages
+│   │   ├── login/         # Login page (OTP-based)
+│   │   └── unauthorized/  # Access denied page
+│   ├── (legal)/           # Legal pages
+│   │   ├── disclaimer/    # Trading disclaimer
+│   │   ├── privacy/       # Privacy policy
+│   │   └── terms/         # Terms of service
+│   ├── (marketing)/       # Public marketing pages
+│   │   ├── about/         # About us
+│   │   ├── blog/          # Blog page
+│   │   ├── contact/       # Contact form
+│   │   └── pricing/       # Pricing plans
 │   ├── api/               # API routes
-│   │   ├── analysis/      # Chart analysis endpoint
-│   │   ├── auth/          # Authentication endpoints
-│   │   └── stripe/        # Payment endpoints
-│   ├── auth/              # Auth pages (login, etc.)
-│   ├── dashboard/         # Main dashboard
+│   │   ├── admin/         # Admin endpoints
+│   │   │   ├── analytics/ # Admin analytics
+│   │   │   └── users/     # User management
+│   │   ├── analyses/      # Analysis endpoints
+│   │   │   └── history/   # User analysis history
+│   │   ├── analysis/      # Create new analysis
+│   │   ├── analytics/     # Analytics tracking
+│   │   │   └── track/     # Event tracking
+│   │   ├── auth/          # Authentication
+│   │   │   ├── [...nextauth]/ # NextAuth handlers
+│   │   │   └── send-otp/  # OTP email sending
+│   │   ├── billing/       # Billing endpoints
+│   │   │   └── usage/     # Usage stats & limits
+│   │   ├── referrals/     # Referral system
+│   │   │   └── stats/     # Referral statistics
+│   │   ├── stripe/        # Payment processing
+│   │   │   ├── checkout/  # Create checkout session
+│   │   │   ├── portal/    # Customer portal
+│   │   │   └── webhook/   # Stripe webhooks
+│   │   └── usage/         # Usage tracking
+│   │       └── stats/     # Usage statistics
 │   └── page.tsx          # Landing page
 ├── components/            # React components
 │   ├── ui/               # Shadcn UI components
@@ -262,6 +309,33 @@ snappchart/
 ├── docker-compose.yml    # Database configuration
 └── package.json         # Dependencies
 ```
+
+## 📄 Pages & Routes
+
+### Public Pages (No Authentication Required)
+- `/` - Landing page with hero section and features
+- `/about` - About the platform and team
+- `/blog` - Blog posts and trading insights
+- `/contact` - Contact form
+- `/pricing` - Subscription plans and pricing
+- `/terms` - Terms of service
+- `/privacy` - Privacy policy
+- `/disclaimer` - Trading disclaimer and risk warnings
+- `/login` - OTP-based email login
+
+### Authenticated User Pages (Login Required)
+- `/home` - User home page after login
+- `/analyze` - Main chart upload and analysis page
+- `/analysis/[id]` - View individual analysis results
+- `/billing` - Subscription management and usage stats
+- `/settings` - User account settings
+- `/dashboard` - Legacy route (redirects to /analyze)
+
+### Admin Pages (Admin Role Required)
+- `/admin` - Admin dashboard with analytics and user management
+
+### Special Pages
+- `/unauthorized` - Shown when user tries to access admin pages without permission
 
 ## 🔧 Common Issues & Solutions
 
@@ -339,20 +413,45 @@ The app analyzes 40+ signals across these categories:
 
 ### Authentication
 ```
-POST /api/auth/send-otp     # Send OTP to email
-POST /api/auth/[...nextauth] # Handle authentication
+POST /api/auth/send-otp         # Send OTP code to email
+POST /api/auth/signin           # Sign in with OTP code
+GET  /api/auth/signout          # Sign out current user
+POST /api/auth/[...nextauth]    # NextAuth handlers
 ```
 
 ### Analysis
 ```
-POST /api/analysis          # Analyze uploaded chart
+POST /api/analysis              # Create new chart analysis (multipart/form-data)
+GET  /api/analyses/history      # Get user's analysis history
 ```
 
-### Payments
+### Billing & Usage
 ```
-POST /api/stripe/checkout   # Create checkout session
-POST /api/stripe/webhook    # Handle Stripe events
-POST /api/stripe/portal     # Customer portal
+GET  /api/billing/usage         # Get current user's usage stats and limits
+GET  /api/usage/stats           # Get detailed usage statistics
+```
+
+### Payments (Stripe)
+```
+POST /api/stripe/checkout       # Create checkout session for subscription
+POST /api/stripe/portal         # Get customer portal URL
+POST /api/stripe/webhook        # Handle Stripe webhook events
+```
+
+### Admin (Admin Role Required)
+```
+GET  /api/admin/users           # Get all users (admin only)
+GET  /api/admin/analytics       # Get platform analytics (admin only)
+```
+
+### Analytics & Tracking
+```
+POST /api/analytics/track       # Track user events
+```
+
+### Referrals
+```
+GET  /api/referrals/stats       # Get referral statistics
 ```
 
 ## 🛠️ Development Commands

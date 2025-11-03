@@ -3,27 +3,16 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { users, chartAnalyses } from '@/lib/db/schema'
 import { count, desc } from 'drizzle-orm'
+import { requireAdmin } from '@/lib/utils/security'
+import { ApiResponse } from '@/lib/utils/api-response'
+import { logger } from '@/lib/utils/logger'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
     // Check if user is authenticated and is admin
-    const session = await auth()
-
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Forbidden - Admin access required' },
-        { status: 403 }
-      )
-    }
+    const session = await requireAdmin()
 
     // Fetch all users with their analysis counts
     const allUsers = await db
@@ -74,7 +63,7 @@ export async function GET() {
       0
     )
 
-    return NextResponse.json({
+    return ApiResponse.success({
       users: usersWithStats,
       stats: {
         totalUsers,
@@ -84,10 +73,17 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error('Error fetching admin users data:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    logger.error('Error fetching admin users data', error)
+    
+    // Handle authorization errors
+    if (error instanceof Error && error.message.includes('Admin access required')) {
+      return ApiResponse.forbidden(error.message)
+    }
+    
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return ApiResponse.unauthorized(error.message)
+    }
+
+    return ApiResponse.serverError('Failed to fetch users data')
   }
 }

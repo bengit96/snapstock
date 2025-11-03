@@ -23,10 +23,10 @@ interface SimpleFeatureProps {
 function FeatureCard({ icon: Icon, title, description, features, index = 0 }: FeatureCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px", amount: 0.3 }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
+      viewport={{ once: true, margin: "0px", amount: 0.2 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
       whileHover={{ y: -5 }}
     >
       <Card className="border-2 hover:border-purple-500 transition-all hover:shadow-lg h-full">
@@ -53,10 +53,10 @@ function FeatureCard({ icon: Icon, title, description, features, index = 0 }: Fe
 function SimpleFeature({ icon: Icon, title, description, index = 0 }: SimpleFeatureProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: "-50px", amount: 0.5 }}
-      transition={{ delay: index * 0.1, duration: 0.4 }}
+      viewport={{ once: true, margin: "0px", amount: 0.3 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
       className="text-center p-6"
     >
       <Icon className="w-12 h-12 text-purple-600 mx-auto mb-3" />
@@ -109,7 +109,7 @@ export function FeaturesSection() {
     {
       icon: Shield,
       title: 'Risk Management',
-      description: 'Never exceed 2:1 risk/reward'
+      description: 'Optimized risk/reward for every trade'
     },
     {
       icon: BarChart3,
@@ -132,7 +132,7 @@ export function FeaturesSection() {
             Everything You Need to Trade with Confidence
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Professional-grade analysis tools powered by cutting-edge AI
+            Professional-grade long-bias analysis tools powered by cutting-edge AI
           </p>
         </div>
 
@@ -154,8 +154,8 @@ export function FeaturesSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px", amount: 0.3 }}
-          transition={{ duration: 0.5 }}
+          viewport={{ once: true, margin: "0px", amount: 0.2 }}
+          transition={{ duration: 0.3 }}
           className="mt-16 max-w-3xl mx-auto"
         >
           <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-8 rounded-xl border-2 border-purple-200 dark:border-purple-800">

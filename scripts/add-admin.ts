@@ -1,11 +1,22 @@
-// Load environment variables before anything else
-import 'dotenv/config'
-
-import { db } from '../lib/db'
-import { users } from '../lib/db/schema'
 import { eq } from 'drizzle-orm'
+import dotenv from 'dotenv'
+import path from 'path'
+
+// Load environment variables FIRST
+dotenv.config({ path: path.resolve(process.cwd(), '.env') })
+
+// Validate DATABASE_URL
+if (!process.env.DATABASE_URL) {
+  console.error('❌ Error: DATABASE_URL not found in environment variables')
+  console.error('Please add DATABASE_URL to your .env file')
+  process.exit(1)
+}
 
 async function addAdmin(email: string) {
+  // Import DB dynamically after env is loaded
+  const { db } = await import('../lib/db')
+  const { users } = await import('../lib/db/schema')
+
   try {
     console.log(`🔍 Looking for user with email: ${email}`)
 

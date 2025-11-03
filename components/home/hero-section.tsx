@@ -1,10 +1,9 @@
 'use client'
 
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Sparkles } from 'lucide-react'
-import { ROUTES } from '@/lib/constants'
+import { ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useGetStarted } from '@/lib/hooks/useGetStarted'
 
 interface HeroSectionProps {
   className?: string
@@ -21,7 +20,7 @@ function StatItem({ value, label, index = 0 }: StatItemProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
+      transition={{ delay: 0.3 + index * 0.05, duration: 0.3 }}
       className="text-center"
     >
       <div className="text-3xl font-bold text-gray-900 dark:text-white">{value}</div>
@@ -31,6 +30,8 @@ function StatItem({ value, label, index = 0 }: StatItemProps) {
 }
 
 export function HeroSection({ className }: HeroSectionProps) {
+  const { handleGetStarted } = useGetStarted()
+
   const stats = [
     { value: 'AI', label: 'Powered Analysis' },
     { value: 'Fast', label: 'Analysis' },
@@ -49,10 +50,10 @@ export function HeroSection({ className }: HeroSectionProps) {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.6 }}
+          transition={{ delay: 0, duration: 0.4 }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
         >
-          Trade Like a Pro with
+          Trade with Confidence using
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 block mt-2">
             AI-Powered Analysis
           </span>
@@ -62,34 +63,32 @@ export function HeroSection({ className }: HeroSectionProps) {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
           className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed px-4"
         >
           SnapPChart is built for momentum traders targeting low float, fast-moving stocks.
           Get rapid AI-powered analysis—from chart screenshot to precise entry, stop loss, and profit targets.
+          <span className="block mt-3 text-sm sm:text-base font-semibold text-purple-600 dark:text-purple-400">
+            Long-bias only. Trading is hard enough—we focus on perfecting one strategy.
+          </span>
         </motion.p>
 
         {/* CTA Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center mb-12 px-4"
         >
-          <Link href={ROUTES.analyze}>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button size="lg" className="text-lg px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25">
-                Analyze Your Chart Free <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </motion.div>
-          </Link>
-          <Link href="#demo">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button size="lg" variant="outline" className="text-lg px-8 border-2">
-                Watch Demo
-              </Button>
-            </motion.div>
-          </Link>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              size="lg"
+              onClick={handleGetStarted}
+              className="text-lg px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25"
+            >
+              Analyze Your Chart Free <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </motion.div>
         </motion.div>
 
         {/* Stats */}

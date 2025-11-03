@@ -73,10 +73,10 @@ export function StockCriteriaSection() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold mb-4">
-            Built for Momentum Trading
+            Built for Long Momentum Trading
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            SnapPChart specializes in low float, fast-moving stocks. Our AI analyzes charts that meet these proven momentum criteria:
+            SnapPChart specializes in low float, fast-moving stocks for long positions. Our AI analyzes charts that meet these proven momentum criteria:
           </p>
         </motion.div>
 
@@ -96,7 +96,7 @@ export function StockCriteriaSection() {
           className="text-center mt-12"
         >
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            These criteria help identify high-probability momentum setups with explosive potential
+            These criteria help identify long momentum setups that historically show strong upward price movement
           </p>
         </motion.div>
       </div>

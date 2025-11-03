@@ -14,16 +14,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 interface LoginFormProps {
   redirectTo?: string
+  onSuccess?: () => void
 }
 
-export function LoginForm({ redirectTo }: LoginFormProps) {
+export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
   const [step, setStep] = useState<'email' | 'otp'>('email')
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const { sendOTP, verifyOTP, isLoading, error, clearError } = useAuth({
-    redirectTo
+    redirectTo,
+    onSuccess
   })
 
   const handleSendOTP = async (e: React.FormEvent) => {
@@ -160,7 +162,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           >
             <Label htmlFor="otp">Verification code</Label>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              We've sent a code to {email}
+              We've sent a code to {email}. Check your spam/junk folder if you don't see it.
             </p>
             <Input
               id="otp"

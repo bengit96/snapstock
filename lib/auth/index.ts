@@ -30,6 +30,12 @@ declare module "next-auth" {
   }
 }
 
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: 'user' | 'admin'
+  }
+}
+
 export const authConfig: NextAuthConfig = {
   adapter: DrizzleAdapter(db, {
     usersTable: users,
@@ -46,17 +52,24 @@ export const authConfig: NextAuthConfig = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.code) {
+          console.error('Missing credentials:', { email: !!credentials?.email, code: !!credentials?.code })
           return null
         }
 
         const email = credentials.email as string
         const code = credentials.code as string
 
+        console.log('Attempting to verify OTP for:', email)
+
         // Verify OTP
         const isValid = await verifyOTP(email, code)
         if (!isValid) {
-          throw new Error('Invalid or expired OTP')
+          console.error('OTP verification failed for:', email)
+          // Generic error message for security - don't reveal if email exists or if OTP is wrong/expired
+          throw new Error('Invalid or expired verification code')
         }
+
+        console.log('OTP verified successfully for:', email)
 
         // Find or create user
         const existingUsers = await db
@@ -68,6 +81,7 @@ export const authConfig: NextAuthConfig = {
         let user = existingUsers[0]
 
         if (!user) {
+          console.log('Creating new user for:', email)
           // Create new user
           const newUsers = await db
             .insert(users)
@@ -78,9 +92,12 @@ export const authConfig: NextAuthConfig = {
             .returning()
 
           user = newUsers[0]
+          console.log('Created user:', user.id)
         } else {
+          console.log('Found existing user:', user.id)
           // Update email verified if not already
           if (!user.emailVerified) {
+            console.log('Updating email verified for user:', user.id)
             await db
               .update(users)
               .set({ emailVerified: new Date() })
@@ -88,7 +105,7 @@ export const authConfig: NextAuthConfig = {
           }
         }
 
-        return {
+        const userData = {
           id: user.id,
           email: user.email,
           name: user.name,
@@ -97,6 +114,9 @@ export const authConfig: NextAuthConfig = {
           subscriptionStatus: user.subscriptionStatus,
           subscriptionTier: user.subscriptionTier,
         }
+
+        console.log('Returning user data:', userData)
+        return userData
       },
     }),
   ],

@@ -3,9 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
-import { BarChart3, Menu, X } from 'lucide-react'
-import { APP_NAME, ROUTES } from '@/lib/constants'
+import { Menu, X, Home, TrendingUp } from 'lucide-react'
+import { LogoCompact } from '@/components/common/logo'
+import { LoginModal } from '@/components/modals/login-modal'
+import { useGetStarted } from '@/lib/hooks/useGetStarted'
+import { ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -16,15 +20,27 @@ interface NavigationProps {
 
 export function Navigation({ className, showAuth = true }: NavigationProps) {
   const pathname = usePathname()
+  const { status } = useSession()
+  const isAuthenticated = status === 'authenticated'
   const isAnalyzePage = pathname === '/analyze'
+  const isLandingPage = pathname === '/' || pathname === ''
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const { handleGetStarted } = useGetStarted()
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
     setMobileMenuOpen(false)
-    const element = document.querySelector(id)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+    // If we're on the landing page, scroll to the section
+    if (isLandingPage) {
+      const element = document.querySelector(id)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    } else {
+      // If we're on a different page, navigate to the landing page with the hash
+      window.location.href = `/${id}`
     }
   }
 
@@ -35,13 +51,8 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
     )}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link href={ROUTES.landing} className="flex items-center gap-2 hover:opacity-80 transition">
-          <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">S</span>
-          </div>
-          <span className="font-bold text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {APP_NAME}
-          </span>
+        <Link href={ROUTES.landing} className="hover:opacity-80 transition">
+          <LogoCompact />
         </Link>
 
         {/* Desktop Navigation */}
@@ -75,17 +86,44 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
           {/* Auth Buttons */}
           {showAuth && (
             <>
-              <Link href={ROUTES.login}>
-                <Button variant="outline" className="font-medium h-11 px-6">
-                  Sign In
-                </Button>
-              </Link>
-              {!isAnalyzePage && (
-                <Link href={ROUTES.analyze}>
-                  <Button className="font-medium h-11 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25">
-                    Get Started Free
+              {isAuthenticated ? (
+                // Show dashboard links when authenticated
+                <div className="flex items-center gap-3">
+                  <Link href="/home">
+                    <Button
+                      variant="outline"
+                      className="font-medium h-11 px-6 flex items-center gap-2"
+                    >
+                      <Home className="w-4 h-4" />
+                      <span className="hidden lg:inline">Dashboard</span>
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/analyze">
+                    <Button className="font-medium h-11 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4" />
+                      <span className="hidden lg:inline">Analyze</span>
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                // Show login/signup when not authenticated
+                <>
+                  <Button
+                    variant="outline"
+                    className="font-medium h-11 px-6"
+                    onClick={() => setIsLoginModalOpen(true)}
+                  >
+                    Sign In
                   </Button>
-                </Link>
+                  {!isAnalyzePage && (
+                    <Button
+                      onClick={handleGetStarted}
+                      className="font-medium h-11 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25"
+                    >
+                      Get Started Free
+                    </Button>
+                  )}
+                </>
               )}
             </>
           )}
@@ -157,17 +195,50 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
                 {/* Auth Buttons */}
                 {showAuth && (
                   <div className="flex flex-col gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <Link href={ROUTES.login} onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full h-12 font-medium">
-                        Sign In
-                      </Button>
-                    </Link>
-                    {!isAnalyzePage && (
-                      <Link href={ROUTES.analyze} onClick={() => setMobileMenuOpen(false)}>
-                        <Button className="w-full h-12 font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                          Get Started Free
+                    {isAuthenticated ? (
+                      // Show dashboard links when authenticated
+                      <>
+                        <Link href="/home" onClick={() => setMobileMenuOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full h-12 font-medium flex items-center justify-center gap-2"
+                          >
+                            <Home className="w-4 h-4" />
+                            Dashboard
+                          </Button>
+                        </Link>
+                        <Link href="/dashboard/analyze" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full h-12 font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2">
+                            <TrendingUp className="w-4 h-4" />
+                            Analyze Chart
+                          </Button>
+                        </Link>
+                      </>
+                    ) : (
+                      // Show login/signup when not authenticated
+                      <>
+                        <Button
+                          variant="outline"
+                          className="w-full h-12 font-medium"
+                          onClick={() => {
+                            setMobileMenuOpen(false)
+                            setIsLoginModalOpen(true)
+                          }}
+                        >
+                          Sign In
                         </Button>
-                      </Link>
+                        {!isAnalyzePage && (
+                          <Button
+                            onClick={(e) => {
+                              setMobileMenuOpen(false)
+                              handleGetStarted(e)
+                            }}
+                            className="w-full h-12 font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                          >
+                            Get Started Free
+                          </Button>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
@@ -176,6 +247,12 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
           </>
         )}
       </AnimatePresence>
+
+      {/* Login Modal */}
+      <LoginModal
+        open={isLoginModalOpen}
+        onOpenChange={setIsLoginModalOpen}
+      />
     </nav>
   )
 }

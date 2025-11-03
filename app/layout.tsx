@@ -14,8 +14,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://snappchart.app'),
-  title: 'SnapPChart - AI-Powered Stock Trading Analysis',
-  description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential. Get instant trade recommendations with advanced AI analysis.',
+  title: {
+    default: 'SnapPChart - AI-Powered Stock Chart Analysis for Day Trading',
+    template: '%s | SnapPChart'
+  },
+  description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential. Get instant trade recommendations with advanced technical analysis using MACD, EMA, and volume indicators.',
   keywords: [
     'stock trading analysis',
     'AI chart analysis',
@@ -30,6 +33,13 @@ export const metadata: Metadata = {
     'momentum stock scanner',
     'MACD analysis',
     'volume profile trading',
+    'real-time chart analysis',
+    'trading bot',
+    'algorithmic trading',
+    'penny stock trading',
+    'swing trading analysis',
+    'stock screener',
+    'trade recommendations',
   ],
   authors: [{ name: 'SnapPChart' }],
   creator: 'SnapPChart',
@@ -152,6 +162,59 @@ export default function RootLayout({
           bestRating: '5',
           worstRating: '1',
         },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What is SnapPChart and how does it work?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'SnapPChart is an AI-powered stock chart analysis tool designed for momentum traders. Simply upload a screenshot of your trading chart, and our advanced AI analyzes technical indicators like MACD, EMA, volume, and VWAP to provide instant trade recommendations with entry points, stop losses, and profit targets.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'What type of stocks does SnapPChart analyze best?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'SnapPChart specializes in low float, momentum stocks typically priced between $2-$20 with explosive potential. We recommend stocks with 10-50M float, strong relative volume (2x+), clear price action, and decent liquidity for day trading and swing trading strategies.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'What technical indicators should be on my chart?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'For optimal analysis, your chart should include: 1-5 minute timeframe, MACD indicator, EMA 9, 20, and 200, volume bars, and VWAP. These indicators help our AI provide accurate momentum analysis and trade recommendations.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I upload historical charts for practice?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'No, SnapPChart is designed exclusively for live, current charts from your trading platform. The analysis provides real-time trading decisions, not historical reviews. Only upload charts showing current market conditions for accurate recommendations.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'How accurate is the AI chart analysis?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'SnapPChart uses advanced GPT-4 Vision AI trained on technical analysis principles including MACD crossovers, EMA positioning, volume patterns, and VWAP levels. The AI provides probabilistic assessments with confidence scores, but trading always carries risk. Use the analysis as a tool to support your own trading decisions.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'What do the analysis grades mean?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Charts receive grades from A+ to F based on bullish signals, no-go conditions, and confluence of indicators. A+ grades indicate optimal setups with strong momentum signals and minimal red flags. Lower grades suggest caution or potential bearish conditions. Each grade comes with a clear recommendation: Strong Buy, Buy, Hold, Caution, or No Trade.',
+            },
+          },
+        ],
       },
     ],
   }

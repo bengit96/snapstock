@@ -66,7 +66,7 @@ export function PricingSection() {
       period: 'per month',
       description: 'Perfect for trying out the platform',
       features: [
-        'Unlimited chart analyses',
+        '100 chart analyses per month',
         'All trading signals',
         'Real-time AI analysis',
         'Trade history tracking',
@@ -78,10 +78,11 @@ export function PricingSection() {
     {
       tier: 'yearly',
       title: 'Yearly',
-      price: 99.99,
+      price: 199.99,
       period: 'per year',
       description: 'Most popular choice for serious traders',
       features: [
+        '300 chart analyses per month',
         'Everything in Monthly',
         'Priority AI processing',
         'Advanced analytics',
@@ -91,7 +92,7 @@ export function PricingSection() {
       badge: 'MOST POPULAR',
       badgeVariant: 'popular',
       isPopular: true,
-      savings: 'Save 58%',
+      savings: 'Save 17%',
       buttonVariant: 'default',
       buttonText: 'Start Yearly - Best Value'
     }
@@ -104,8 +105,8 @@ export function PricingSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px", amount: 0.5 }}
-          transition={{ duration: 0.5 }}
+          viewport={{ once: true, margin: "0px", amount: 0.3 }}
+          transition={{ duration: 0.3 }}
           className="mb-12"
         >
           <h2 className="text-4xl font-bold mb-4">
@@ -121,10 +122,10 @@ export function PricingSection() {
           {plans.map((plan, index) => (
             <motion.div
               key={plan.tier}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px", amount: 0.3 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
+              viewport={{ once: true, margin: "0px", amount: 0.2 }}
+              transition={{ delay: index * 0.05, duration: 0.3 }}
             >
               <PricingCard
                 {...plan}

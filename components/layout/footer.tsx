@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { BarChart3 } from 'lucide-react'
-import { APP_NAME } from '@/lib/constants'
+import { LogoIcon } from '@/components/common/logo'
+import { APP_NAME, DISCORD_INVITE_URL } from '@/lib/constants'
 
 interface FooterLinkProps {
   href: string
@@ -15,6 +15,21 @@ interface FooterSectionProps {
 }
 
 function FooterLink({ href, children }: FooterLinkProps) {
+  const isExternal = href.startsWith('http')
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block py-2 hover:text-white transition"
+      >
+        {children}
+      </a>
+    )
+  }
+
   return (
     <Link href={href} className="inline-block py-2 hover:text-white transition">
       {children}
@@ -44,18 +59,17 @@ export function Footer() {
     {
       title: 'Product',
       links: [
-        { href: '#features', label: 'Features' },
-        { href: '#pricing', label: 'Pricing' },
-        { href: '#how-it-works', label: 'How it Works' },
-        { href: '/dashboard', label: 'Dashboard' }
+        { href: '/#features', label: 'Features' },
+        { href: '/#pricing', label: 'Pricing' },
+        { href: '/#how-it-works', label: 'How it Works' }
       ]
     },
     {
-      title: 'Company',
+      title: 'Community',
       links: [
+        { href: DISCORD_INVITE_URL, label: '💬 Join Discord' },
         { href: '/about', label: 'About Us' },
-        { href: '/contact', label: 'Contact' },
-        { href: '/blog', label: 'Blog' }
+        { href: '/contact', label: 'Contact' }
       ]
     },
     {
@@ -75,9 +89,7 @@ export function Footer() {
           {/* Brand Section */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-white" />
-              </div>
+              <LogoIcon className="w-8 h-8 text-purple-600" />
               <span className="text-xl font-bold text-white">{APP_NAME}</span>
             </div>
             <p className="text-sm">

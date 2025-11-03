@@ -12,7 +12,7 @@ interface AnalyticsEventData {
   eventType: string
   userId?: string
   sessionId?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 interface RequestInfo {
@@ -238,30 +238,31 @@ class AnalyticsService {
       // Use db directly
 
       // Count landing page visits
+      // TODO: Fix Drizzle ORM where syntax to use proper typed queries
       const visitsResult = await db
         .select()
         .from(analyticsEvents)
-        .where((eb: any) =>
-          eb('event_type', '=', 'landing_page_visit')
-            .and(eb('created_at', '>=', since))
+        .where((eb: unknown) =>
+          (eb as any)('event_type', '=', 'landing_page_visit')
+            .and((eb as any)('created_at', '>=', since))
         )
 
       // Count signups
       const signupsResult = await db
         .select()
         .from(analyticsEvents)
-        .where((eb: any) =>
-          eb('event_type', '=', 'signup')
-            .and(eb('created_at', '>=', since))
+        .where((eb: unknown) =>
+          (eb as any)('event_type', '=', 'signup')
+            .and((eb as any)('created_at', '>=', since))
         )
 
       // Count conversions
       const conversionsResult = await db
         .select()
         .from(analyticsEvents)
-        .where((eb: any) =>
-          eb('event_type', '=', 'conversion')
-            .and(eb('created_at', '>=', since))
+        .where((eb: unknown) =>
+          (eb as any)('event_type', '=', 'conversion')
+            .and((eb as any)('created_at', '>=', since))
         )
 
       const totalVisits = visitsResult.length

@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db/client'
 import { chartAnalyses, users } from '@/lib/db/schema'
-import { SUBSCRIPTION_LIMITS } from '@/lib/constants'
+import { getUserBillingPeriod, countAnalysesInPeriod } from '@/lib/utils/billing'
 import { eq, and, gte, desc } from 'drizzle-orm'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,20 +40,9 @@ export async function GET(request: NextRequest) {
       .from(chartAnalyses)
       .where(eq(chartAnalyses.userId, session.user.id))
 
-    // Get this month's analyses
-    const thisMonthStart = new Date()
-    thisMonthStart.setDate(1)
-    thisMonthStart.setHours(0, 0, 0, 0)
-
-    const thisMonth = await db
-      .select()
-      .from(chartAnalyses)
-      .where(
-        and(
-          eq(chartAnalyses.userId, session.user.id),
-          gte(chartAnalyses.createdAt, thisMonthStart)
-        )
-      )
+    // Get billing period info for current period analyses
+    const billingInfo = await getUserBillingPeriod(session.user.id)
+    const thisMonth = await countAnalysesInPeriod(session.user.id, billingInfo.periodStart)
 
     // Get this week's analyses
     const thisWeekStart = new Date()
@@ -82,12 +73,10 @@ export async function GET(request: NextRequest) {
       .limit(10)
 
     const isFreeUser = !user.subscriptionStatus || user.subscriptionStatus !== 'active'
-    const tier = user.subscriptionTier as 'monthly' | 'yearly' | 'lifetime' | null
-    const monthlyLimit = tier ? SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses : null
 
     return NextResponse.json({
       totalAnalyses: totalAnalyses.length,
-      thisMonth: thisMonth.length,
+      thisMonth: thisMonth,
       thisWeek: thisWeek.length,
       recentAnalyses: recentAnalyses.map((a) => ({
         ...a,
@@ -100,10 +89,10 @@ export async function GET(request: NextRequest) {
       }),
       // Include monthly limit info for paid users
       ...(!isFreeUser && {
-        subscriptionTier: tier,
-        monthlyLimit: monthlyLimit,
-        monthlyUsed: thisMonth.length,
-        monthlyRemaining: monthlyLimit === null ? null : Math.max(0, monthlyLimit - thisMonth.length),
+        subscriptionTier: billingInfo.tier,
+        monthlyLimit: billingInfo.analysesLimit,
+        monthlyUsed: thisMonth,
+        monthlyRemaining: billingInfo.analysesLimit === null ? null : Math.max(0, billingInfo.analysesLimit - thisMonth),
       }),
     })
   } catch (error) {

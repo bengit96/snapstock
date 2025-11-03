@@ -59,7 +59,7 @@ export function HowItWorksSection() {
     {
       number: 3,
       title: 'Execute with Confidence',
-      description: 'Receive your grade (A-F), exact entry point, stop loss, and profit target to trade like a pro.'
+      description: 'Receive your grade (A-F), exact entry point, stop loss, and profit target for informed trading decisions.'
     }
   ]
 

@@ -36,17 +36,15 @@ export function AnalysisDetails({
         </div>
       )}
 
-      {/* Score Summary */}
-      <div className="pt-4 border-t dark:border-gray-700">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Total Score:</span>
-          <span className="font-semibold">{totalScore} points</span>
+      {/* Confluence Summary */}
+      {confluenceCount > 0 && (
+        <div className="pt-4 border-t dark:border-gray-700">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600 dark:text-gray-400">Confluence Areas:</span>
+            <span className="font-semibold">{confluenceCount}</span>
+          </div>
         </div>
-        <div className="flex justify-between text-sm mt-1">
-          <span className="text-gray-600 dark:text-gray-400">Confluence Areas:</span>
-          <span className="font-semibold">{confluenceCount}</span>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

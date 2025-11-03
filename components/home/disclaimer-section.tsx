@@ -26,6 +26,10 @@ export function DisclaimerSection() {
                 technical analysis approaches. Any references to trading strategies or methodologies are based on publicly available
                 information and our own interpretation of momentum trading principles.
               </p>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed mt-4">
+                <strong>Long-Bias Analysis Only:</strong> SnapPChart focuses exclusively on long positions. We rarely analyze short setups.
+                Trading is challenging enough—we believe in perfecting one strategy rather than spreading focus across multiple approaches.
+              </p>
             </div>
           </div>
         </motion.div>

@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 interface Signal {
   name: string
   points: number
+  explanation?: string
 }
 
 interface DetectedSignalsProps {
@@ -71,30 +72,36 @@ function SignalGroup({
     bullish: {
       container: 'bg-green-50 dark:bg-green-900/20',
       title: 'text-green-700 dark:text-green-300',
-      badge: 'bg-green-100 dark:bg-green-800/30'
+      text: 'text-green-800 dark:text-green-200',
+      explanation: 'text-green-700 dark:text-green-300'
     },
     bearish: {
       container: 'bg-red-50 dark:bg-red-900/20',
       title: 'text-red-700 dark:text-red-300',
-      badge: 'bg-red-100 dark:bg-red-800/30'
+      text: 'text-red-800 dark:text-red-200',
+      explanation: 'text-red-700 dark:text-red-300'
     }
   }
 
   const classes = variantClasses[variant]
 
   return (
-    <div className={cn('p-2 rounded', classes.container)}>
-      <p className={cn('text-xs font-medium mb-1', classes.title)}>
-        {title}:
+    <div className={cn('p-3 rounded-lg', classes.container)}>
+      <p className={cn('text-sm font-semibold mb-2', classes.title)}>
+        {title}
       </p>
-      <div className="flex flex-wrap gap-1">
+      <div className="space-y-2">
         {signals.map((signal, idx) => (
-          <span
-            key={idx}
-            className={cn('text-xs px-2 py-1 rounded', classes.badge)}
-          >
-            {signal.name} ({variant === 'bullish' ? '+' : '-'}{Math.abs(signal.points)})
-          </span>
+          <div key={idx} className="space-y-0.5">
+            <p className={cn('text-sm font-medium', classes.text)}>
+              • {signal.name}
+            </p>
+            {signal.explanation && (
+              <p className={cn('text-xs ml-3', classes.explanation)}>
+                {signal.explanation}
+              </p>
+            )}
+          </div>
         ))}
       </div>
     </div>

@@ -30,8 +30,8 @@ export function useAuth(options?: UseAuthOptions) {
       try {
         await authService.sendOTP(email)
         return true
-      } catch (err: any) {
-        const message = err.message || ERROR_MESSAGES.generic
+      } catch (err) {
+        const message = err instanceof Error ? err.message : ERROR_MESSAGES.generic
         setError(message)
         options?.onError?.(message)
         return false
@@ -50,6 +50,8 @@ export function useAuth(options?: UseAuthOptions) {
       setIsLoading(true)
       setError(null)
 
+      console.log('verifyOTP called with:', { email, code })
+
       try {
         const result = await signIn('credentials', {
           email,
@@ -57,21 +59,29 @@ export function useAuth(options?: UseAuthOptions) {
           redirect: false,
         })
 
+        console.log('signIn result:', result)
+
         if (result?.error) {
+          console.error('SignIn error:', result.error)
           throw new Error(result.error)
         }
 
+        console.log('Sign in successful')
         options?.onSuccess?.()
 
         if (options?.redirectTo) {
+          console.log('Redirecting to:', options.redirectTo)
           router.push(options.redirectTo)
         } else {
-          router.push(ROUTES.dashboard)
+          console.log('Redirecting to home page')
+          router.push(ROUTES.home)
         }
 
         return true
-      } catch (err: any) {
-        const message = err.message || ERROR_MESSAGES.otpInvalid
+      } catch (err) {
+        console.error('verifyOTP error:', err)
+        // Always show generic error message for security
+        const message = 'Invalid or expired verification code'
         setError(message)
         options?.onError?.(message)
         return false
@@ -87,12 +97,14 @@ export function useAuth(options?: UseAuthOptions) {
    */
   const logout = useCallback(async () => {
     setIsLoading(true)
+    console.log('Logout initiated')
 
     try {
       await signOut({
-        callbackUrl: ROUTES.home,
+        callbackUrl: ROUTES.landing,
         redirect: true
       })
+      console.log('Logout completed successfully')
     } catch (err) {
       console.error('Logout failed:', err)
     } finally {
