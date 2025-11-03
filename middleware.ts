@@ -14,6 +14,11 @@ export async function middleware(req: NextRequest) {
   const secret = requireEnv('NEXTAUTH_SECRET')
   const token = (await getToken({ req, secret })) as TokenWithRole | null
 
+  // Don't redirect login page to itself
+  if (req.nextUrl.pathname === '/login') {
+    return NextResponse.next()
+  }
+
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url))
   }

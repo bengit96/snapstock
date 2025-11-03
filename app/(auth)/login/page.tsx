@@ -22,11 +22,11 @@ function LoginContent() {
   const { data: session, status } = useSession();
   const callbackUrl = searchParams.get("callbackUrl") || ROUTES.home;
 
-  // Handle already authenticated users (rare case - usually they shouldn't reach login page)
+  // Handle authentication state changes
   useEffect(() => {
     if (status === "authenticated" && session) {
       console.log(
-        "🎯 Login page: User already authenticated (unexpected), redirecting to:",
+        "✅ Login page: User authenticated, redirecting to:",
         callbackUrl
       );
       console.log("User data:", {
@@ -34,15 +34,25 @@ function LoginContent() {
         id: session.user?.id,
       });
 
-      // Immediate redirect for already authenticated users
-      window.location.href = callbackUrl;
+      // Redirect after session is confirmed and stable
+      const timer = setTimeout(() => {
+        console.log("🔄 Executing redirect to:", callbackUrl);
+        window.location.href = callbackUrl;
+      }, 1000);
+
+      return () => clearTimeout(timer);
     }
-  }, [status, callbackUrl, session]);
+  }, [status, session, callbackUrl]);
 
   // Debug session status
   useEffect(() => {
     console.log("Login page session status:", status);
-    console.log("Login page session data:", session);
+    if (session) {
+      console.log("Login page session data:", {
+        email: session.user?.email,
+        id: session.user?.id,
+      });
+    }
   }, [status, session]);
 
   // Show loading while checking auth
@@ -98,10 +108,9 @@ function LoginContent() {
             redirectTo={callbackUrl}
             onSuccess={() => {
               console.log(
-                "🎯 LoginForm success callback, redirecting to:",
-                callbackUrl
+                "🎯 LoginForm: Authentication successful, waiting for session update..."
               );
-              window.location.href = callbackUrl;
+              // Let the useEffect handle the redirect after session is established
             }}
           />
 
