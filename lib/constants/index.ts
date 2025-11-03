@@ -138,6 +138,22 @@ export const SUBSCRIPTION_LIMITS = {
 // Pricing Plans - Combined features and display data
 export const PRICING_PLANS = [
   {
+    tier: "free" as const,
+    title: "Free",
+    price: 0,
+    period: "forever",
+    description: "Perfect for trying out the platform",
+    features: [
+      "1 chart analysis",
+      "AI-powered analysis",
+      "Basic trade recommendations",
+    ],
+    badge: "Everyone Starts Here",
+    badgeVariant: "default" as const,
+    buttonVariant: "outline" as const,
+    buttonText: "Get Started Free",
+  },
+  {
     tier: "monthly" as const,
     title: "Monthly",
     price: 19.99,

@@ -13,9 +13,17 @@ export function PricingSection() {
   const router = useRouter();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
-  const handleSubscribe = async (tier: "monthly" | "yearly" | "lifetime") => {
+  const handleSubscribe = async (
+    tier: "free" | "monthly" | "yearly" | "lifetime"
+  ) => {
     if (!session) {
       router.push(ROUTES.login);
+      return;
+    }
+
+    if (tier === "free") {
+      // For free tier, redirect to analyze page
+      router.push(ROUTES.analyze);
       return;
     }
 
@@ -43,7 +51,7 @@ export function PricingSection() {
     }
   };
 
-  // Filter out lifetime plan for now (only show monthly and yearly on landing page)
+  // Show free, monthly, and yearly plans on landing page
   const plans = PRICING_PLANS.filter((plan) => plan.tier !== "lifetime");
 
   return (
@@ -60,16 +68,20 @@ export function PricingSection() {
           transition={{ duration: 0.3 }}
           className="mb-8 md:mb-12"
         >
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm mb-4 shadow-lg">
+            🎯 Start FREE - Upgrade Anytime
+          </div>
           <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
             Simple, Transparent Pricing
           </h2>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
-            Choose the plan that fits your trading style
+            Everyone gets 1 free analysis. Ready for more? Choose the plan that
+            fits your trading style.
           </p>
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto px-2 md:px-0">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-7xl mx-auto px-2 md:px-0">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.tier}

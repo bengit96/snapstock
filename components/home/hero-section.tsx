@@ -33,10 +33,10 @@ export function HeroSection({ className }: HeroSectionProps) {
   const { handleGetStarted } = useGetStarted()
 
   const stats = [
+    { value: 'FREE', label: 'Analysis for Everyone' },
     { value: 'AI', label: 'Powered Analysis' },
-    { value: 'Fast', label: 'Analysis' },
-    { value: 'Smart', label: 'Insights' },
-    { value: '24/7', label: 'Available' }
+    { value: 'Fast', label: 'Results' },
+    { value: 'Smart', label: 'Insights' }
   ]
 
   return (
@@ -46,11 +46,21 @@ export function HeroSection({ className }: HeroSectionProps) {
 
       <div className="container mx-auto text-center relative">
         {/* Badge */}
+        {/* Free Badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0, duration: 0.4 }}
+          className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm mb-6 shadow-lg"
+        >
+          ✨ Everyone Gets 1 FREE Analysis
+        </motion.div>
+
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0, duration: 0.4 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
         >
           Trade with Confidence using
@@ -63,13 +73,13 @@ export function HeroSection({ className }: HeroSectionProps) {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
           className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed px-4"
         >
-          SnapPChart is built for momentum traders targeting low float, fast-moving stocks.
-          Get rapid AI-powered analysis—from chart screenshot to precise entry, stop loss, and profit targets.
+          <span className="font-semibold text-emerald-600 dark:text-emerald-400">Try it free - no signup required!</span> Upload your chart and get instant AI-powered analysis
+          with precise entry points, stop losses, and profit targets for momentum trading.
           <span className="block mt-3 text-sm sm:text-base font-semibold text-purple-600 dark:text-purple-400">
-            Long-bias only. Trading is hard enough—we focus on perfecting one strategy.
+            Specializing in low float, fast-moving stocks ($2-$20) • Long-bias only
           </span>
         </motion.p>
 
@@ -77,16 +87,16 @@ export function HeroSection({ className }: HeroSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
           className="flex justify-center mb-12 px-4"
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="lg"
               onClick={handleGetStarted}
-              className="text-lg px-8 w-auto min-w-[280px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25"
+              className="text-lg px-8 w-auto min-w-[320px] bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 shadow-lg shadow-emerald-500/25 font-bold"
             >
-              Analyze Your Chart Free <ArrowRight className="ml-2 h-5 w-5" />
+              🚀 Get FREE AI Analysis Now <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
         </motion.div>

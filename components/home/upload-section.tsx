@@ -68,11 +68,14 @@ export function UploadSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm mb-4 shadow-lg">
+            🎁 FREE for Everyone
+          </div>
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Try It Now
+            Try It Now - No Signup Required
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Upload your chart and get instant AI-powered analysis
+            Upload your chart and get instant AI-powered analysis with entry/exit signals
           </p>
         </motion.div>
 

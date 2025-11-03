@@ -1,54 +1,59 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
-import { Menu, X, Home, TrendingUp } from 'lucide-react'
-import { LogoCompact } from '@/components/common/logo'
-import { LoginModal } from '@/components/modals/login-modal'
-import { useGetStarted } from '@/lib/hooks/useGetStarted'
-import { ROUTES } from '@/lib/constants'
-import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Menu, X, Home, TrendingUp } from "lucide-react";
+import { LogoCompact } from "@/components/common/logo";
+import { LoginModal } from "@/components/modals/login-modal";
+import { useGetStarted } from "@/lib/hooks/useGetStarted";
+import { ROUTES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NavigationProps {
-  className?: string
-  showAuth?: boolean
+  className?: string;
+  showAuth?: boolean;
 }
 
 export function Navigation({ className, showAuth = true }: NavigationProps) {
-  const pathname = usePathname()
-  const { status } = useSession()
-  const isAuthenticated = status === 'authenticated'
-  const isAnalyzePage = pathname === '/analyze'
-  const isLandingPage = pathname === '/' || pathname === ''
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const { handleGetStarted } = useGetStarted()
+  const pathname = usePathname();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  const isAnalyzePage = pathname === "/analyze";
+  const isLandingPage = pathname === "/" || pathname === "";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { handleGetStarted } = useGetStarted();
 
-  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault()
-    setMobileMenuOpen(false)
+  const handleScrollTo = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    id: string
+  ) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
 
     // If we're on the landing page, scroll to the section
     if (isLandingPage) {
-      const element = document.querySelector(id)
+      const element = document.querySelector(id);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     } else {
       // If we're on a different page, navigate to the landing page with the hash
-      window.location.href = `/${id}`
+      window.location.href = `/${id}`;
     }
-  }
+  };
 
   return (
-    <nav className={cn(
-      'fixed top-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg z-50 border-b border-gray-200 dark:border-gray-800',
-      className
-    )}>
+    <nav
+      className={cn(
+        "fixed top-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg z-50 border-b border-gray-200 dark:border-gray-800",
+        className
+      )}
+    >
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link href={ROUTES.landing} className="hover:opacity-80 transition">
@@ -61,21 +66,21 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
             <>
               <a
                 href="#features"
-                onClick={(e) => handleScrollTo(e, '#features')}
+                onClick={(e) => handleScrollTo(e, "#features")}
                 className="text-sm font-medium text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition cursor-pointer"
               >
                 Features
               </a>
               <a
                 href="#pricing"
-                onClick={(e) => handleScrollTo(e, '#pricing')}
+                onClick={(e) => handleScrollTo(e, "#pricing")}
                 className="text-sm font-medium text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition cursor-pointer"
               >
                 Pricing
               </a>
               <a
                 href="#how-it-works"
-                onClick={(e) => handleScrollTo(e, '#how-it-works')}
+                onClick={(e) => handleScrollTo(e, "#how-it-works")}
                 className="text-sm font-medium text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition cursor-pointer"
               >
                 How it Works
@@ -170,21 +175,21 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
                   <div className="flex flex-col space-y-2">
                     <a
                       href="#features"
-                      onClick={(e) => handleScrollTo(e, '#features')}
+                      onClick={(e) => handleScrollTo(e, "#features")}
                       className="px-4 py-3 text-base font-medium text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     >
                       Features
                     </a>
                     <a
                       href="#pricing"
-                      onClick={(e) => handleScrollTo(e, '#pricing')}
+                      onClick={(e) => handleScrollTo(e, "#pricing")}
                       className="px-4 py-3 text-base font-medium text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     >
                       Pricing
                     </a>
                     <a
                       href="#how-it-works"
-                      onClick={(e) => handleScrollTo(e, '#how-it-works')}
+                      onClick={(e) => handleScrollTo(e, "#how-it-works")}
                       className="px-4 py-3 text-base font-medium text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     >
                       How it Works
@@ -198,7 +203,10 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
                     {isAuthenticated ? (
                       // Show dashboard links when authenticated
                       <>
-                        <Link href="/home" onClick={() => setMobileMenuOpen(false)}>
+                        <Link
+                          href="/home"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
                           <Button
                             variant="outline"
                             className="w-full h-12 font-medium flex items-center justify-center gap-2"
@@ -207,7 +215,10 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
                             Dashboard
                           </Button>
                         </Link>
-                        <Link href="/dashboard/analyze" onClick={() => setMobileMenuOpen(false)}>
+                        <Link
+                          href="/dashboard/analyze"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
                           <Button className="w-full h-12 font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2">
                             <TrendingUp className="w-4 h-4" />
                             Analyze Chart
@@ -221,8 +232,8 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
                           variant="outline"
                           className="w-full h-12 font-medium"
                           onClick={() => {
-                            setMobileMenuOpen(false)
-                            setIsLoginModalOpen(true)
+                            setMobileMenuOpen(false);
+                            setIsLoginModalOpen(true);
                           }}
                         >
                           Sign In
@@ -230,8 +241,8 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
                         {!isAnalyzePage && (
                           <Button
                             onClick={(e) => {
-                              setMobileMenuOpen(false)
-                              handleGetStarted(e)
+                              setMobileMenuOpen(false);
+                              handleGetStarted(e);
                             }}
                             className="w-full h-12 font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                           >
@@ -252,7 +263,8 @@ export function Navigation({ className, showAuth = true }: NavigationProps) {
       <LoginModal
         open={isLoginModalOpen}
         onOpenChange={setIsLoginModalOpen}
+        callbackUrl="/dashboard/analyze"
       />
     </nav>
-  )
+  );
 }

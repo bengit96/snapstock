@@ -6,7 +6,7 @@ import { CheckCircle, Award } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface PricingCardProps {
-  tier: 'monthly' | 'yearly' | 'lifetime'
+  tier: 'free' | 'monthly' | 'yearly' | 'lifetime'
   title: string
   price: number
   period: string

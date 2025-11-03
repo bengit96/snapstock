@@ -19,17 +19,14 @@ export function useGetStarted() {
       return
     }
 
-    // If on landing page, scroll to upload section
-    if (isLandingPage) {
-      const uploadSection = document.getElementById('upload-chart')
-      if (uploadSection) {
-        uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-    } else {
-      // If on other page, redirect to landing page with hash
-      router.push('/#upload-chart')
+    // If not authenticated, redirect to login
+    if (status === 'unauthenticated') {
+      router.push('/auth/login')
+      return
     }
-  }, [status, isLandingPage, router])
+
+    // If loading, do nothing (wait for status to resolve)
+  }, [status, router])
 
   return {
     handleGetStarted,

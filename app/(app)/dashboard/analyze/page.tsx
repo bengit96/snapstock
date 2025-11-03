@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { AnalyzeUpload } from "@/components/analyze/analyze-upload";
@@ -25,74 +25,77 @@ export default function ProtectedAnalyzePage() {
   // Check if user is admin
   const isAdmin = session?.user?.role === "admin";
 
-  const handleImageUpload = async (imageUrl: string) => {
-    setUploadedImage(imageUrl);
-    setError(null);
-    setIsAnalyzing(true);
+  const handleImageUpload = useCallback(
+    async (imageUrl: string) => {
+      setUploadedImage(imageUrl);
+      setError(null);
+      setIsAnalyzing(true);
 
-    try {
-      // Skip limit checks for admin users
-      if (!isAdmin) {
-        // Refetch usage to get latest data
-        const { data: latestUsage } = await refetchUsage();
+      try {
+        // Skip limit checks for admin users
+        if (!isAdmin) {
+          // Refetch usage to get latest data
+          const { data: latestUsage } = await refetchUsage();
 
-        if (
-          latestUsage?.analysesLimit !== null &&
-          latestUsage?.analysesLimit !== undefined &&
-          latestUsage?.analysesUsed >= latestUsage?.analysesLimit
-        ) {
+          if (
+            latestUsage?.analysesLimit !== null &&
+            latestUsage?.analysesLimit !== undefined &&
+            latestUsage?.analysesUsed >= latestUsage?.analysesLimit
+          ) {
+            setIsLimitModalOpen(true);
+            setIsAnalyzing(false);
+            return;
+          }
+        }
+
+        // Use the consolidated API endpoint with JSON body
+        const response = await fetch("/api/analysis", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ imageUrl }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          if (response.status === 402) {
+            setIsLimitModalOpen(true);
+            setIsAnalyzing(false);
+            return;
+          }
+          throw new Error(errorData.error || "Failed to analyze chart");
+        }
+
+        const result = await response.json();
+
+        // Extract data from the API response wrapper
+        const data = result.data || result;
+
+        // Clear the pending image from sessionStorage
+        sessionStorage.removeItem("pendingAnalysisImageUrl");
+
+        // Brief delay to show completion before redirect for smoother UX
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Redirect to analysis result page
+        router.push(`/analysis/${data.id}`);
+      } catch (err) {
+        console.error("Analysis error:", err);
+        setIsAnalyzing(false);
+
+        // Check if it's a 402 error (payment required / limit reached) - but not for admins
+        if (!isAdmin && err instanceof Error && err.message.includes("limit")) {
           setIsLimitModalOpen(true);
-          setIsAnalyzing(false);
-          return;
+        } else {
+          setError(
+            err instanceof Error ? err.message : "Failed to analyze chart"
+          );
         }
       }
-
-      // Use the consolidated API endpoint with JSON body
-      const response = await fetch("/api/analysis", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ imageUrl }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 402) {
-          setIsLimitModalOpen(true);
-          setIsAnalyzing(false);
-          return;
-        }
-        throw new Error(errorData.error || "Failed to analyze chart");
-      }
-
-      const result = await response.json();
-
-      // Extract data from the API response wrapper
-      const data = result.data || result;
-
-      // Clear the pending image from sessionStorage
-      sessionStorage.removeItem("pendingAnalysisImageUrl");
-
-      // Brief delay to show completion before redirect for smoother UX
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Redirect to analysis result page
-      router.push(`/analysis/${data.id}`);
-    } catch (err) {
-      console.error("Analysis error:", err);
-      setIsAnalyzing(false);
-
-      // Check if it's a 402 error (payment required / limit reached) - but not for admins
-      if (!isAdmin && err instanceof Error && err.message.includes("limit")) {
-        setIsLimitModalOpen(true);
-      } else {
-        setError(
-          err instanceof Error ? err.message : "Failed to analyze chart"
-        );
-      }
-    }
-  };
+    },
+    [isAdmin, refetchUsage, router]
+  );
 
   const handleImageClear = () => {
     setUploadedImage(null);
@@ -110,7 +113,7 @@ export default function ProtectedAnalyzePage() {
   // Check for pending image from public analyze page and auto-process
   useEffect(() => {
     if (
-      status === "authenticated" &&
+      (status === "authenticated" || (status === "loading" && session)) &&
       !hasProcessedPendingImage &&
       !isAnalyzing
     ) {
@@ -121,9 +124,9 @@ export default function ProtectedAnalyzePage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, hasProcessedPendingImage]);
+  }, [status, session, hasProcessedPendingImage, handleImageUpload]);
 
-  if (status === "loading") {
+  if (status === "loading" && !session) {
     return (
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-900 dark:to-purple-900/20">
         <div className="flex-1 flex items-center justify-center">
