@@ -78,13 +78,13 @@ export function HeroSection({ className }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center mb-12 px-4"
+          className="flex justify-center mb-12 px-4"
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="lg"
               onClick={handleGetStarted}
-              className="text-lg px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25"
+              className="text-lg px-8 w-auto min-w-[280px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25"
             >
               Analyze Your Chart Free <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

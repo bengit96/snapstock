@@ -46,12 +46,13 @@ export function CTASection({
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px", amount: 0.5 }}
           transition={{ delay: 0.2, duration: 0.5 }}
+          className="flex justify-center px-4"
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="lg"
               onClick={handleGetStarted}
-              className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 shadow-xl"
+              className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 w-auto min-w-[280px] shadow-lg shadow-purple-500/25"
             >
               {buttonText} <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

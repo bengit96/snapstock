@@ -31,13 +31,6 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // For API routes, require authentication
-  if (req.nextUrl.pathname.startsWith("/api/")) {
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
-
   return NextResponse.next();
 }
 
