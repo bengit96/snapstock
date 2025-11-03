@@ -3,6 +3,9 @@
  * Sends notifications to Discord for important events
  */
 
+import { db } from '@/lib/db'
+import { discordNotifications } from '@/lib/db/schema'
+
 interface DiscordEmbed {
   title: string
   description?: string
@@ -15,6 +18,16 @@ interface DiscordEmbed {
 interface DiscordMessage {
   content?: string
   embeds?: DiscordEmbed[]
+}
+
+interface NotificationLogData {
+  notificationType: string
+  metadata?: Record<string, unknown>
+  ipAddress?: string
+  referrer?: string
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
 }
 
 class DiscordService {
@@ -32,13 +45,16 @@ class DiscordService {
   }
 
   /**
-   * Send a message to Discord
+   * Send a message to Discord and log the result
    */
-  private async send(message: DiscordMessage): Promise<void> {
+  private async send(message: DiscordMessage, logData?: NotificationLogData): Promise<void> {
     if (!this.isConfigured()) {
       console.warn('Discord webhook not configured')
       return
     }
+
+    let success = false
+    let errorMessage: string | undefined
 
     try {
       const response = await fetch(this.webhookUrl!, {
@@ -50,11 +66,33 @@ class DiscordService {
       })
 
       if (!response.ok) {
-        throw new Error(`Discord API error: ${response.statusText}`)
+        throw new Error(`Discord API error: ${response.status} ${response.statusText}`)
       }
+
+      success = true
     } catch (error) {
       console.error('Failed to send Discord notification:', error)
+      errorMessage = error instanceof Error ? error.message : 'Unknown error'
       // Don't throw - we don't want Discord failures to break the app
+    }
+
+    // Log the notification to database
+    if (logData) {
+      try {
+        await db.insert(discordNotifications).values({
+          notificationType: logData.notificationType,
+          success,
+          error: errorMessage,
+          metadata: logData.metadata,
+          ipAddress: logData.ipAddress,
+          referrer: logData.referrer,
+          utmSource: logData.utmSource,
+          utmMedium: logData.utmMedium,
+          utmCampaign: logData.utmCampaign,
+        })
+      } catch (dbError) {
+        console.error('Failed to log Discord notification:', dbError)
+      }
     }
   }
 
@@ -85,7 +123,10 @@ class DiscordService {
       })
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'signup',
+      metadata: { email: data.email, referralCode: data.referralCode },
+    })
   }
 
   /**
@@ -132,7 +173,18 @@ class DiscordService {
       })
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'analysis',
+      metadata: {
+        userId: data.userId,
+        email: data.email,
+        stockSymbol: data.stockSymbol,
+        grade: data.grade,
+        shouldEnter: data.shouldEnter,
+        confidence: data.confidence,
+        isFree: data.isFree,
+      },
+    })
   }
 
   /**
@@ -157,7 +209,16 @@ class DiscordService {
       timestamp: new Date().toISOString(),
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'payment',
+      metadata: {
+        userId: data.userId,
+        email: data.email,
+        tier: data.tier,
+        amount: data.amount,
+        isNew: data.isNew,
+      },
+    })
   }
 
   /**
@@ -188,7 +249,15 @@ class DiscordService {
       })
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'cancellation',
+      metadata: {
+        userId: data.userId,
+        email: data.email,
+        tier: data.tier,
+        reason: data.reason,
+      },
+    })
   }
 
   /**
@@ -216,7 +285,15 @@ class DiscordService {
       timestamp: new Date().toISOString(),
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'referral',
+      metadata: {
+        referrerEmail: data.referrerEmail,
+        referredEmail: data.referredEmail,
+        referralCode: data.referralCode,
+        status: data.status,
+      },
+    })
   }
 
   /**
@@ -268,8 +345,15 @@ class DiscordService {
       })
     }
 
-    // Always send landing page visit notifications
-    await this.send({ embeds: [embed] })
+    // Always send landing page visit notifications with logging
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'landing_page_visit',
+      ipAddress: data.ipAddress,
+      referrer: data.referrer,
+      utmSource: data.utmSource,
+      utmMedium: data.utmMedium,
+      utmCampaign: data.utmCampaign,
+    })
   }
 
   /**
@@ -298,7 +382,14 @@ class DiscordService {
       })
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'page_visit_summary',
+      metadata: {
+        page: data.page,
+        count: data.count,
+        unique: data.unique,
+      },
+    })
   }
 
   /**
@@ -333,7 +424,14 @@ class DiscordService {
       })
     }
 
-    await this.send({ embeds: [embed] })
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'error',
+      metadata: {
+        error: data.error,
+        context: data.context,
+        userId: data.userId,
+      },
+    })
   }
 }
 

@@ -421,3 +421,31 @@ export const referrals = pgTable(
     statusIdx: index("referral_status_idx").on(table.status),
   })
 );
+
+// Discord Notifications Log
+export const discordNotifications = pgTable(
+  "discord_notifications",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    notificationType: text("notification_type").notNull(), // 'landing_page_visit', 'signup', 'analysis', etc.
+    success: boolean("success").notNull(),
+    error: text("error"), // Error message if failed
+    metadata: jsonb("metadata"), // Additional data about the notification
+
+    // Request info (for tracking purposes)
+    ipAddress: text("ip_address"),
+    referrer: text("referrer"),
+    utmSource: text("utm_source"),
+    utmMedium: text("utm_medium"),
+    utmCampaign: text("utm_campaign"),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    notificationTypeIdx: index("discord_notification_type_idx").on(table.notificationType),
+    successIdx: index("discord_success_idx").on(table.success),
+    createdAtIdx: index("discord_created_at_idx").on(table.createdAt),
+  })
+);
