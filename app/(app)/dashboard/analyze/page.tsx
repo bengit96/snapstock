@@ -230,7 +230,7 @@ export default function ProtectedAnalyzePage() {
           setIsAnalyzing(false);
           // Only redirect to home if user clicked "Maybe Later" or closed the modal
           if (shouldRedirect) {
-            router.push('/');
+            router.push("/home");
           }
         }}
         analysesUsed={usageData?.analysesUsed ?? 0}

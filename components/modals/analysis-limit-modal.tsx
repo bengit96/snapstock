@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { TrendingUp, Zap, Crown } from "lucide-react"
-import { motion } from "framer-motion"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { TrendingUp, Zap, Crown } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface AnalysisLimitModalProps {
-  isOpen: boolean
-  onClose: (shouldRedirect?: boolean) => void
-  analysesUsed: number
-  analysesLimit: number
-  subscriptionTier: string
+  isOpen: boolean;
+  onClose: (shouldRedirect?: boolean) => void;
+  analysesUsed: number;
+  analysesLimit: number;
+  subscriptionTier: string;
 }
 
 export function AnalysisLimitModal({
@@ -21,19 +27,19 @@ export function AnalysisLimitModal({
   analysesLimit,
   subscriptionTier,
 }: AnalysisLimitModalProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleUpgrade = () => {
-    onClose(false) // Don't redirect to home when navigating to billing
-    router.push("/billing")
-  }
+    onClose(false); // Don't redirect to home when navigating to billing
+    router.push("/billing");
+  };
 
   const handleViewPricing = () => {
-    onClose(false) // Don't redirect to home when navigating to pricing
-    router.push("/pricing")
-  }
+    onClose(false); // Don't redirect to home when navigating to pricing
+    router.push("/pricing");
+  };
 
-  const isFreeUser = subscriptionTier === "free"
+  const isFreeUser = subscriptionTier === "free";
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose(true)}>
@@ -48,18 +54,21 @@ export function AnalysisLimitModal({
               <TrendingUp className="w-8 h-8 text-white" />
             </div>
             <DialogTitle className="text-2xl font-bold text-center">
-              {isFreeUser ? "Free Trial Limit Reached" : "Monthly Analysis Limit Reached"}
+              {isFreeUser
+                ? "Free Trial Limit Reached"
+                : "Monthly Analysis Limit Reached"}
             </DialogTitle>
             <DialogDescription className="text-center text-base">
               {isFreeUser ? (
                 <>
-                  You've used your free analysis. Upgrade now to unlock unlimited stock
-                  analysis and advanced insights!
+                  You've used your free analysis. Upgrade now to unlock
+                  unlimited stock analysis and advanced insights!
                 </>
               ) : (
                 <>
-                  You've reached your monthly limit of <strong>{analysesLimit} analyses</strong>.
-                  Upgrade your plan for more analyses or wait until next month.
+                  You've reached your monthly limit of{" "}
+                  <strong>{analysesLimit} analyses</strong>. Upgrade your plan
+                  for more analyses or wait until next month.
                 </>
               )}
             </DialogDescription>
@@ -93,7 +102,8 @@ export function AnalysisLimitModal({
                 <div className="flex items-start space-x-3">
                   <Zap className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700 dark:text-gray-300">
-                    <strong>100-300 monthly analyses</strong> depending on your plan
+                    <strong>100-300 monthly analyses</strong> depending on your
+                    plan
                   </span>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -127,7 +137,11 @@ export function AnalysisLimitModal({
               >
                 View Pricing Plans
               </Button>
-              <Button onClick={() => onClose(true)} variant="ghost" className="w-full">
+              <Button
+                onClick={() => onClose(true)}
+                variant="ghost"
+                className="w-full"
+              >
                 Maybe Later
               </Button>
             </div>
@@ -135,5 +149,5 @@ export function AnalysisLimitModal({
         </motion.div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

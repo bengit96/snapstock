@@ -144,8 +144,8 @@ export function UploadSection() {
                   </p>
                 </div>
 
-                {/* Integrated Recommendations - Hidden on mobile for cleaner UX */}
-                <div className="hidden md:block max-w-lg mx-auto pt-2">
+                {/* Integrated Recommendations */}
+                <div className="max-w-lg mx-auto pt-2">
                   <div className="flex items-center justify-center gap-1.5 mb-2">
                     <Sparkles className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
                     <span className="text-[10px] font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
@@ -169,8 +169,8 @@ export function UploadSection() {
                   </div>
                 </div>
 
-                {/* Stock Selection Requirements - Hidden on mobile for cleaner UX */}
-                <div className="hidden md:block max-w-lg mx-auto pt-2 border-t border-purple-200/30 dark:border-purple-700/30 mt-2">
+                {/* Stock Selection Requirements */}
+                <div className="max-w-lg mx-auto pt-2 border-t border-purple-200/30 dark:border-purple-700/30 mt-2">
                   <div className="flex items-center justify-center gap-1.5 mb-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                     <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
