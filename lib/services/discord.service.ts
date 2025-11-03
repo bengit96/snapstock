@@ -268,10 +268,8 @@ class DiscordService {
       })
     }
 
-    // Only send if there are fields (avoid spam)
-    if (embed.fields!.length > 0) {
-      await this.send({ embeds: [embed] })
-    }
+    // Always send landing page visit notifications
+    await this.send({ embeds: [embed] })
   }
 
   /**

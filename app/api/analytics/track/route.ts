@@ -16,15 +16,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Track the event
-    await analyticsService.trackEvent(
-      {
-        eventType,
-        userId: session?.user?.id,
-        metadata,
-      },
-      request
-    )
+    // Track the event - handle special cases
+    if (eventType === 'landing_page_visit') {
+      await analyticsService.trackLandingPageVisit(
+        request,
+        session?.user?.id
+      )
+    } else {
+      await analyticsService.trackEvent(
+        {
+          eventType,
+          userId: session?.user?.id,
+          metadata,
+        },
+        request
+      )
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
