@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import Link from 'next/link'
 import { ROUTES } from '@/lib/constants'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 
 interface LoginFormProps {
   redirectTo?: string
@@ -22,10 +23,22 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const { update } = useSession()
 
   const { sendOTP, verifyOTP, isLoading, error, clearError } = useAuth({
     redirectTo,
-    onSuccess
+    onSuccess: async () => {
+      console.log('🎯 LoginForm onSuccess: Starting session refresh...')
+      try {
+        await update()
+        console.log('✅ Session refreshed successfully')
+        onSuccess?.()
+      } catch (error) {
+        console.error('❌ Session refresh failed:', error)
+        // Still call onSuccess even if refresh fails
+        onSuccess?.()
+      }
+    }
   })
 
   const handleSendOTP = async (e: React.FormEvent) => {

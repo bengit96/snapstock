@@ -24,21 +24,22 @@ function LoginContent() {
 
   // Handle authentication state changes
   useEffect(() => {
-    if (status === "authenticated" && session) {
+    if (status === "authenticated" && session && session.user?.id) {
       console.log(
-        "✅ Login page: User authenticated, redirecting to:",
+        "✅ Login page: User authenticated with valid session, redirecting to:",
         callbackUrl
       );
       console.log("User data:", {
         email: session.user?.email,
         id: session.user?.id,
+        role: session.user?.role,
       });
 
       // Redirect after session is confirmed and stable
       const timer = setTimeout(() => {
         console.log("🔄 Executing redirect to:", callbackUrl);
         window.location.href = callbackUrl;
-      }, 1000);
+      }, 500); // Reduced delay for better UX
 
       return () => clearTimeout(timer);
     }
@@ -46,12 +47,16 @@ function LoginContent() {
 
   // Debug session status
   useEffect(() => {
-    console.log("Login page session status:", status);
+    console.log("🔍 Login page session status:", status);
     if (session) {
-      console.log("Login page session data:", {
+      console.log("🔍 Login page session data:", {
         email: session.user?.email,
         id: session.user?.id,
+        role: session.user?.role,
+        hasId: !!session.user?.id,
       });
+    } else {
+      console.log("🔍 No session data available");
     }
   }, [status, session]);
 

@@ -1,60 +1,58 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
-import { requireEnv } from '@/lib/utils/env'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { requireEnv } from "@/lib/utils/env";
 
 // Extend JWT token type to include role
 interface TokenWithRole {
-  sub?: string
-  role?: 'user' | 'admin'
-  [key: string]: unknown
+  sub?: string;
+  role?: "user" | "admin";
+  [key: string]: unknown;
 }
 
 export async function middleware(req: NextRequest) {
-  const secret = requireEnv('NEXTAUTH_SECRET')
-  const token = (await getToken({ req, secret })) as TokenWithRole | null
+  const secret = requireEnv("NEXTAUTH_SECRET");
+  const token = (await getToken({ req, secret })) as TokenWithRole | null;
 
-  // Don't redirect login page to itself
-  if (req.nextUrl.pathname === '/login') {
-    return NextResponse.next()
-  }
+  // Check for admin API routes (page admin routes handled by AuthGuard)
+  const isAdminApiRoute = req.nextUrl.pathname.startsWith("/api/admin");
 
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', req.url))
-  }
+  if (isAdminApiRoute) {
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  // Check for admin routes
-  const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
-
-  if (isAdminRoute) {
-    const userRole = token.role
-
-    if (userRole !== 'admin') {
-      return NextResponse.redirect(new URL('/unauthorized', req.url))
+    const userRole = token.role;
+    if (userRole !== "admin") {
+      return NextResponse.json(
+        { error: "Admin access required" },
+        { status: 403 }
+      );
     }
   }
 
-  return NextResponse.next()
+  // For API routes, require authentication
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // User pages
-    '/dashboard/:path*',
-    '/home/:path*',
-    '/billing/:path*',
-    '/settings/:path*',
-    // API routes
-    '/api/analysis/:path*',
-    '/api/analyses/:path*',
-    '/api/billing/:path*',
-    '/api/stripe/checkout',
-    '/api/stripe/portal',
-    '/api/trades/:path*',
-    '/api/usage/:path*',
-    '/api/referrals/:path*',
-    // Admin routes
-    '/admin/:path*',
-    '/api/admin/:path*',
+    // API routes only - page auth handled by components
+    "/api/analysis/:path*",
+    "/api/analyses/:path*",
+    "/api/billing/:path*",
+    "/api/stripe/checkout",
+    "/api/stripe/portal",
+    "/api/stripe/webhook",
+    "/api/trades/:path*",
+    "/api/usage/:path*",
+    "/api/referrals/:path*",
+    "/api/admin/:path*",
   ],
-}
+};
