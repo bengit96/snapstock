@@ -135,46 +135,79 @@ export const SUBSCRIPTION_LIMITS = {
   },
 } as const;
 
-// Pricing
+// Pricing Plans - Combined features and display data
+export const PRICING_PLANS = [
+  {
+    tier: "monthly" as const,
+    title: "Monthly",
+    price: 19.99,
+    period: "per month",
+    description: "Perfect for trying out the platform",
+    features: [
+      "100 chart analyses per month",
+      "Trade history tracking",
+      "Cancel anytime",
+    ],
+    buttonVariant: "outline" as const,
+    buttonText: "Start Monthly",
+  },
+  {
+    tier: "yearly" as const,
+    title: "Yearly",
+    price: 199.99,
+    period: "per year",
+    description: "Most popular choice for serious traders",
+    features: [
+      "300 chart analyses per month",
+      "Trade history tracking",
+      "24/7 support",
+    ],
+    badge: "MOST POPULAR",
+    badgeVariant: "popular" as const,
+    isPopular: true,
+    savings: "Save 17%",
+    buttonVariant: "default" as const,
+    buttonText: "Start Yearly - Best Value",
+  },
+  {
+    tier: "lifetime" as const,
+    title: "Lifetime",
+    price: 599,
+    period: "one-time",
+    description: "Ultimate value for committed traders",
+    features: [
+      "Unlimited chart analyses",
+      "Trade history tracking",
+      "24/7 support",
+    ],
+    badge: "BEST VALUE",
+    badgeVariant: "lifetime" as const,
+    savings: "Save 70%",
+    buttonVariant: "default" as const,
+    buttonText: "Get Lifetime Access",
+  },
+] as const;
+
+// Legacy Pricing - Keep for backward compatibility
 export const PRICING = {
   monthly: {
     price: 19.99,
     label: "Monthly",
     description: "Perfect for trying out the platform",
-    features: [
-      "100 chart analyses per month",
-      "Advanced AI analysis",
-      "All 40+ trading signals",
-      "Trade history tracking",
-      "Cancel anytime",
-    ],
+    features: PRICING_PLANS[0].features,
   },
   yearly: {
     price: 199.99,
     label: "Yearly",
     description: "Most popular choice for serious traders",
     savings: "17%",
-    features: [
-      "300 chart analyses per month",
-      "Everything in Monthly",
-      "Priority AI processing",
-      "Advanced analytics",
-      "Export trade data",
-      "Email support",
-    ],
+    features: PRICING_PLANS[1].features,
   },
   lifetime: {
     price: 599,
     label: "Lifetime",
     description: "Ultimate value for committed traders",
-    features: [
-      "Unlimited chart analyses",
-      "Everything in Yearly",
-      "Lifetime updates",
-      "Early access features",
-      "Priority support",
-      "1-on-1 onboarding",
-    ],
+    features: PRICING_PLANS[2].features,
   },
 };
 

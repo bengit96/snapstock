@@ -310,14 +310,6 @@ export default function BillingPage() {
                       </li>
                       <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <CheckCircle className="w-4 h-4 text-green-500" />
-                        All trading signals
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Real-time AI analysis
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
                         Cancel anytime
                       </li>
                     </ul>
@@ -374,19 +366,7 @@ export default function BillingPage() {
                       </li>
                       <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <CheckCircle className="w-4 h-4 text-green-500" />
-                        Everything in Monthly
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Priority AI processing
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Advanced analytics
-                      </li>
-                      <li className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Export trade data
+                        Priority Support
                       </li>
                     </ul>
 

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { PricingCard } from "@/components/pricing/pricing-card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { ROUTES } from "@/lib/constants";
+import { PRICING_PLANS, ROUTES } from "@/lib/constants";
 import { usePageTracking } from "@/lib/hooks/usePageTracking";
 import { ProductSchema } from "@/components/seo/product-schema";
 
@@ -65,64 +65,7 @@ export default function PricingPage() {
     }
   };
 
-  const plans: PricingPlan[] = [
-    {
-      tier: "monthly",
-      title: "Monthly",
-      price: 19.99,
-      period: "per month",
-      description: "Perfect for trying out the platform",
-      features: [
-        "Unlimited chart analyses",
-        "Advanced AI analysis",
-        "All 40+ trading signals",
-        "Trade history tracking",
-        "Cancel anytime",
-      ],
-      buttonVariant: "outline",
-      buttonText: "Start Monthly",
-    },
-    {
-      tier: "yearly",
-      title: "Yearly",
-      price: 199.99,
-      period: "per year",
-      description: "Most popular choice for serious traders",
-      features: [
-        "Everything in Monthly",
-        "Priority AI processing",
-        "Advanced analytics",
-        "Export trade data",
-        "Email support",
-      ],
-      badge: "BEST VALUE",
-      badgeVariant: "popular",
-      isPopular: true,
-      savings: "Save 17%",
-      buttonVariant: "default",
-      buttonText: "Get Best Value",
-    },
-    {
-      tier: "lifetime",
-      title: "Lifetime",
-      price: 599,
-      period: "one-time payment",
-      description: "Ultimate value for committed traders",
-      features: [
-        "Everything in Yearly",
-        "Lifetime updates",
-        "Early access features",
-        "Priority support",
-        "1-on-1 onboarding",
-      ],
-      badge: "LIFETIME",
-      badgeVariant: "lifetime",
-      buttonVariant: "outline",
-      buttonText: "Get Lifetime Access",
-    },
-  ];
-
-  const productOffers = plans.map((plan) => ({
+  const productOffers = PRICING_PLANS.map((plan) => ({
     name: plan.title,
     price: plan.price,
     priceCurrency: "USD",
@@ -156,7 +99,7 @@ export default function PricingPage() {
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
+          {PRICING_PLANS.map((plan) => (
             <PricingCard
               key={plan.tier}
               {...plan}
