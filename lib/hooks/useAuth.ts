@@ -69,12 +69,15 @@ export function useAuth(options?: UseAuthOptions) {
         console.log('Sign in successful')
         options?.onSuccess?.()
 
-        // Let the calling component handle redirects to avoid conflicts
-        // Only redirect if explicitly requested and no onSuccess handler
-        if (options?.redirectTo && !options?.onSuccess) {
+        // Let the onSuccess handler handle redirects if provided
+        // Otherwise, redirect if explicitly requested
+        if (options?.onSuccess) {
+          // onSuccess handler will handle the redirect
+          console.log('onSuccess handler provided, skipping automatic redirect')
+        } else if (options?.redirectTo) {
           console.log('Redirecting to:', options.redirectTo)
           router.push(options.redirectTo)
-        } else if (!options?.redirectTo && !options?.onSuccess) {
+        } else {
           console.log('Redirecting to home page')
           router.push(ROUTES.home)
         }
