@@ -189,6 +189,10 @@ export const chartAnalyses = pgTable(
     keyStrengths: jsonb("key_strengths").$type<string[]>().default([]),
     keyConcerns: jsonb("key_concerns").$type<string[]>().default([]),
 
+    // Pullback analysis
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pullbackRecommendation: jsonb("pullback_recommendation").$type<any>(),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
