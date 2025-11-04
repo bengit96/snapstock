@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
     if (!aiAnalysis.isValidChart) {
       return ApiResponse.badRequest("Invalid chart", {
         message:
-          "The uploaded image does not appear to be a valid LIVE stock chart. Please ensure: (1) It's a chart from a trading platform, (2) It shows CURRENT/LIVE price action (not historical data from weeks/months ago), (3) It has visible price action, volume bars, and technical indicators.",
+          "The uploaded image does not appear to be a valid LIVE stock chart. Please ensure: (1) It's a chart from a trading platform, (2) It shows CURRENT/LIVE price action (not historical data from weeks/months ago), (3) It has visible price action, volume bars, technical indicators and x and y axis",
         confidence: aiAnalysis.confidence,
       });
     }
@@ -265,7 +265,8 @@ export async function POST(request: NextRequest) {
         overallReason: aiAnalysis.overallReason || undefined,
         keyStrengths: aiAnalysis.keyStrengths || [],
         keyConcerns: aiAnalysis.keyConcerns || [],
-        pullbackRecommendation: analysisResult.pullbackRecommendation || undefined,
+        pullbackRecommendation:
+          analysisResult.pullbackRecommendation || undefined,
       })
       .returning();
 
