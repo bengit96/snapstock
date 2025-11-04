@@ -16,14 +16,17 @@ export function PricingSection() {
   const handleSubscribe = async (
     tier: "free" | "monthly" | "yearly" | "lifetime"
   ) => {
-    if (!session) {
-      router.push(ROUTES.login);
+    if (tier === "free") {
+      // For free tier, scroll to upload section
+      const uploadSection = document.getElementById("upload-chart");
+      if (uploadSection) {
+        uploadSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
 
-    if (tier === "free") {
-      // For free tier, redirect to analyze page
-      router.push(ROUTES.analyze);
+    if (!session) {
+      router.push(ROUTES.login);
       return;
     }
 

@@ -15,6 +15,8 @@ export default function PublicAnalyzePage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [modalWasOpened, setModalWasOpened] = useState(false);
 
   // Check for uploaded image from landing page
   useEffect(() => {
@@ -24,37 +26,58 @@ export default function PublicAnalyzePage() {
 
       // If already authenticated, redirect to protected analyze page
       if (status === "authenticated") {
-        console.log('🔄 Already authenticated, redirecting to dashboard/analyze');
+        console.log(
+          "🔄 Already authenticated, redirecting to dashboard/analyze"
+        );
         setIsRedirecting(true);
         router.push("/dashboard/analyze");
-      } else if (status === "unauthenticated") {
-        // Show login modal for unauthenticated users
-        console.log('🔐 Not authenticated, showing login modal');
+      } else if (status === "unauthenticated" && !isAuthenticating) {
+        // Show login modal for unauthenticated users (but not if we're in the process of authenticating)
+        console.log("🔐 Not authenticated, showing login modal");
         setIsLoginModalOpen(true);
+        setModalWasOpened(true);
       }
-    } else {
-      // No image uploaded, redirect to home
-      console.log('❌ No pending image, redirecting to home');
+    } else if (!isAuthenticating && !isRedirecting) {
+      // No image uploaded, redirect to home (but not if we're authenticating/redirecting)
+      console.log("❌ No pending image, redirecting to home");
       router.push("/");
     }
-  }, [status, router]);
+  }, [status, router, isAuthenticating, isRedirecting]);
 
   // Handle successful login
   const handleLoginSuccess = () => {
-    console.log('✅ Login successful, redirecting to dashboard/analyze');
+    console.log("✅ Login successful, setting authenticating flag");
+    setIsAuthenticating(true);
+    setModalWasOpened(false); // Reset modal state since login succeeded
     setIsLoginModalOpen(false);
-    setIsRedirecting(true);
-    // Redirect to dashboard analyze page where the pending image will be processed
-    router.push("/dashboard/analyze");
+
+    // Wait for session to be fully established before redirecting
+    // Increased timeout to ensure session is ready
+    setTimeout(() => {
+      const pendingImage = sessionStorage.getItem("pendingAnalysisImageUrl");
+      console.log(
+        "🔄 Redirecting to dashboard/analyze with pending image:",
+        pendingImage
+      );
+      setIsRedirecting(true);
+      router.push("/dashboard/analyze");
+    }, 500); // Wait 0.5 seconds for session to propagate
   };
 
   // Handle login modal close
   const handleLoginModalChange = (open: boolean) => {
     setIsLoginModalOpen(open);
-    if (!open && status === "unauthenticated") {
-      // User closed modal without logging in - redirect to home
-      console.log('❌ Login modal closed without authentication');
-      sessionStorage.removeItem("pendingAnalysisImageUrl");
+
+    // Only redirect to home if user closed modal without authenticating
+    // AND we're not in the process of authenticating
+    // AND the modal was actually opened (not just closed on page load)
+    if (
+      !open &&
+      status === "unauthenticated" &&
+      !isAuthenticating &&
+      modalWasOpened
+    ) {
+      console.log("❌ Login modal closed without authentication");
       router.push("/");
     }
   };

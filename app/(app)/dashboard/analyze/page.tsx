@@ -18,6 +18,7 @@ export default function ProtectedAnalyzePage() {
   const [hasProcessedPendingImage, setHasProcessedPendingImage] =
     useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hasCheckedPendingImage, setHasCheckedPendingImage] = useState(false);
 
   // React Query hooks
   const { data: usageData, refetch: refetchUsage } = useBillingUsage();
@@ -110,21 +111,42 @@ export default function ProtectedAnalyzePage() {
     setIsAnalyzing(false);
   };
 
-  // Check for pending image from public analyze page and auto-process
+  // Check for pending image on mount and when session changes
   useEffect(() => {
+    if (hasCheckedPendingImage) return;
+
+    console.log("🔍 Dashboard analyze: Checking for pending image", {
+      status,
+      hasSession: !!session,
+      hasProcessedPendingImage,
+      isAnalyzing,
+      hasCheckedPendingImage,
+    });
+
+    // Only proceed once authenticated and not already processing
     if (
-      (status === "authenticated" || (status === "loading" && session)) &&
+      status === "authenticated" &&
       !hasProcessedPendingImage &&
       !isAnalyzing
     ) {
       const storedImageUrl = sessionStorage.getItem("pendingAnalysisImageUrl");
+      console.log(
+        "📦 Checking sessionStorage for pending image:",
+        storedImageUrl
+      );
+
       if (storedImageUrl) {
+        console.log("✅ Found pending image, starting analysis...");
+        setHasCheckedPendingImage(true);
         setHasProcessedPendingImage(true);
         handleImageUpload(storedImageUrl);
+      } else {
+        console.log("❌ No pending image found in sessionStorage");
+        setHasCheckedPendingImage(true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, session, hasProcessedPendingImage, handleImageUpload]);
+  }, [status, hasProcessedPendingImage, isAnalyzing, hasCheckedPendingImage]);
 
   if (status === "loading" && !session) {
     return (
@@ -233,6 +255,7 @@ export default function ProtectedAnalyzePage() {
           setIsAnalyzing(false);
           // Only redirect to home if user clicked "Maybe Later" or closed the modal
           if (shouldRedirect) {
+            sessionStorage.removeItem("pendingAnalysisImageUrl");
             router.push("/home");
           }
         }}

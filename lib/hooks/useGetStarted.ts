@@ -1,36 +1,42 @@
-'use client'
+"use client";
 
-import { useSession } from 'next-auth/react'
-import { useRouter, usePathname } from 'next/navigation'
-import { useCallback } from 'react'
+import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
+import { useCallback } from "react";
 
 export function useGetStarted() {
-  const { status } = useSession()
-  const router = useRouter()
-  const pathname = usePathname()
-  const isLandingPage = pathname === '/' || pathname === ''
+  const { status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/" || pathname === "";
 
-  const handleGetStarted = useCallback((e?: React.MouseEvent) => {
-    e?.preventDefault()
+  const handleGetStarted = useCallback(
+    (e?: React.MouseEvent) => {
+      e?.preventDefault();
 
-    // If authenticated, redirect to protected analyze page
-    if (status === 'authenticated') {
-      router.push('/dashboard/analyze')
-      return
-    }
+      // If authenticated, redirect to protected analyze page
+      if (status === "authenticated") {
+        router.push("/dashboard/analyze");
+        return;
+      }
 
-    // If not authenticated, redirect to login
-    if (status === 'unauthenticated') {
-      router.push('/auth/login')
-      return
-    }
-
-    // If loading, do nothing (wait for status to resolve)
-  }, [status, router])
+      // If not authenticated, redirect to login
+      if (isLandingPage) {
+        const uploadSection = document.getElementById("upload-chart");
+        if (uploadSection) {
+          uploadSection.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      } else {
+        // If on other page, redirect to landing page with hash
+        router.push("/#upload-chart");
+      }
+    },
+    [status, isLandingPage, router]
+  );
 
   return {
     handleGetStarted,
-    isAuthenticated: status === 'authenticated',
-    isLoading: status === 'loading'
-  }
+    isAuthenticated: status === "authenticated",
+    isLoading: status === "loading",
+  };
 }
