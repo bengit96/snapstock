@@ -99,11 +99,11 @@ export default function PricingPage() {
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {PRICING_PLANS.map((plan) => (
+          {PRICING_PLANS.filter((plan) => plan.tier !== "free").map((plan) => (
             <PricingCard
               key={plan.tier}
               {...plan}
-              onSubscribe={() => handleSubscribe(plan.tier)}
+              onSubscribe={() => handleSubscribe(plan.tier as "monthly" | "yearly" | "lifetime")}
               isLoading={loadingTier === plan.tier}
             />
           ))}

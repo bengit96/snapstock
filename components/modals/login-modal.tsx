@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -20,11 +20,22 @@ interface LoginModalProps {
 
 export function LoginModal({ open, onOpenChange, callbackUrl, onSuccess }: LoginModalProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const redirectUrl = callbackUrl || pathname
 
   const handleLoginSuccess = () => {
+    console.log('🎯 LoginModal: Login successful, redirecting to:', redirectUrl)
     onOpenChange(false)
-    onSuccess?.()
+
+    // If onSuccess is provided, call it instead of redirecting
+    if (onSuccess) {
+      onSuccess()
+    } else if (redirectUrl) {
+      // Small delay to allow session to be established
+      setTimeout(() => {
+        router.push(redirectUrl)
+      }, 500)
+    }
   }
 
   return (
@@ -45,7 +56,7 @@ export function LoginModal({ open, onOpenChange, callbackUrl, onSuccess }: Login
         </DialogHeader>
 
         <div className="mt-4">
-          <LoginForm redirectTo={redirectUrl} onSuccess={handleLoginSuccess} />
+          <LoginForm onSuccess={handleLoginSuccess} />
         </div>
       </DialogContent>
     </Dialog>

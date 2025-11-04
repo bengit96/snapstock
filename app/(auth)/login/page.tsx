@@ -20,7 +20,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: session, status } = useSession();
-  const callbackUrl = searchParams.get("callbackUrl") || ROUTES.home;
+  const callbackUrl = searchParams.get("callbackUrl") || ROUTES.dashboard;
 
   // Handle authentication state changes
   useEffect(() => {
@@ -82,7 +82,7 @@ function LoginContent() {
           <CardContent className="pt-6 flex flex-col items-center gap-4">
             <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Redirecting to home...
+              Redirecting to dashboard...
             </p>
           </CardContent>
         </Card>

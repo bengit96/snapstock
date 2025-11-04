@@ -24,23 +24,36 @@ export default function PublicAnalyzePage() {
 
       // If already authenticated, redirect to protected analyze page
       if (status === "authenticated") {
+        console.log('🔄 Already authenticated, redirecting to dashboard/analyze');
         setIsRedirecting(true);
         router.push("/dashboard/analyze");
       } else if (status === "unauthenticated") {
         // Show login modal for unauthenticated users
+        console.log('🔐 Not authenticated, showing login modal');
         setIsLoginModalOpen(true);
       }
     } else {
       // No image uploaded, redirect to home
+      console.log('❌ No pending image, redirecting to home');
       router.push("/");
     }
   }, [status, router]);
+
+  // Handle successful login
+  const handleLoginSuccess = () => {
+    console.log('✅ Login successful, redirecting to dashboard/analyze');
+    setIsLoginModalOpen(false);
+    setIsRedirecting(true);
+    // Redirect to dashboard analyze page where the pending image will be processed
+    router.push("/dashboard/analyze");
+  };
 
   // Handle login modal close
   const handleLoginModalChange = (open: boolean) => {
     setIsLoginModalOpen(open);
     if (!open && status === "unauthenticated") {
       // User closed modal without logging in - redirect to home
+      console.log('❌ Login modal closed without authentication');
       sessionStorage.removeItem("pendingAnalysisImageUrl");
       router.push("/");
     }
@@ -138,6 +151,7 @@ export default function PublicAnalyzePage() {
         open={isLoginModalOpen}
         onOpenChange={handleLoginModalChange}
         callbackUrl="/dashboard/analyze"
+        onSuccess={handleLoginSuccess}
       />
     </div>
   );
