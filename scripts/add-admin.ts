@@ -16,6 +16,7 @@ async function addAdmin(email: string) {
   // Import DB dynamically after env is loaded
   const { db } = await import('../lib/db')
   const { users } = await import('../lib/db/schema')
+  const { discordService } = await import('../lib/services/discord.service')
 
   try {
     console.log(`🔍 Looking for user with email: ${email}`)
@@ -44,6 +45,12 @@ async function addAdmin(email: string) {
       console.log(`   Email: ${newUser[0].email}`)
       console.log(`   Role: ${newUser[0].role}`)
       console.log(`   ID: ${newUser[0].id}`)
+
+      // Notify Discord about new admin user creation
+      await discordService.notifySignup({
+        email: newUser[0].email,
+        userId: newUser[0].id,
+      })
     } else {
       const user = existingUsers[0]
 

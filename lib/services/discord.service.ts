@@ -393,6 +393,57 @@ class DiscordService {
   }
 
   /**
+   * Notify about a failed chart analysis
+   */
+  async notifyFailedAnalysis(data: {
+    userId: string
+    email: string
+    error: string
+    failureType: string
+    chartUrl?: string
+    stockSymbol?: string
+  }): Promise<void> {
+    const embed: DiscordEmbed = {
+      title: '❌ Failed Chart Analysis',
+      description: data.error,
+      color: 0xf59e0b, // amber/orange
+      fields: [
+        { name: 'User', value: data.email, inline: true },
+        { name: 'Failure Type', value: data.failureType, inline: true },
+      ],
+      timestamp: new Date().toISOString(),
+    }
+
+    if (data.stockSymbol) {
+      embed.fields!.push({
+        name: 'Stock Symbol',
+        value: data.stockSymbol,
+        inline: true,
+      })
+    }
+
+    if (data.chartUrl) {
+      embed.fields!.push({
+        name: 'Chart Link',
+        value: `[View Chart](${data.chartUrl})`,
+        inline: false,
+      })
+    }
+
+    await this.send({ embeds: [embed] }, {
+      notificationType: 'failed_analysis',
+      metadata: {
+        userId: data.userId,
+        email: data.email,
+        error: data.error,
+        failureType: data.failureType,
+        chartUrl: data.chartUrl,
+        stockSymbol: data.stockSymbol,
+      },
+    })
+  }
+
+  /**
    * Send error notification
    */
   async notifyError(data: {

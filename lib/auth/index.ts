@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { users, accounts, sessions } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { verifyOTP } from './otp'
+import { discordService } from '@/lib/services/discord.service'
 
 declare module "next-auth" {
   interface Session {
@@ -93,6 +94,12 @@ export const authConfig: NextAuthConfig = {
 
           user = newUsers[0]
           console.log('Created user:', user.id)
+
+          // Notify Discord about new user signup
+          await discordService.notifySignup({
+            email: user.email,
+            userId: user.id,
+          })
         } else {
           console.log('Found existing user:', user.id)
           // Update email verified if not already

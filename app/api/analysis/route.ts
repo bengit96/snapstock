@@ -21,13 +21,13 @@ import type { Session } from "next-auth";
  */
 export async function POST(request: NextRequest) {
   let session: Session | null = null;
+  let imageUrl: string | undefined;
 
   try {
     session = await requireAuth();
 
     // Determine the content type and extract image data accordingly
     const contentType = request.headers.get("content-type") || "";
-    let imageUrl: string;
     let base64Image: string;
 
     if (contentType.includes("multipart/form-data")) {
@@ -69,6 +69,15 @@ export async function POST(request: NextRequest) {
         logger.error("Failed to upload image to blob storage", uploadError, {
           userId: session.user.id,
         });
+
+        // Notify Discord about failed analysis due to upload error
+        await discordService.notifyFailedAnalysis({
+          userId: session.user.id,
+          email: session.user.email,
+          error: uploadError instanceof Error ? uploadError.message : "Failed to upload image to blob storage",
+          failureType: "File Upload",
+        });
+
         return ApiResponse.serverError(
           "Failed to upload image. Please try again."
         );
@@ -115,6 +124,14 @@ export async function POST(request: NextRequest) {
     );
 
     if (!rateLimitResult.success) {
+      // Notify Discord about failed analysis due to rate limiting
+      await discordService.notifyFailedAnalysis({
+        userId: session.user.id,
+        email: session.user.email,
+        error: `Rate limit exceeded (${rateLimitResult.remaining}/${rateLimitResult.limit} requests remaining)`,
+        failureType: "Rate Limit",
+      });
+
       return NextResponse.json(
         {
           error: "Too many analysis requests. Please try again later.",
@@ -152,6 +169,14 @@ export async function POST(request: NextRequest) {
       // Check free trial limits
       if (isFreeUser) {
         if ((user.freeAnalysesUsed || 0) >= (user.freeAnalysesLimit || 1)) {
+          // Notify Discord about failed analysis due to free trial limit
+          await discordService.notifyFailedAnalysis({
+            userId: session.user.id,
+            email: user.email,
+            error: `Free trial limit reached (${user.freeAnalysesUsed}/${user.freeAnalysesLimit} analyses used)`,
+            failureType: "Free Trial Limit",
+          });
+
           return NextResponse.json(
             {
               error: "Free trial limit reached",
@@ -173,6 +198,14 @@ export async function POST(request: NextRequest) {
           const nextResetDate = limitCheck.periodEnd
             ? new Date(limitCheck.periodEnd).toLocaleDateString()
             : "your next billing date";
+
+          // Notify Discord about failed analysis due to monthly limit
+          await discordService.notifyFailedAnalysis({
+            userId: session.user.id,
+            email: user.email,
+            error: `Monthly limit reached (${limitCheck.used}/${limitCheck.limit} analyses used, tier: ${user.subscriptionTier})`,
+            failureType: "Monthly Limit",
+          });
 
           return NextResponse.json(
             {
@@ -207,6 +240,15 @@ export async function POST(request: NextRequest) {
 
     // Check if it's a valid chart
     if (!aiAnalysis.isValidChart) {
+      // Notify Discord about failed analysis due to invalid chart
+      await discordService.notifyFailedAnalysis({
+        userId: session.user.id,
+        email: user.email,
+        error: `Invalid chart detected (confidence: ${aiAnalysis.confidence}%) - Not a valid LIVE stock chart`,
+        failureType: "Invalid Chart",
+        chartUrl: imageUrl,
+      });
+
       return ApiResponse.badRequest("Invalid chart", {
         message:
           "The uploaded image does not appear to be a valid LIVE stock chart. Please ensure: (1) It's a chart from a trading platform, (2) It shows CURRENT/LIVE price action (not historical data from weeks/months ago), (3) It has visible price action, volume bars, technical indicators and x and y axis",
@@ -358,11 +400,23 @@ export async function POST(request: NextRequest) {
       userId: session?.user?.id,
     });
 
-    // Send email notification for critical errors
+    // Send Discord notification for failed analysis
     const errorMessage =
       error instanceof Error
         ? error.message
         : "Unknown error in analysis route";
+
+    if (session?.user) {
+      await discordService.notifyFailedAnalysis({
+        userId: session.user.id,
+        email: session.user.email,
+        error: errorMessage,
+        failureType: "Analysis Error",
+        chartUrl: imageUrl, // May be undefined if error occurred before upload
+      });
+    }
+
+    // Send email notification for critical errors
     const errorStack = error instanceof Error ? error.stack : undefined;
 
     await emailNotificationService.sendErrorNotification({
