@@ -349,7 +349,24 @@ export async function POST(request: NextRequest) {
       request
     );
 
-    // Send Discord notification
+    // Prepare secure image URL for notifications and response
+    const { getSecureImageUrl } = await import("@/lib/utils/image-security");
+    const secureImageUrl = getSecureImageUrl(savedAnalysis.id);
+
+    // Log analysis details for tracking
+    console.log("=== Chart Analysis Details ===");
+    console.log("User:", user.email);
+    console.log("Analysis ID:", savedAnalysis.id);
+    console.log("Stock Symbol:", aiAnalysis.stockSymbol || "Unknown");
+    console.log("Grade:", analysisResult.grade);
+    console.log("Recommendation:", analysisResult.shouldEnter ? "ENTER" : "SKIP");
+    console.log("AI Confidence:", aiAnalysis.confidence ? `${aiAnalysis.confidence}%` : "N/A");
+    console.log("Type:", isFreeUser ? "Free Trial" : "Paid");
+    console.log("Chart URL:", imageUrl);
+    console.log("Secure Chart URL:", secureImageUrl);
+    console.log("==============================");
+
+    // Send Discord notification with chart link
     await discordService.notifyAnalysis({
       userId: session.user.id,
       email: user.email,
@@ -358,12 +375,11 @@ export async function POST(request: NextRequest) {
       shouldEnter: analysisResult.shouldEnter,
       confidence: aiAnalysis.confidence,
       isFree: isFreeUser,
+      chartUrl: imageUrl, // Send blob URL for Discord (publicly accessible)
+      analysisId: savedAnalysis.id,
     });
 
     // Prepare response with enhanced information
-    // Use secure image URL instead of direct blob storage URL
-    const { getSecureImageUrl } = await import("@/lib/utils/image-security");
-    const secureImageUrl = getSecureImageUrl(savedAnalysis.id);
 
     const response = {
       id: savedAnalysis.id,

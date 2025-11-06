@@ -158,6 +158,37 @@ class DiscordService {
   }
 
   /**
+   * Notify about a chart upload (pre-authentication)
+   */
+  async notifyChartUpload(data: {
+    imageUrl: string;
+  }): Promise<void> {
+    const embed: DiscordEmbed = {
+      title: "📤 Chart Uploaded",
+      description: "A user uploaded a chart (pre-authentication)",
+      color: 0x3b82f6, // blue
+      fields: [
+        {
+          name: "Chart Link",
+          value: `[View Chart](${data.imageUrl})`,
+          inline: false,
+        },
+      ],
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.send(
+      { embeds: [embed] },
+      {
+        notificationType: "chart_upload",
+        metadata: {
+          imageUrl: data.imageUrl,
+        },
+      }
+    );
+  }
+
+  /**
    * Notify about a new chart analysis
    */
   async notifyAnalysis(data: {
@@ -168,6 +199,8 @@ class DiscordService {
     shouldEnter: boolean;
     confidence?: number;
     isFree?: boolean;
+    chartUrl?: string;
+    analysisId?: string;
   }): Promise<void> {
     const embed: DiscordEmbed = {
       title: "📊 Chart Analysis Generated",
@@ -201,6 +234,14 @@ class DiscordService {
       });
     }
 
+    if (data.chartUrl) {
+      embed.fields!.push({
+        name: "Chart Link",
+        value: `[View Chart](${data.chartUrl})`,
+        inline: false,
+      });
+    }
+
     await this.send(
       { embeds: [embed] },
       {
@@ -213,6 +254,8 @@ class DiscordService {
           shouldEnter: data.shouldEnter,
           confidence: data.confidence,
           isFree: data.isFree,
+          chartUrl: data.chartUrl,
+          analysisId: data.analysisId,
         },
       }
     );
