@@ -233,14 +233,44 @@ export function UploadSection() {
             </div>
           </div>
 
-          {/* Helpful Tip - Below Upload Zone */}
+          {/* Helpful Tips - Below Upload Zone */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="mt-6"
+            className="mt-6 space-y-3"
           >
+            {/* Axis Visibility Warning */}
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-3 md:p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded-full bg-amber-500 flex items-center justify-center mt-0.5">
+                  <svg
+                    className="w-3 h-3 md:w-4 md:h-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xs md:text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">
+                    ⚠️ Important: Axis Visibility
+                  </h4>
+                  <p className="text-[10px] md:text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
+                    Ensure both <strong>X-axis (time)</strong> and <strong>Y-axis (price)</strong> are clearly visible in your chart for accurate AI analysis.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro Tip */}
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded-full bg-blue-500 flex items-center justify-center mt-0.5">

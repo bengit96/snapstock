@@ -54,42 +54,58 @@ export function ChartUpload({
         <CardDescription>
           Upload a stock chart screenshot for instant AI analysis
         </CardDescription>
-        <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-          <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">
-            Recommended Indicators:
-          </p>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-purple-800 dark:text-purple-200">
-            <div className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              MACD
-            </div>
-            <div className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              EMA 9
-            </div>
-            <div className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              Volume Chart
-            </div>
-            <div className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              EMA 20
-            </div>
-            <div className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              VWAP
-            </div>
-            <div className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
-              EMA 200
-            </div>
+        <div className="mt-3 space-y-3">
+          {/* Axis Visibility Warning */}
+          <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+            <p className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1 flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              X & Y Axis Must Be Visible
+            </p>
+            <p className="text-xs text-amber-800 dark:text-amber-200">
+              Ensure both axes (time and price) are clearly visible for accurate analysis
+            </p>
           </div>
-          <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mt-3 mb-1">
-            Recommended Time Frame:
-          </p>
-          <p className="text-xs text-purple-800 dark:text-purple-200">
-            1min or 5min charts for best results
-          </p>
+
+          {/* Recommended Setup */}
+          <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+            <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">
+              Recommended Indicators:
+            </p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-purple-800 dark:text-purple-200">
+              <div className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+                MACD
+              </div>
+              <div className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+                EMA 9
+              </div>
+              <div className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+                Volume Chart
+              </div>
+              <div className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+                EMA 20
+              </div>
+              <div className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+                VWAP
+              </div>
+              <div className="flex items-center">
+                <span className="w-1.5 h-1.5 bg-purple-600 rounded-full mr-2" />
+                EMA 200
+              </div>
+            </div>
+            <p className="text-sm font-semibold text-purple-900 dark:text-purple-100 mt-3 mb-1">
+              Recommended Time Frame:
+            </p>
+            <p className="text-xs text-purple-800 dark:text-purple-200">
+              1min or 5min charts for best results
+            </p>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
