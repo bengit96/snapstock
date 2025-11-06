@@ -83,12 +83,13 @@ export function HeroSection({ className }: HeroSectionProps) {
           className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed px-4"
         >
           <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-            Try it free - no signup required!
+            Try it free!
           </span>{" "}
           Upload your chart and get instant AI-powered analysis with precise
           entry points, stop losses, and profit targets for momentum trading.
           <span className="block mt-3 text-sm sm:text-base font-semibold text-purple-600 dark:text-purple-400">
-            Works with Stocks, Forex, Crypto, Futures & More • Optimized for momentum setups
+            Works with Stocks, Forex, Crypto, Futures & More • Optimized for
+            momentum setups
           </span>
         </motion.p>
 
