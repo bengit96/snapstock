@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     siteName: 'SnapPChart',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.png?v=2',
         width: 1200,
         height: 630,
         alt: 'SnapPChart - AI-Powered Stock Trading Analysis',
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SnapPChart - AI-Powered Stock Trading Analysis',
     description: 'Analyze stock charts and get AI-powered trade recommendations',
-    images: ['/twitter-image.png'],
+    images: ['/twitter-image.png?v=2'],
     creator: '@snappchart',
   },
   alternates: {

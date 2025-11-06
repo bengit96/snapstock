@@ -1,120 +1,124 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ErrorMessage } from '@/components/ui/error-message'
-import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { Mail } from 'lucide-react'
-import { useAuth } from '@/lib/hooks/useAuth'
-import Link from 'next/link'
-import { ROUTES } from '@/lib/constants'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useSession, signIn } from 'next-auth/react'
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Mail } from "lucide-react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import Link from "next/link";
+import { ROUTES } from "@/lib/constants";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signIn } from "next-auth/react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from "@/components/ui/tooltip";
 
 interface LoginFormProps {
-  redirectTo?: string
-  onSuccess?: () => void
-  showTooltip?: boolean
+  redirectTo?: string;
+  onSuccess?: () => void;
+  showTooltip?: boolean;
 }
 
-export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginFormProps) {
-  const [step, setStep] = useState<'email' | 'otp'>('email')
-  const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState('')
-  const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false)
-  const [tooltipOpen, setTooltipOpen] = useState(false)
-  const { update } = useSession()
+export function LoginForm({
+  redirectTo,
+  onSuccess,
+  showTooltip = false,
+}: LoginFormProps) {
+  const [step, setStep] = useState<"email" | "otp">("email");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const { update } = useSession();
 
   // Show tooltip when modal opens, hide after 5 seconds or when user interacts
   useEffect(() => {
     if (showTooltip && !acceptedTerms) {
       // Small delay to ensure modal is fully rendered
       const timer = setTimeout(() => {
-        setTooltipOpen(true)
+        setTooltipOpen(true);
         // Auto-hide after 5 seconds
         setTimeout(() => {
-          setTooltipOpen(false)
-        }, 5000)
-      }, 300)
-      
-      return () => clearTimeout(timer)
+          setTooltipOpen(false);
+        }, 5000);
+      }, 300);
+
+      return () => clearTimeout(timer);
     } else {
-      setTooltipOpen(false)
+      setTooltipOpen(false);
     }
-  }, [showTooltip, acceptedTerms])
+  }, [showTooltip, acceptedTerms]);
 
   // Hide tooltip when user checks the checkbox
   const handleTermsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAcceptedTerms(e.target.checked)
+    setAcceptedTerms(e.target.checked);
     if (e.target.checked) {
-      setTooltipOpen(false)
+      setTooltipOpen(false);
     }
-  }
+  };
 
   const { sendOTP, verifyOTP, isLoading, error, clearError } = useAuth({
     redirectTo,
     onSuccess: async () => {
-      console.log('🎯 LoginForm onSuccess: Starting session refresh...')
+      console.log("🎯 LoginForm onSuccess: Starting session refresh...");
       try {
-        await update()
-        console.log('✅ Session refreshed successfully')
-        onSuccess?.()
+        await update();
+        console.log("✅ Session refreshed successfully");
+        onSuccess?.();
       } catch (error) {
-        console.error('❌ Session refresh failed:', error)
+        console.error("❌ Session refresh failed:", error);
         // Still call onSuccess even if refresh fails
-        onSuccess?.()
+        onSuccess?.();
       }
-    }
-  })
+    },
+  });
 
   const handleSendOTP = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const success = await sendOTP(email)
+    e.preventDefault();
+    const success = await sendOTP(email);
     if (success) {
-      setStep('otp')
+      setStep("otp");
     }
-  }
+  };
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await verifyOTP(email, otp)
-  }
+    e.preventDefault();
+    await verifyOTP(email, otp);
+  };
 
   const handleReset = () => {
-    setStep('email')
-    setOtp('')
-    clearError()
-  }
+    setStep("email");
+    setOtp("");
+    clearError();
+  };
 
   const handleGoogleSignIn = async () => {
     if (!acceptedTerms) {
-      return
+      return;
     }
 
-    setGoogleLoading(true)
+    setGoogleLoading(true);
     try {
-      await signIn('google', {
-        callbackUrl: redirectTo || '/',
-        redirect: true
-      })
+      await signIn("google", {
+        callbackUrl: redirectTo || "/dashboard/analyze",
+        redirect: true,
+      });
     } catch (error) {
-      console.error('Google sign-in error:', error)
-      setGoogleLoading(false)
+      console.error("Google sign-in error:", error);
+      setGoogleLoading(false);
     }
-  }
+  };
 
   return (
     <AnimatePresence mode="wait">
-      {step === 'email' ? (
+      {step === "email" ? (
         <motion.div
           key="email-step"
           initial={{ opacity: 0, x: -20 }}
@@ -146,12 +150,16 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
                 </TooltipTrigger>
                 <TooltipContent side="right" className="max-w-xs">
                   <p className="text-sm">
-                    You must accept the terms and conditions to enable Google sign-in
+                    You must accept the terms and conditions to enable Google
+                    sign-in
                   </p>
                 </TooltipContent>
               </Tooltip>
-              <label htmlFor="acceptTerms" className="text-sm text-gray-700 dark:text-gray-300">
-                I have read and agree to the{' '}
+              <label
+                htmlFor="acceptTerms"
+                className="text-sm text-gray-700 dark:text-gray-300"
+              >
+                I have read and agree to the{" "}
                 <Link
                   href={ROUTES.terms}
                   target="_blank"
@@ -159,7 +167,7 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
                 >
                   Terms of Service
                 </Link>
-                ,{' '}
+                ,{" "}
                 <Link
                   href={ROUTES.privacy}
                   target="_blank"
@@ -167,7 +175,7 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
                 >
                   Privacy Policy
                 </Link>
-                , and{' '}
+                , and{" "}
                 <Link
                   href="/disclaimer"
                   target="_blank"
@@ -215,7 +223,7 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
                   />
                 </svg>
               )}
-              {googleLoading ? 'Signing in...' : 'Continue with Google'}
+              {googleLoading ? "Signing in..." : "Continue with Google"}
             </Button>
           </motion.div>
 
@@ -275,7 +283,7 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
                 {isLoading ? (
                   <LoadingSpinner size="sm" className="mr-2" />
                 ) : null}
-                {isLoading ? 'Sending...' : 'Send verification code'}
+                {isLoading ? "Sending..." : "Send verification code"}
               </Button>
             </motion.div>
           </form>
@@ -298,14 +306,17 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
           >
             <Label htmlFor="otp">Verification code</Label>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              We've sent a code to {email}. Check your spam/junk folder if you don't see it.
+              We've sent a code to {email}. Check your spam/junk folder if you
+              don't see it.
             </p>
             <Input
               id="otp"
               type="text"
               placeholder="Enter 6-digit code"
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+              onChange={(e) =>
+                setOtp(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
+              }
               maxLength={6}
               required
               disabled={isLoading}
@@ -320,11 +331,13 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <Button type="submit" className="w-full" disabled={isLoading || otp.length !== 6}>
-              {isLoading ? (
-                <LoadingSpinner size="sm" className="mr-2" />
-              ) : null}
-              {isLoading ? 'Verifying...' : 'Verify & Sign in'}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading || otp.length !== 6}
+            >
+              {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : null}
+              {isLoading ? "Verifying..." : "Verify & Sign in"}
             </Button>
           </motion.div>
 
@@ -346,5 +359,5 @@ export function LoginForm({ redirectTo, onSuccess, showTooltip = false }: LoginF
         </motion.form>
       )}
     </AnimatePresence>
-  )
+  );
 }
