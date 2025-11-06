@@ -86,11 +86,10 @@ export function UploadSection() {
             🎁 FREE for Everyone
           </div>
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Try It Now - No Signup Required
+            Ready to Try? Upload Your Chart
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Upload your chart and get instant AI-powered analysis with
-            entry/exit signals
+            Get your first analysis free - no signup, no credit card required
           </p>
         </motion.div>
 
@@ -181,51 +180,44 @@ export function UploadSection() {
                   </p>
                 </div>
 
-                {/* Integrated Recommendations */}
+                {/* Simple Instructions */}
                 <div className="max-w-lg mx-auto pt-2">
-                  <div className="flex items-center justify-center gap-1.5 mb-2">
-                    <Sparkles className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
-                    <span className="text-[10px] font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
-                      Recommended Setup
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-center gap-1.5">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
-                      1-5min timeframe
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
-                      MACD
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
-                      EMA 9, 20, 200
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
-                      Volume bars
-                    </span>
-                  </div>
-                </div>
-
-                {/* Stock Selection Requirements */}
-                <div className="max-w-lg mx-auto pt-2 border-t border-purple-200/30 dark:border-purple-700/30 mt-2">
-                  <div className="flex items-center justify-center gap-1.5 mb-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-                    <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
-                      Recommended Stock Criteria
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-                    {STOCK_SELECTION_CHECKLIST.map((requirement, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-1.5 text-[10px] text-gray-600 dark:text-gray-400"
-                      >
-                        <div className="w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 flex-shrink-0" />
-                        <span className="font-medium">{requirement}</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                    Upload any trading chart - our AI will analyze it instantly
+                  </p>
+                  <details className="mt-3 text-center">
+                    <summary className="text-xs text-purple-600 dark:text-purple-400 cursor-pointer hover:text-purple-700 dark:hover:text-purple-300 font-medium inline-flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      Best results? See recommended setup
+                    </summary>
+                    <div className="mt-3 space-y-3">
+                      <div className="flex flex-wrap items-center justify-center gap-1.5">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
+                          1-5min timeframe
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
+                          MACD
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
+                          EMA 9, 20, 200
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-purple-200/50 dark:border-purple-700/50">
+                          Volume bars
+                        </span>
                       </div>
-                    ))}
-                  </div>
+                      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-gray-500 dark:text-gray-500">
+                        {STOCK_SELECTION_CHECKLIST.map((requirement, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-1.5"
+                          >
+                            <div className="w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 flex-shrink-0" />
+                            <span>{requirement}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </details>
                 </div>
               </div>
             </div>
@@ -241,7 +233,7 @@ export function UploadSection() {
             </div>
           </div>
 
-          {/* Live Chart Warning - Below Upload Zone */}
+          {/* Helpful Tip - Below Upload Zone */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -249,9 +241,9 @@ export function UploadSection() {
             transition={{ delay: 0.3 }}
             className="mt-6"
           >
-            <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-xl p-3 md:p-4 shadow-lg">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 md:p-4">
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded-full bg-amber-500 flex items-center justify-center mt-0.5">
+                <div className="flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded-full bg-blue-500 flex items-center justify-center mt-0.5">
                   <svg
                     className="w-3 h-3 md:w-4 md:h-4 text-white"
                     fill="none"
@@ -262,19 +254,17 @@ export function UploadSection() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-xs md:text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">
-                    ⚠️ LIVE CHARTS ONLY
+                  <h4 className="text-xs md:text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">
+                    💡 Pro Tip
                   </h4>
-                  <p className="text-[10px] md:text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
-                    <strong>Do not upload old/historical charts.</strong> Only
-                    upload <strong>live, current charts</strong> from your
-                    trading platform. The analysis is designed for real-time
-                    trading decisions, not historical review.
+                  <p className="text-[10px] md:text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                    For best results, upload <strong>live charts</strong> from your trading platform.
+                    Our AI is optimized for real-time trading decisions.
                   </p>
                 </div>
               </div>

@@ -30,6 +30,7 @@ interface EnvConfig {
 
   // Discord Webhook
   DISCORD_WEBHOOK_URL?: string
+  DISCORD_WEBHOOK_USERS_URL?: string
 
   // Optional: Feature flags
   NODE_ENV?: 'development' | 'production' | 'test'

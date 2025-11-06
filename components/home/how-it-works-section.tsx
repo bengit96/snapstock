@@ -49,17 +49,17 @@ export function HowItWorksSection() {
     {
       number: 1,
       title: 'Upload Your Chart',
-      description: 'Screenshot your chart with MACD, Volume Profile, EMA 9/20/200, and VWAP visible. Upload to SnapPChart.'
+      description: 'Take a screenshot of your trading chart and upload it. Any chart works - our AI handles the rest.'
     },
     {
       number: 2,
-      title: 'AI Analyzes Rapidly',
-      description: 'Our advanced AI examines multiple signals, patterns, and confluence zones to provide comprehensive analysis.'
+      title: 'AI Analyzes Instantly',
+      description: 'Our AI examines patterns, momentum, and key signals to evaluate your setup in seconds.'
     },
     {
       number: 3,
-      title: 'Execute with Confidence',
-      description: 'Receive your grade (A-F), exact entry point, stop loss, and profit target for informed trading decisions.'
+      title: 'Get Your Trade Plan',
+      description: 'Receive a grade (A-F), precise entry point, stop loss, and profit targets - ready to trade.'
     }
   ]
 

@@ -1,42 +1,50 @@
-'use client'
+"use client";
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Lock } from 'lucide-react'
-import { LoginForm } from '@/components/auth/login-form'
+} from "@/components/ui/dialog";
+import { Lock } from "lucide-react";
+import { LoginForm } from "@/components/auth/login-form";
 
 interface LoginModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  callbackUrl?: string
-  onSuccess?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  callbackUrl?: string;
+  onSuccess?: () => void;
 }
 
-export function LoginModal({ open, onOpenChange, callbackUrl, onSuccess }: LoginModalProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const redirectUrl = callbackUrl || pathname
+export function LoginModal({
+  open,
+  onOpenChange,
+  callbackUrl,
+  onSuccess,
+}: LoginModalProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const redirectUrl = callbackUrl || pathname;
 
   const handleLoginSuccess = () => {
-    console.log('🎯 LoginModal: Login successful, redirecting to:', redirectUrl)
-    onOpenChange(false)
+    console.log(
+      "🎯 LoginModal: Login successful, redirecting to:",
+      redirectUrl
+    );
+    onOpenChange(false);
 
     // If onSuccess is provided, call it instead of redirecting
     if (onSuccess) {
-      onSuccess()
+      onSuccess();
     } else if (redirectUrl) {
       // Small delay to allow session to be established
       setTimeout(() => {
-        router.push(redirectUrl)
-      }, 500)
+        router.push(redirectUrl);
+      }, 500);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -51,14 +59,15 @@ export function LoginModal({ open, onOpenChange, callbackUrl, onSuccess }: Login
             Sign In to Continue
           </DialogTitle>
           <DialogDescription className="text-center text-base pt-2">
-            Create a free account to analyze your chart and get instant AI-powered trading insights
+            Create a free account to analyze your chart and get instant
+            AI-powered trading insights
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4">
-          <LoginForm onSuccess={handleLoginSuccess} />
+          <LoginForm onSuccess={handleLoginSuccess} showTooltip={open} />
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

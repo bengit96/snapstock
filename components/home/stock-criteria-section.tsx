@@ -1,8 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckCircle2, TrendingUp, Volume2, DollarSign, Newspaper } from 'lucide-react'
-import { STOCK_SELECTION_CRITERIA } from '@/lib/constants'
+import { CheckCircle2, TrendingUp, Volume2, Zap, Newspaper, Activity } from 'lucide-react'
+import { MOMENTUM_TRADING_CRITERIA } from '@/lib/constants'
 
 interface CriteriaItemProps {
   icon: React.ElementType
@@ -35,29 +35,29 @@ function CriteriaItem({ icon: Icon, label, description, index }: CriteriaItemPro
 export function StockCriteriaSection() {
   const criteria = [
     {
-      icon: DollarSign,
-      label: STOCK_SELECTION_CRITERIA.priceRange.label,
-      description: STOCK_SELECTION_CRITERIA.priceRange.description
-    },
-    {
       icon: TrendingUp,
-      label: STOCK_SELECTION_CRITERIA.float.label,
-      description: STOCK_SELECTION_CRITERIA.float.description
-    },
-    {
-      icon: TrendingUp,
-      label: STOCK_SELECTION_CRITERIA.movePercentage.label,
-      description: STOCK_SELECTION_CRITERIA.movePercentage.description
+      label: MOMENTUM_TRADING_CRITERIA.trend.label,
+      description: MOMENTUM_TRADING_CRITERIA.trend.description
     },
     {
       icon: Volume2,
-      label: STOCK_SELECTION_CRITERIA.relativeVolume.label,
-      description: STOCK_SELECTION_CRITERIA.relativeVolume.description
+      label: MOMENTUM_TRADING_CRITERIA.volume.label,
+      description: MOMENTUM_TRADING_CRITERIA.volume.description
+    },
+    {
+      icon: Zap,
+      label: MOMENTUM_TRADING_CRITERIA.volatility.label,
+      description: MOMENTUM_TRADING_CRITERIA.volatility.description
     },
     {
       icon: Newspaper,
-      label: STOCK_SELECTION_CRITERIA.catalyst.label,
-      description: STOCK_SELECTION_CRITERIA.catalyst.description
+      label: MOMENTUM_TRADING_CRITERIA.catalyst.label,
+      description: MOMENTUM_TRADING_CRITERIA.catalyst.description
+    },
+    {
+      icon: Activity,
+      label: MOMENTUM_TRADING_CRITERIA.liquidity.label,
+      description: MOMENTUM_TRADING_CRITERIA.liquidity.description
     }
   ]
 
@@ -73,10 +73,10 @@ export function StockCriteriaSection() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold mb-4">
-            Built for Long Momentum Trading
+            Optimized for Momentum Trading
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            SnapPChart specializes in low float, fast-moving stocks for long positions. Our AI analyzes charts that meet these proven momentum criteria:
+            Our AI delivers the best results when analyzing charts with strong momentum characteristics across any market - stocks, forex, crypto, or futures.
           </p>
         </motion.div>
 
@@ -96,7 +96,7 @@ export function StockCriteriaSection() {
           className="text-center mt-12"
         >
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            These criteria help identify long momentum setups that historically show strong upward price movement
+            Works across all markets and timeframes - day trading to swing trading
           </p>
         </motion.div>
       </div>

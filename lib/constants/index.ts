@@ -5,7 +5,7 @@
 // Application Config
 export const APP_NAME = "SnapPChart";
 export const APP_DESCRIPTION =
-  "AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential.";
+  "AI-powered chart analysis for momentum traders. Get instant trade plans with precise entry, stop loss, and profit targets for stocks, forex, crypto, and futures.";
 export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -64,43 +64,41 @@ export const AI_MAX_TOKENS = 1500;
 export const AI_TEMPERATURE = 0.2;
 export const EXPECTED_ANALYSIS_TIME = 5; // seconds
 
-// Stock Selection Criteria (Momentum Trading Focus)
-export const STOCK_SELECTION_CRITERIA = {
-  priceRange: {
-    min: 2,
-    max: 20,
-    label: "$2-$20",
-    description: "Price range: $2-$20",
+// Momentum Trading Criteria (For Best Results)
+export const MOMENTUM_TRADING_CRITERIA = {
+  trend: {
+    label: "Strong trend",
+    description: "Clear uptrend with momentum",
   },
-  float: {
-    max: 10000000, // 10 million
-    label: "Less than 10M float",
-    description: "Float under 10 million shares",
+  volume: {
+    label: "High volume",
+    description: "Above-average trading volume",
   },
-  movePercentage: {
-    min: 20,
-    label: "At least 20% move",
-    description: "Minimum 20% intraday move",
-  },
-  relativeVolume: {
-    min: 5,
-    label: "5x average volume",
-    description: "5x or more of average daily volume",
+  volatility: {
+    label: "Good volatility",
+    description: "Sufficient price movement for targets",
   },
   catalyst: {
-    required: true,
-    label: "News catalyst present",
-    description: "Active news event or catalyst",
+    label: "News/catalyst",
+    description: "News event or market catalyst",
+  },
+  liquidity: {
+    label: "High liquidity",
+    description: "Adequate market depth and activity",
   },
 } as const;
 
-export const STOCK_SELECTION_CHECKLIST = [
-  STOCK_SELECTION_CRITERIA.priceRange.label,
-  STOCK_SELECTION_CRITERIA.float.label,
-  STOCK_SELECTION_CRITERIA.movePercentage.label,
-  STOCK_SELECTION_CRITERIA.relativeVolume.label,
-  STOCK_SELECTION_CRITERIA.catalyst.label,
+export const MOMENTUM_TRADING_CHECKLIST = [
+  MOMENTUM_TRADING_CRITERIA.trend.label,
+  MOMENTUM_TRADING_CRITERIA.volume.label,
+  MOMENTUM_TRADING_CRITERIA.volatility.label,
+  MOMENTUM_TRADING_CRITERIA.catalyst.label,
+  MOMENTUM_TRADING_CRITERIA.liquidity.label,
 ] as const;
+
+// Legacy export for backwards compatibility
+export const STOCK_SELECTION_CRITERIA = MOMENTUM_TRADING_CRITERIA;
+export const STOCK_SELECTION_CHECKLIST = MOMENTUM_TRADING_CHECKLIST;
 
 // Trading Rules
 export const MIN_RISK_REWARD_RATIO = 2.0;
@@ -176,6 +174,7 @@ export const PRICING_PLANS = [
     features: [
       "300 chart analyses per month",
       "Trade history tracking",
+      "Historical Trade analysis (in progress)",
       "24/7 support",
     ],
     badge: "MOST POPULAR",
@@ -269,7 +268,8 @@ export const ROUTES = {
 export const ERROR_MESSAGES = {
   generic: "An error occurred. Please try again.",
   unauthorized: "Please sign in to continue.",
-  invalidChart: "The uploaded image does not appear to be a valid stock chart.",
+  invalidChart:
+    "The uploaded image does not appear to be a valid trading chart.",
   uploadFailed: "Failed to upload chart. Please try again.",
   analysisFailed: "Failed to analyze chart. Please try again.",
   subscriptionRequired: "Active subscription required to access this feature.",

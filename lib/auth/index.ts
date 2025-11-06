@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '@/lib/db'
 import { users, accounts, sessions } from '@/lib/db/schema'
@@ -45,6 +46,11 @@ export const authConfig: NextAuthConfig = {
   }),
 
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      allowDangerousEmailAccountLinking: true, // Allow linking existing email accounts
+    }),
     CredentialsProvider({
       name: 'otp',
       credentials: {
@@ -131,6 +137,18 @@ export const authConfig: NextAuthConfig = {
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+
+  events: {
+    async createUser({ user }) {
+      // Notify Discord about new user signup (for Google OAuth)
+      if (user.email) {
+        await discordService.notifySignup({
+          email: user.email,
+          userId: user.id,
+        })
+      }
+    },
   },
 
   callbacks: {

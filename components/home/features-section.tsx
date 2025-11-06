@@ -113,8 +113,8 @@ export function FeaturesSection() {
     },
     {
       icon: BarChart3,
-      title: 'Any Chart Type',
-      description: 'Works with all trading platforms'
+      title: 'All Markets',
+      description: 'Stocks, forex, crypto, futures & more'
     },
     {
       icon: Lock,
@@ -132,7 +132,7 @@ export function FeaturesSection() {
             Everything You Need to Trade with Confidence
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Professional-grade long-bias analysis tools powered by cutting-edge AI
+            Professional-grade momentum analysis tools powered by cutting-edge AI
           </p>
         </div>
 

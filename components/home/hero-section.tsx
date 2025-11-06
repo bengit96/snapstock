@@ -88,8 +88,7 @@ export function HeroSection({ className }: HeroSectionProps) {
           Upload your chart and get instant AI-powered analysis with precise
           entry points, stop losses, and profit targets for momentum trading.
           <span className="block mt-3 text-sm sm:text-base font-semibold text-purple-600 dark:text-purple-400">
-            Specializing in low float, fast-moving stocks ($2-$20) • Long-bias
-            only
+            Works with Stocks, Forex, Crypto, Futures & More • Optimized for momentum setups
           </span>
         </motion.p>
 
