@@ -1,15 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  TrendingUp,
-  Target,
-  AlertTriangle,
-  CheckCircle2,
-  ArrowUpRight,
-} from "lucide-react";
+import { CheckCircle2, Sparkles, TrendingUp, Target, AlertTriangle, Activity, ArrowDown } from "lucide-react";
+import Image from "next/image";
 
 export function DemoSection() {
+  const handleScrollToUpload = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const element = document.getElementById('upload-chart');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   return (
     <section
       id="demo"
@@ -35,154 +38,129 @@ export function DemoSection() {
           </p>
         </motion.div>
 
-        {/* Demo Content */}
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          {/* Left: Sample Chart Placeholder */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            <div className="relative rounded-2xl overflow-hidden border-2 border-purple-200/50 dark:border-purple-700/50 shadow-xl bg-white dark:bg-gray-800">
-              {/* Chart placeholder - you can replace with actual sample image */}
-              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-                <div className="text-center p-6">
-                  <TrendingUp className="w-16 h-16 mx-auto mb-4 text-purple-500" />
-                  <p className="text-gray-600 dark:text-gray-400 font-semibold">
-                    Sample Chart Analysis
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                    Works with any market - Stocks, Forex, Crypto, Futures
-                  </p>
-                </div>
-              </div>
-              <div className="absolute top-4 left-4 px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-bold shadow-lg">
-                ANY MARKET
+        {/* Main Screenshot */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="relative mb-12"
+        >
+          <div className="relative rounded-2xl overflow-hidden border-2 border-purple-200/50 dark:border-purple-700/50 shadow-2xl bg-white dark:bg-gray-800">
+            <Image
+              src="/screenshot-original.png"
+              alt="Real SnapStock AI analysis example showing chart analysis, B+ grade, and trade setup"
+              width={1920}
+              height={1080}
+              className="w-full h-auto"
+              priority
+            />
+
+            {/* Simplified gradient overlay */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white/95 via-white/50 to-transparent dark:from-gray-900/95 dark:via-gray-900/50 flex items-end justify-center pb-4">
+              <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium text-sm">
+                <ArrowDown className="w-4 h-4 animate-bounce" />
+                <span>More details below</span>
               </div>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Right: Analysis Results */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="space-y-4"
-          >
-            {/* Grade Card */}
-            <div className="bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl p-6 text-white shadow-xl">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold opacity-90">
-                  Setup Grade
-                </span>
-                <CheckCircle2 className="w-5 h-5" />
+        {/* What's included - Cleaner, less cluttered */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="mb-12"
+        >
+          <h3 className="text-center text-2xl font-bold mb-3 text-gray-900 dark:text-white">
+            What's Included in Every Analysis
+          </h3>
+          <p className="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+            Comprehensive AI-powered insights covering technical signals, risk assessment, and actionable trade plans
+          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* AI Analysis & Grade */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-purple-100 dark:border-purple-800 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4">
+                <Activity className="w-6 h-6 text-white" />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-bold">A</span>
-                <span className="text-lg opacity-90">Excellent Setup</span>
-              </div>
-              <p className="text-sm mt-2 opacity-90">
-                Strong momentum with clear entry signals
+              <h4 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                AI Analysis & Grade
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Plain-language market assessment with A-F quality rating
               </p>
             </div>
 
-            {/* Trade Details */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-gray-700">
-              <h3 className="font-bold text-lg mb-4 text-gray-900 dark:text-white">
-                Trade Plan
-              </h3>
-
-              {/* Entry Point */}
-              <div className="flex items-start gap-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                  <Target className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    Entry Point
-                  </div>
-                  <div className="text-xl font-bold text-gray-900 dark:text-white">
-                    Entry: 0.6850
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    Pullback to support level
-                  </div>
-                </div>
+            {/* Trade Setup */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-blue-100 dark:border-blue-800 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4">
+                <Target className="w-6 h-6 text-white" />
               </div>
-
-              {/* Stop Loss */}
-              <div className="flex items-start gap-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    Stop Loss
-                  </div>
-                  <div className="text-xl font-bold text-gray-900 dark:text-white">
-                    Stop: 0.6720
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    1.9% risk - below key support
-                  </div>
-                </div>
-              </div>
-
-              {/* Profit Targets */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                  <ArrowUpRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    Profit Targets
-                  </div>
-                  <div className="flex gap-4">
-                    <div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">
-                        0.7050
-                      </div>
-                      <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-                        Target 1: +2.9%
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">
-                        0.7250
-                      </div>
-                      <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-                        Target 2: +5.8%
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Key Insights */}
-            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-5 border border-purple-200 dark:border-purple-800">
-              <h4 className="font-bold text-sm text-purple-900 dark:text-purple-100 mb-3">
-                Key Insights
+              <h4 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                Complete Trade Setup
               </h4>
-              <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  <span>Strong bullish momentum confirmed</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  <span>Volume spike indicates institutional interest</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  <span>Risk/reward ratio: 1:2.3 (favorable)</span>
-                </li>
-              </ul>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Entry price, stop loss, take profit, and risk/reward ratios
+              </p>
             </div>
-          </motion.div>
-        </div>
+
+            {/* Trade Thesis */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-indigo-100 dark:border-indigo-800 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center mb-4">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                Trade Thesis
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Detailed technical reasoning and strategic trade rationale
+              </p>
+            </div>
+
+            {/* Bullish & Bearish Signals */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-emerald-100 dark:border-emerald-800 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center mb-4">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                Bullish & Bearish Signals
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Detected patterns with detailed explanations for both sides
+              </p>
+            </div>
+
+            {/* Strengths & Concerns */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-orange-100 dark:border-orange-800 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                Strengths & Concerns
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                What makes the setup attractive and risks to watch
+              </p>
+            </div>
+
+            {/* Risk Assessment */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-yellow-100 dark:border-yellow-800 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center mb-4">
+                <AlertTriangle className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                Risk Assessment
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                No-go conditions and critical warning signals
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Bottom CTA */}
         <motion.div
@@ -190,15 +168,19 @@ export function DemoSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="text-center mt-12"
+          className="text-center"
         >
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
-            Get this level of detail for <span className="font-bold text-purple-600 dark:text-purple-400">every chart you upload</span>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+            Get all of this for <span className="font-bold text-purple-600 dark:text-purple-400">every chart you upload</span>
           </p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm shadow-lg">
-            <CheckCircle2 className="w-4 h-4" />
-            Your first analysis is FREE
-          </div>
+          <a
+            href="#upload-chart"
+            onClick={handleScrollToUpload}
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold text-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200"
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            Try your free chart analysis now!
+          </a>
         </motion.div>
       </div>
     </section>
