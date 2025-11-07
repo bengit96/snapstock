@@ -1,50 +1,60 @@
-'use client'
+"use client";
 
-import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, Sparkles, Check, ArrowLeft, CheckCircle2 } from 'lucide-react'
-import { useDropzone } from 'react-dropzone'
-import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE, STOCK_SELECTION_CHECKLIST } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Upload, Sparkles, Check, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { useDropzone } from "react-dropzone";
+import {
+  ACCEPTED_IMAGE_TYPES,
+  MAX_FILE_SIZE,
+  STOCK_SELECTION_CHECKLIST,
+} from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface AnalyzeUploadProps {
-  onImageUpload: (image: string) => void
-  onImageClear?: () => void
-  uploadedImage?: string | null
-  showLogin?: boolean
+  onImageUpload: (image: string) => void;
+  onImageClear?: () => void;
+  uploadedImage?: string | null;
+  showLogin?: boolean;
 }
 
 export function AnalyzeUpload({
   onImageUpload,
   onImageClear,
   uploadedImage,
-  showLogin = false
+  showLogin = false,
 }: AnalyzeUploadProps) {
-  const [localImage, setLocalImage] = useState<string | null>(uploadedImage || null)
+  const [localImage, setLocalImage] = useState<string | null>(
+    uploadedImage || null
+  );
 
-  const handleDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result as string
-        setLocalImage(result)
-        onImageUpload(result)
+  const handleDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          setLocalImage(result);
+          onImageUpload(result);
+        };
+        reader.readAsDataURL(acceptedFiles[0]);
       }
-      reader.readAsDataURL(acceptedFiles[0])
-    }
-  }, [onImageUpload])
+    },
+    [onImageUpload]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     accept: ACCEPTED_IMAGE_TYPES,
     maxFiles: 1,
     maxSize: MAX_FILE_SIZE,
-  })
+  });
 
   const handleClearImage = () => {
-    setLocalImage(null)
-    onImageClear?.()
-  }
+    setLocalImage(null);
+    onImageClear?.();
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -80,9 +90,10 @@ export function AnalyzeUpload({
               >
                 <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
                   Analyze Your Chart
+                </span>{" "}
+                <span className="text-gray-900 dark:text-white">
+                  & Get Instant Insights
                 </span>
-                {' '}
-                <span className="text-gray-900 dark:text-white">& Get Instant Insights</span>
               </motion.h1>
 
               <motion.p
@@ -91,7 +102,8 @@ export function AnalyzeUpload({
                 transition={{ delay: 0.3 }}
                 className="text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4"
               >
-                Upload your stock chart and receive professional-grade analysis instantly
+                Upload your stock chart and receive professional-grade analysis
+                instantly
               </motion.p>
             </div>
 
@@ -105,48 +117,59 @@ export function AnalyzeUpload({
               <div
                 {...getRootProps()}
                 className={cn(
-                  'relative overflow-hidden cursor-pointer transition-all duration-300',
-                  'rounded-2xl border-2',
+                  "relative overflow-hidden cursor-pointer transition-all duration-300",
+                  "rounded-2xl border-2",
                   isDragActive
-                    ? 'border-purple-400 dark:border-purple-500 scale-[1.01]'
-                    : 'border-purple-200/50 dark:border-purple-800/30 hover:border-purple-300 dark:hover:border-purple-700/50'
+                    ? "border-purple-400 dark:border-purple-500 scale-[1.01]"
+                    : "border-purple-200/50 dark:border-purple-800/30 hover:border-purple-300 dark:hover:border-purple-700/50"
                 )}
               >
                 <input {...getInputProps()} />
 
                 {/* Gradient Background */}
-                <div className={cn(
-                  'absolute inset-0 transition-opacity duration-300',
-                  isDragActive
-                    ? 'bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 dark:from-purple-950/40 dark:via-pink-950/20 dark:to-purple-950/40'
-                    : 'bg-gradient-to-br from-purple-50/50 via-white to-pink-50/50 dark:from-purple-950/20 dark:via-gray-900 dark:to-pink-950/20'
-                )} />
+                <div
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-300",
+                    isDragActive
+                      ? "bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 dark:from-purple-950/40 dark:via-pink-950/20 dark:to-purple-950/40"
+                      : "bg-gradient-to-br from-purple-50/50 via-white to-pink-50/50 dark:from-purple-950/20 dark:via-gray-900 dark:to-pink-950/20"
+                  )}
+                />
 
                 {/* Content */}
                 <div className="relative py-8 px-6">
                   <div className="text-center space-y-4">
                     {/* Upload Icon with Glow */}
                     <div className="relative inline-block">
-                      <div className={cn(
-                        "absolute inset-0 rounded-full blur-xl transition-opacity",
-                        isDragActive
-                          ? "bg-purple-400/40 opacity-100"
-                          : "bg-purple-300/20 opacity-0 group-hover:opacity-100"
-                      )} />
-                      <div className={cn(
-                        "relative w-12 h-12 rounded-full flex items-center justify-center transition-all",
-                        isDragActive
-                          ? "bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg"
-                          : "bg-gradient-to-br from-purple-400/80 to-pink-400/80 shadow-md"
-                      )}>
-                        <Upload className="w-6 h-6 text-white" strokeWidth={2} />
+                      <div
+                        className={cn(
+                          "absolute inset-0 rounded-full blur-xl transition-opacity",
+                          isDragActive
+                            ? "bg-purple-400/40 opacity-100"
+                            : "bg-purple-300/20 opacity-0 group-hover:opacity-100"
+                        )}
+                      />
+                      <div
+                        className={cn(
+                          "relative w-12 h-12 rounded-full flex items-center justify-center transition-all",
+                          isDragActive
+                            ? "bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg"
+                            : "bg-gradient-to-br from-purple-400/80 to-pink-400/80 shadow-md"
+                        )}
+                      >
+                        <Upload
+                          className="w-6 h-6 text-white"
+                          strokeWidth={2}
+                        />
                       </div>
                     </div>
 
                     {/* Main Text */}
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                        {isDragActive ? 'Drop your chart here' : 'Upload Your Chart'}
+                        {isDragActive
+                          ? "Drop your chart here"
+                          : "Upload Your Chart"}
                       </h3>
                       <p className="text-xs text-gray-600 dark:text-gray-400">
                         Drag and drop or click to browse
@@ -203,10 +226,12 @@ export function AnalyzeUpload({
                 </div>
 
                 {/* Animated border gradient */}
-                <div className={cn(
-                  "absolute inset-0 rounded-2xl transition-opacity pointer-events-none",
-                  isDragActive ? "opacity-100" : "opacity-0"
-                )}>
+                <div
+                  className={cn(
+                    "absolute inset-0 rounded-2xl transition-opacity pointer-events-none",
+                    isDragActive ? "opacity-100" : "opacity-0"
+                  )}
+                >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-20 blur-xl" />
                 </div>
               </div>
@@ -223,8 +248,18 @@ export function AnalyzeUpload({
               <div className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-xl p-4 shadow-lg">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center mt-0.5">
-                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
                     </svg>
                   </div>
                   <div className="flex-1">
@@ -232,7 +267,10 @@ export function AnalyzeUpload({
                       ⚠️ X & Y AXIS MUST BE VISIBLE
                     </h4>
                     <p className="text-xs text-orange-800 dark:text-orange-200 leading-relaxed">
-                      Make sure both the <strong>X-axis (time/date)</strong> and <strong>Y-axis (price)</strong> are clearly visible in your chart screenshot. This is essential for accurate AI analysis.
+                      Make sure both the <strong>X-axis (time/date)</strong> and{" "}
+                      <strong>Y-axis (price)</strong> are clearly visible in
+                      your chart screenshot. This is essential for accurate AI
+                      analysis.
                     </p>
                   </div>
                 </div>
@@ -242,8 +280,18 @@ export function AnalyzeUpload({
               <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-xl p-4 shadow-lg">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center mt-0.5">
-                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
                     </svg>
                   </div>
                   <div className="flex-1">
@@ -251,7 +299,10 @@ export function AnalyzeUpload({
                       ⚠️ LIVE CHARTS ONLY
                     </h4>
                     <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
-                      <strong>Do not upload old/historical charts.</strong> Only upload <strong>live, current charts</strong> from your trading platform. The analysis is designed for real-time trading decisions, not historical review.
+                      <strong>Do not upload old/historical charts.</strong> Only
+                      upload <strong>live, current charts</strong> from your
+                      trading platform. The analysis is designed for real-time
+                      trading decisions, not historical review.
                     </p>
                   </div>
                 </div>
@@ -293,9 +344,13 @@ export function AnalyzeUpload({
                   Sign in to get your instant AI analysis
                 </p>
               ) : (
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Analyzing your chart...
-                </p>
+                <Button
+                  onClick={() => onImageUpload(localImage!)}
+                  className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 mb-6"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Analyze Chart
+                </Button>
               )}
 
               <button
@@ -310,5 +365,5 @@ export function AnalyzeUpload({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
