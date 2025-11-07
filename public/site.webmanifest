@@ -1,7 +1,11 @@
 {
-  "name": "SnapPChart",
+  "name": "SnapPChart - AI-Powered Stock Chart Analysis",
   "short_name": "SnapPChart",
-  "description": "AI-Powered Stock Trading Analysis",
+  "description": "AI-powered chart analysis for momentum traders. Upload stock charts and get instant trade recommendations with technical analysis.",
+  "categories": ["finance", "business", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
   "icons": [
     {
       "src": "/favicon-16x16.png",
@@ -32,10 +36,26 @@
       "src": "/favicon-256x256.png",
       "sizes": "256x256",
       "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "theme_color": "#667eea",
   "background_color": "#ffffff",
   "display": "standalone",
-  "start_url": "/"
+  "orientation": "any",
+  "start_url": "/",
+  "id": "/?source=pwa",
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ],
+  "prefer_related_applications": false
 }

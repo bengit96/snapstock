@@ -6,8 +6,18 @@ export const metadata = generatePageMetadata({
   path: '/contact',
   keywords: [
     'SnapPChart support',
+    'SnapPChart contact',
+    'contact SnapPChart',
+    'SnapPChart help',
+    'SnapPChart customer service',
     'trading analysis help',
     'customer service',
     'contact support',
+    'chart analysis support',
+    'trading software support',
+    'technical support trading',
+    'SnapPChart email',
+    'reach SnapPChart',
+    'get help with SnapPChart',
   ],
 })

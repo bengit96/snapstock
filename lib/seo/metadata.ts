@@ -27,11 +27,30 @@ export function generatePageMetadata(options: PageMetadataOptions): Metadata {
     title: `${title} | SnapPChart`,
     description,
     keywords: [
+      // Brand
+      'SnapPChart',
+      'SnapChart',
+      'Snap P Chart',
+      'snappchart app',
+      'snappchart.app',
+      // Core terms
       'stock trading analysis',
       'AI chart analysis',
       'momentum trading',
+      'AI stock chart analysis',
+      'stock chart analyzer',
+      'chart analysis software',
+      'trading chart analysis',
+      'technical analysis AI',
+      'day trading tools',
+      'trading signals',
+      'AI trading assistant',
+      // Page-specific keywords
       ...keywords,
     ],
+    authors: [{ name: 'SnapPChart', url: baseUrl }],
+    creator: 'SnapPChart',
+    publisher: 'SnapPChart',
     alternates: {
       canonical: url,
     },
@@ -45,7 +64,8 @@ export function generatePageMetadata(options: PageMetadataOptions): Metadata {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: `${title} - SnapPChart`,
+          type: 'image/png',
         },
       ],
       locale: 'en_US',
@@ -56,6 +76,8 @@ export function generatePageMetadata(options: PageMetadataOptions): Metadata {
       title: `${title} | SnapPChart`,
       description,
       images: [ogImage],
+      creator: '@snappchart',
+      site: '@snappchart',
     },
     robots: noIndex
       ? {
@@ -65,6 +87,13 @@ export function generatePageMetadata(options: PageMetadataOptions): Metadata {
       : {
           index: true,
           follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+          },
         },
   }
 }
