@@ -162,12 +162,18 @@ class DiscordService {
    */
   async notifyChartUpload(data: {
     imageUrl: string;
+    filename: string;
   }): Promise<void> {
     const embed: DiscordEmbed = {
-      title: "📤 Chart Uploaded",
-      description: "A user uploaded a chart (pre-authentication)",
+      title: "📤 Pre-Login Chart Upload",
+      description: "A user uploaded a chart before authentication",
       color: 0x3b82f6, // blue
       fields: [
+        {
+          name: "Filename",
+          value: `\`${data.filename}\``,
+          inline: false,
+        },
         {
           name: "Chart Link",
           value: `[View Chart](${data.imageUrl})`,
@@ -183,6 +189,7 @@ class DiscordService {
         notificationType: "chart_upload",
         metadata: {
           imageUrl: data.imageUrl,
+          filename: data.filename,
         },
       }
     );

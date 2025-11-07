@@ -48,16 +48,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Log chart upload details for tracking
-    console.log("=== Chart Upload Details ===");
+    console.log("=== Pre-Login Chart Upload ===");
     console.log("Filename:", secureFilename);
     console.log("Chart URL:", imageUrl);
     console.log("Status: Pre-authentication upload");
-    console.log("============================");
+    console.log("Timestamp:", new Date().toISOString());
+    console.log("===============================");
 
     // Send Discord notification about chart upload
     const { discordService } = await import("@/lib/services/discord.service");
     await discordService.notifyChartUpload({
       imageUrl,
+      filename: secureFilename,
     });
 
     return NextResponse.json({
