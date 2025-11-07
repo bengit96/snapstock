@@ -1,26 +1,47 @@
-'use client'
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Brain, Target, DollarSign, Clock, Shield, BarChart3, Lock, CheckCircle } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-import { motion } from 'framer-motion'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Brain,
+  Target,
+  DollarSign,
+  Clock,
+  Shield,
+  BarChart3,
+  Lock,
+  CheckCircle,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface FeatureCardProps {
-  icon: LucideIcon
-  title: string
-  description: string
-  features: string[]
-  index?: number
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  features: string[];
+  index?: number;
 }
 
 interface SimpleFeatureProps {
-  icon: LucideIcon
-  title: string
-  description: string
-  index?: number
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  index?: number;
 }
 
-function FeatureCard({ icon: Icon, title, description, features, index = 0 }: FeatureCardProps) {
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+  features,
+  index = 0,
+}: FeatureCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -47,10 +68,15 @@ function FeatureCard({ icon: Icon, title, description, features, index = 0 }: Fe
         </CardContent>
       </Card>
     </motion.div>
-  )
+  );
 }
 
-function SimpleFeature({ icon: Icon, title, description, index = 0 }: SimpleFeatureProps) {
+function SimpleFeature({
+  icon: Icon,
+  title,
+  description,
+  index = 0,
+}: SimpleFeatureProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -63,65 +89,66 @@ function SimpleFeature({ icon: Icon, title, description, index = 0 }: SimpleFeat
       <h3 className="font-semibold mb-2">{title}</h3>
       <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
     </motion.div>
-  )
+  );
 }
 
 export function FeaturesSection() {
   const mainFeatures: FeatureCardProps[] = [
     {
       icon: Brain,
-      title: 'Advanced AI Analysis',
-      description: 'Cutting-edge AI that understands charts like a professional trader',
+      title: "Advanced AI Analysis",
+      description:
+        "Cutting-edge AI that understands charts like a professional trader",
       features: [
-        'Identifies candlestick patterns instantly',
-        'Recognizes support and resistance levels',
-        'Detects volume patterns and momentum'
-      ]
+        "Identifies candlestick patterns instantly",
+        "Recognizes support and resistance levels",
+        "Detects volume patterns and momentum",
+      ],
     },
     {
       icon: Target,
-      title: 'Precision Grading System',
-      description: 'Get instant A-F grades based on proven technical signals',
+      title: "Precision Grading System",
+      description: "Get instant A-F grades based on proven technical signals",
       features: [
-        'Multi-factor confluence analysis',
-        'Automatic no-go zone detection',
-        'Clear reasoning for every decision'
-      ]
+        "Multi-factor confluence analysis",
+        "Automatic no-go zone detection",
+        "Clear reasoning for every decision",
+      ],
     },
     {
       icon: DollarSign,
-      title: 'Complete Trade Planning',
-      description: 'Exact entry, stop loss, and profit targets calculated',
+      title: "Complete Trade Planning",
+      description: "Exact entry, stop loss, and profit targets calculated",
       features: [
-        'Risk/reward ratios optimized',
-        'Position sizing recommendations',
-        'Multiple timeframe alignment'
-      ]
-    }
-  ]
+        "Risk/reward ratios optimized",
+        "Position sizing recommendations",
+        "Multiple timeframe alignment",
+      ],
+    },
+  ];
 
   const additionalFeatures: SimpleFeatureProps[] = [
     {
       icon: Clock,
-      title: 'Fast Analysis',
-      description: 'Quick AI-powered chart evaluation'
+      title: "Fast Analysis",
+      description: "Quick AI-powered chart evaluation",
     },
     {
       icon: Shield,
-      title: 'Risk Management',
-      description: 'Optimized risk/reward for every trade'
+      title: "Risk Management",
+      description: "Optimized risk/reward for every trade",
     },
     {
       icon: BarChart3,
-      title: 'All Markets',
-      description: 'Stocks, forex, crypto, futures & more'
+      title: "All Markets",
+      description: "Stocks, forex, crypto, futures & more",
     },
     {
       icon: Lock,
-      title: 'Secure & Private',
-      description: 'Your data is encrypted and safe'
-    }
-  ]
+      title: "Secure & Private",
+      description: "Your data is encrypted and safe",
+    },
+  ];
 
   return (
     <section id="features" className="py-20 px-4 bg-white dark:bg-gray-900">
@@ -132,7 +159,8 @@ export function FeaturesSection() {
             Everything You Need to Trade with Confidence
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Professional-grade momentum analysis tools powered by cutting-edge AI
+            Professional-grade momentum analysis tools powered by cutting-edge
+            AI
           </p>
         </div>
 
@@ -151,7 +179,7 @@ export function FeaturesSection() {
         </div>
 
         {/* Chart Requirements */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px", amount: 0.2 }}
@@ -182,8 +210,8 @@ export function FeaturesSection() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
-  )
+  );
 }
