@@ -1,0 +1,74 @@
+
+<svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .chart-bg { fill: #ffffff; }
+      .grid { stroke: #e5e7eb; stroke-width: 1; }
+      .candle-green { fill: #10b981; stroke: #10b981; }
+      .candle-red { fill: #ef4444; stroke: #ef4444; }
+      .line-vwap { stroke: #f59e0b; stroke-width: 3; fill: none; }
+      .text-title { font: bold 24px Arial; fill: #111827; }
+      .text-label { font: bold 14px Arial; }
+      .arrow { fill: #10b981; }
+    </style>
+  </defs>
+
+  <rect class="chart-bg" width="1200" height="600"/>
+
+  <!-- Grid -->
+  <line class="grid" x1="0" y1="0" x2="0" y2="600"/><line class="grid" x1="60" y1="0" x2="60" y2="600"/><line class="grid" x1="120" y1="0" x2="120" y2="600"/><line class="grid" x1="180" y1="0" x2="180" y2="600"/><line class="grid" x1="240" y1="0" x2="240" y2="600"/><line class="grid" x1="300" y1="0" x2="300" y2="600"/><line class="grid" x1="360" y1="0" x2="360" y2="600"/><line class="grid" x1="420" y1="0" x2="420" y2="600"/><line class="grid" x1="480" y1="0" x2="480" y2="600"/><line class="grid" x1="540" y1="0" x2="540" y2="600"/><line class="grid" x1="600" y1="0" x2="600" y2="600"/><line class="grid" x1="660" y1="0" x2="660" y2="600"/><line class="grid" x1="720" y1="0" x2="720" y2="600"/><line class="grid" x1="780" y1="0" x2="780" y2="600"/><line class="grid" x1="840" y1="0" x2="840" y2="600"/><line class="grid" x1="900" y1="0" x2="900" y2="600"/><line class="grid" x1="960" y1="0" x2="960" y2="600"/><line class="grid" x1="1020" y1="0" x2="1020" y2="600"/><line class="grid" x1="1080" y1="0" x2="1080" y2="600"/><line class="grid" x1="1140" y1="0" x2="1140" y2="600"/>
+  <line class="grid" x1="0" y1="0" x2="1200" y2="0"/><line class="grid" x1="0" y1="60" x2="1200" y2="60"/><line class="grid" x1="0" y1="120" x2="1200" y2="120"/><line class="grid" x1="0" y1="180" x2="1200" y2="180"/><line class="grid" x1="0" y1="240" x2="1200" y2="240"/><line class="grid" x1="0" y1="300" x2="1200" y2="300"/><line class="grid" x1="0" y1="360" x2="1200" y2="360"/><line class="grid" x1="0" y1="420" x2="1200" y2="420"/><line class="grid" x1="0" y1="480" x2="1200" y2="480"/><line class="grid" x1="0" y1="540" x2="1200" y2="540"/>
+
+  <text class="text-title" x="50" y="40">VWAP Pullback Entry Setup</text>
+
+  <!-- Candlesticks -->
+  <rect class="candle-green" x="90" y="340" width="35" height="50"/>
+  <line class="candle-green" x1="107" y1="325" x2="107" y2="395" stroke-width="2"/>
+
+  <rect class="candle-green" x="170" y="310" width="35" height="60"/>
+  <line class="candle-green" x1="187" y1="295" x2="187" y2="380" stroke-width="2"/>
+
+  <rect class="candle-green" x="250" y="275" width="35" height="65"/>
+  <line class="candle-green" x1="267" y1="260" x2="267" y2="350" stroke-width="2"/>
+
+  <rect class="candle-green" x="330" y="260" width="35" height="50"/>
+  <line class="candle-green" x1="347" y1="245" x2="347" y2="320" stroke-width="2"/>
+
+  <rect class="candle-red" x="410" y="285" width="35" height="45"/>
+  <line class="candle-red" x1="427" y1="275" x2="427" y2="340" stroke-width="2"/>
+
+  <rect class="candle-red" x="490" y="305" width="35" height="40"/>
+  <line class="candle-red" x1="507" y1="295" x2="507" y2="355" stroke-width="2"/>
+
+  <rect class="candle-red" x="570" y="325" width="35" height="35"/>
+  <line class="candle-red" x1="587" y1="315" x2="587" y2="370" stroke-width="2"/>
+
+  <!-- Bounce off VWAP -->
+  <rect class="candle-green" x="650" y="310" width="35" height="55"/>
+  <line class="candle-green" x1="667" y1="300" x2="667" y2="370" stroke-width="2"/>
+
+  <rect class="candle-green" x="730" y="275" width="35" height="60"/>
+  <line class="candle-green" x1="747" y1="260" x2="747" y2="345" stroke-width="2"/>
+
+  <rect class="candle-green" x="810" y="240" width="35" height="65"/>
+  <line class="candle-green" x1="827" y1="225" x2="827" y2="315" stroke-width="2"/>
+
+  <rect class="candle-green" x="890" y="215" width="35" height="60"/>
+  <line class="candle-green" x1="907" y1="200" x2="907" y2="285" stroke-width="2"/>
+
+  <rect class="candle-green" x="970" y="195" width="35" height="55"/>
+  <line class="candle-green" x1="987" y1="180" x2="987" y2="260" stroke-width="2"/>
+
+  <!-- VWAP line -->
+  <path class="line-vwap" d="M 107 360 L 187 353 L 267 346 L 347 339 L 427 332 L 507 325 L 587 318 L 667 311 L 747 304 L 827 297 L 907 290 L 987 283"/>
+
+  <text style="font: bold 16px Arial; fill: #f59e0b;" x="1000" y="285">VWAP</text>
+
+  <!-- Entry arrow -->
+  <polygon class="arrow" points="667,280 647,240 687,240"/>
+  <text class="text-label" fill="#10b981" x="640" y="230">Entry</text>
+
+  <!-- Labels -->
+  <text class="text-label" fill="#ef4444" x="450" y="400">Pullback to VWAP</text>
+  <text class="text-label" fill="#10b981" x="750" y="220">Continuation Higher</text>
+</svg>

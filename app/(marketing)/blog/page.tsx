@@ -1,8 +1,29 @@
 "use client";
 
 import { Navigation } from "@/components/layout/navigation";
-import { BookOpen, Calendar, ArrowRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
+
+interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  readTime: string;
+  category: string;
+}
+
+const blogPosts: BlogPost[] = [
+  {
+    slug: "momentum-trading-strategy",
+    title: "Understanding Momentum Trading: A Practical Approach",
+    excerpt: "Momentum trading has become one of the most talked-about strategies in day trading circles. Learn how to identify stocks in play and execute profitable trades.",
+    date: "Nov 8, 2025",
+    readTime: "8 min read",
+    category: "Trading Strategy"
+  }
+];
 
 export default function BlogPage() {
   return (
@@ -25,76 +46,46 @@ export default function BlogPage() {
             </p>
           </motion.div>
 
-          {/* Coming Soon */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-center p-12 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg"
-          >
-            <BookOpen className="w-20 h-20 text-purple-600 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4">Coming Soon</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-              We&apos;re working on bringing you valuable content about momentum
-              trading strategies, chart analysis techniques, and platform
-              updates. Check back soon!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="mailto:ben@snappchart.app?subject=Blog Updates Notification"
-                className="inline-flex items-center justify-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition"
+          {/* Blog Posts */}
+          <div className="space-y-8">
+            {blogPosts.map((post, index) => (
+              <motion.article
+                key={post.slug}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
               >
-                Get Notified
-                <ArrowRight className="w-4 h-4" />
-              </a>
-              <a
-                href="/"
-                className="inline-flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 border-2 border-purple-600 dark:border-purple-400 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 dark:hover:bg-gray-700 transition"
-              >
-                Back to Home
-              </a>
-            </div>
-          </motion.div>
-
-          {/* Upcoming Topics */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mt-12"
-          >
-            <h2 className="text-2xl font-bold mb-6 text-center">
-              What to Expect
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <Calendar className="w-8 h-8 text-purple-600 mb-3" />
-                <h3 className="font-semibold text-lg mb-2">
-                  Trading Strategies
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Learn momentum trading techniques, chart patterns, and risk
-                  management strategies
-                </p>
-              </div>
-              <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <Calendar className="w-8 h-8 text-purple-600 mb-3" />
-                <h3 className="font-semibold text-lg mb-2">Platform Updates</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Stay informed about new features, AI improvements, and
-                  platform enhancements
-                </p>
-              </div>
-              <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <Calendar className="w-8 h-8 text-purple-600 mb-3" />
-                <h3 className="font-semibold text-lg mb-2">Market Insights</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Analysis of current market conditions and how to adapt your
-                  trading approach
-                </p>
-              </div>
-            </div>
-          </motion.section>
+                <Link href={`/blog/${post.slug}`}>
+                  <div className="p-6">
+                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                      <span className="inline-flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {post.date}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {post.readTime}
+                      </span>
+                      <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-2 py-1 rounded text-xs font-semibold">
+                        {post.category}
+                      </span>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">
+                      {post.title}
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      {post.excerpt}
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-semibold hover:gap-3 transition-all">
+                      Read more
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </Link>
+              </motion.article>
+            ))}
+          </div>
         </div>
       </main>
     </div>

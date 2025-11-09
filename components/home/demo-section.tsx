@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, Sparkles, TrendingUp, Target, AlertTriangle, Activity, ArrowDown } from "lucide-react";
-import Image from "next/image";
+import { DemoVideoPlayer } from "./demo-video-player";
 
 export function DemoSection() {
   const handleScrollToUpload = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -38,7 +38,7 @@ export function DemoSection() {
           </p>
         </motion.div>
 
-        {/* Main Screenshot */}
+        {/* Main Demo Video */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -46,24 +46,12 @@ export function DemoSection() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="relative mb-12"
         >
-          <div className="relative rounded-2xl overflow-hidden border-2 border-purple-200/50 dark:border-purple-700/50 shadow-2xl bg-white dark:bg-gray-800">
-            <Image
-              src="/screenshot-original.png"
-              alt="Real SnapStock AI analysis example showing chart analysis, B+ grade, and trade setup"
-              width={1920}
-              height={1080}
-              className="w-full h-auto"
-              priority
-            />
-
-            {/* Simplified gradient overlay */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white/95 via-white/50 to-transparent dark:from-gray-900/95 dark:via-gray-900/50 flex items-end justify-center pb-4">
-              <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium text-sm">
-                <ArrowDown className="w-4 h-4 animate-bounce" />
-                <span>More details below</span>
-              </div>
-            </div>
-          </div>
+          <DemoVideoPlayer
+            videoSrc="https://xxbzzkqzvzk04tvk.public.blob.vercel-storage.com/snappchart%20video.mp4"
+            tiktokVideoId="7570362710345436434"
+            thumbnailSrc="/screenshot-original.png"
+            alt="Real SnapStock AI analysis demo - Upload chart, get instant AI analysis with grade and trade setup"
+          />
         </motion.div>
 
         {/* What's included - Cleaner, less cluttered */}

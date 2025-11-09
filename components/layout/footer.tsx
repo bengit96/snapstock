@@ -16,6 +16,7 @@ interface FooterSectionProps {
 
 function FooterLink({ href, children }: FooterLinkProps) {
   const isExternal = href.startsWith('http')
+  const linkClassName = "inline-block py-1 hover:text-purple-400 transition-colors duration-200"
 
   if (isExternal) {
     return (
@@ -23,7 +24,7 @@ function FooterLink({ href, children }: FooterLinkProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block py-2 hover:text-white transition"
+        className={linkClassName}
       >
         {children}
       </a>
@@ -31,7 +32,7 @@ function FooterLink({ href, children }: FooterLinkProps) {
   }
 
   return (
-    <Link href={href} className="inline-block py-2 hover:text-white transition">
+    <Link href={href} className={linkClassName}>
       {children}
     </Link>
   )
@@ -40,8 +41,8 @@ function FooterLink({ href, children }: FooterLinkProps) {
 function FooterSection({ title, links }: FooterSectionProps) {
   return (
     <div>
-      <h3 className="font-semibold text-white mb-4">{title}</h3>
-      <ul className="space-y-2 text-sm">
+      <h3 className="font-semibold text-white mb-3 text-sm uppercase tracking-wider">{title}</h3>
+      <ul className="space-y-2.5 text-sm">
         {links.map((link, index) => (
           <li key={index}>
             <FooterLink href={link.href}>{link.label}</FooterLink>
@@ -65,11 +66,17 @@ export function Footer() {
       ]
     },
     {
-      title: 'Community',
+      title: 'Resources',
       links: [
-        { href: DISCORD_INVITE_URL, label: '💬 Join Discord' },
+        { href: '/blog', label: 'Blog' },
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact' }
+      ]
+    },
+    {
+      title: 'Community',
+      links: [
+        { href: DISCORD_INVITE_URL, label: '💬 Join Discord' }
       ]
     },
     {
@@ -83,32 +90,29 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-gray-900 text-gray-400 py-12 px-4">
-      <div className="container mx-auto">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div>
+    <footer className="bg-gray-900 text-gray-400 py-16 px-4">
+      <div className="container mx-auto max-w-7xl">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12">
+          {/* Brand Section - Takes 2 columns */}
+          <div className="col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <LogoIcon className="w-8 h-8 text-purple-600" />
               <span className="text-xl font-bold text-white">{APP_NAME}</span>
             </div>
-            <p className="text-sm">
+            <p className="text-sm text-gray-400 max-w-xs">
               AI-powered trading analysis based on proven strategies.
             </p>
           </div>
 
-          {/* Footer Sections */}
+          {/* Footer Sections - Each takes 1 column */}
           {sections.map((section, index) => (
             <FooterSection key={index} {...section} />
           ))}
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-          <p>&copy; {currentYear} {APP_NAME}. All rights reserved.</p>
-          <p className="mt-2 text-xs">
-            Trading involves risk. Past performance does not guarantee future results.
-          </p>
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-gray-500">
+          <p>&copy; {currentYear} {APP_NAME}. All rights reserved. Trading involves risk. Past performance does not guarantee future results.</p>
         </div>
       </div>
     </footer>

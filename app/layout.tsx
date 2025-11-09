@@ -15,10 +15,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://snappchart.app'),
   title: {
-    default: 'SnapPChart - AI-Powered Stock Chart Analysis for Day Trading',
+    default: 'SnapPChart - AI Stock Chart Analysis Tool for Day Traders & Momentum Trading',
     template: '%s | SnapPChart'
   },
-  description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential. Get instant trade recommendations with advanced technical analysis using MACD, EMA, and volume indicators.',
+  description: 'Professional AI-powered stock chart analysis platform for day traders and momentum trading. Upload trading charts for instant technical analysis of low float stocks ($2-$20) with AI-generated trade setups, entry/exit points, MACD, EMA, VWAP indicators. Not affiliated with Snapchat.',
   keywords: [
     // Brand Variations
     'SnapPChart',
@@ -154,6 +154,89 @@ export const metadata: Metadata = {
     'low float stock trading tool',
     'day trading chart analysis',
     'real-time trading signals',
+
+    // Specific Use Cases & Problems
+    'stock chart analysis tool online',
+    'AI stock trading analysis software',
+    'trading chart reader AI',
+    'analyze my stock chart',
+    'instant stock chart analysis',
+    'professional trading chart analysis',
+    'stock chart interpretation tool',
+    'AI technical analysis software',
+    'smart stock chart analyzer',
+    'trading chart AI assistant',
+
+    // Trading Platform Keywords
+    'stock chart analysis app',
+    'web-based stock analysis',
+    'online trading analysis tool',
+    'cloud stock analysis platform',
+    'browser stock chart tool',
+
+    // Educational & Learning
+    'learn stock chart analysis',
+    'stock chart analysis course',
+    'trading education tools',
+    'technical analysis learning',
+    'stock trading tutorial',
+
+    // Professional Trading Keywords
+    'institutional trading tools',
+    'professional chart analysis',
+    'advanced trading platform',
+    'pro trader software',
+    'elite trading tools',
+
+    // More Specific Stock Trading Terms
+    'equity chart analysis',
+    'stock price chart analyzer',
+    'trading chart patterns tool',
+    'chart setup finder',
+    'trade setup analysis',
+    'stock entry point finder',
+    'exit strategy calculator',
+
+    // Market-Specific Terms
+    'US stock market analysis',
+    'NASDAQ chart analysis',
+    'NYSE trading tools',
+    'OTC stock analysis',
+    'penny stock chart reader',
+
+    // Time-Based Trading
+    'premarket chart analysis',
+    'afterhours trading tool',
+    'intraday chart analyzer',
+    'minute chart analysis',
+    '5 minute chart trading',
+
+    // Risk Management Keywords
+    'trading risk calculator',
+    'position sizing tool',
+    'stop loss finder',
+    'risk management trading',
+    'trade risk analyzer',
+
+    // Action-Oriented Keywords
+    'analyze stock charts online',
+    'get trade recommendations',
+    'upload trading screenshot',
+    'AI analyze my trades',
+    'check stock chart setup',
+
+    // Comparison & Alternative Keywords
+    'better than manual analysis',
+    'faster than traditional charting',
+    'AI vs manual chart reading',
+
+    // Brand Differentiation (NOT Snapchat related)
+    'stock trading chart platform',
+    'equity trading analysis',
+    'shares chart analyzer',
+    'trading securities analysis',
+    'financial chart AI tool',
+    'market chart analysis platform',
   ],
   authors: [{ name: 'SnapPChart', url: 'https://snappchart.app' }],
   creator: 'SnapPChart',
@@ -201,8 +284,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'SnapPChart - AI-Powered Stock Trading Analysis',
-    description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential.',
+    title: 'SnapPChart - Professional AI Stock Chart Analysis for Day Traders',
+    description: 'Upload your stock trading charts for instant AI-powered technical analysis. Get trade recommendations, entry/exit points, and risk management for low float momentum stocks. Professional trading tool for day traders.',
     url: 'https://snappchart.app',
     siteName: 'SnapPChart',
     images: [
@@ -221,8 +304,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SnapPChart - AI-Powered Stock Trading Analysis',
-    description: 'Analyze stock charts and get AI-powered trade recommendations',
+    title: 'SnapPChart - AI Stock Chart Analysis for Day Trading',
+    description: 'Professional stock chart analysis tool. Upload trading charts, get AI-powered technical analysis, entry/exit points, and trade setups for momentum stocks.',
     images: ['/twitter-image.png?v=2'],
     creator: '@snappchart',
     site: '@snappchart',
@@ -248,9 +331,9 @@ export default function RootLayout({
         alternateName: ['Snap P Chart', 'SnapChart', 'Snappchart'],
         legalName: 'SnapPChart',
         url: 'https://snappchart.app',
-        description: 'AI-powered stock chart analysis platform for momentum traders, specializing in technical analysis of low float stocks.',
+        description: 'Professional AI-powered stock chart analysis platform for day traders and momentum traders. Upload trading charts for instant technical analysis, trade setups, entry/exit recommendations for low float stocks and momentum trading strategies.',
         foundingDate: '2024',
-        slogan: 'AI-Powered Stock Chart Analysis for Day Trading',
+        slogan: 'Professional AI Stock Chart Analysis Tool for Day Traders',
         logo: {
           '@type': 'ImageObject',
           url: 'https://snappchart.app/logo.png',
@@ -294,7 +377,7 @@ export default function RootLayout({
         '@id': 'https://snappchart.app/#website',
         url: 'https://snappchart.app',
         name: 'SnapPChart',
-        description: 'AI-powered chart analysis for momentum traders. Specializing in low float, fast-moving stocks ($2-$20) with explosive potential.',
+        description: 'Professional AI stock chart analysis platform for day traders. Upload trading charts for instant technical analysis of low float, fast-moving stocks ($2-$20) with AI-powered trade recommendations and risk management.',
         publisher: {
           '@id': 'https://snappchart.app/#organization',
         },
@@ -317,7 +400,7 @@ export default function RootLayout({
         applicationSubCategory: 'Stock Trading Analysis',
         operatingSystem: 'Web Browser, iOS, Android',
         browserRequirements: 'Requires JavaScript. Requires HTML5.',
-        description: 'AI-powered stock chart analysis tool for momentum traders. Upload trading charts and receive instant AI-powered analysis with trade recommendations, entry points, stop losses, and profit targets.',
+        description: 'Professional stock chart analysis software for day traders and momentum traders. Upload trading charts to receive instant AI-powered technical analysis with specific trade recommendations, entry points, stop loss levels, and profit targets for low float stocks.',
         screenshot: 'https://snappchart.app/og-image.png',
         featureList: [
           'AI-powered chart analysis',

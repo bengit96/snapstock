@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Trading Chart Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        canvas {
+            border: 1px solid #333;
+            margin: 20px 0;
+            background: white;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Trading Chart Generator</h1>
+    <p>Click the buttons below to generate and download chart images for the blog post.</p>
+
+    <div class="controls">
+        <button onclick="generateMomentumChart()">Generate Momentum Example Chart</button>
+        <button onclick="generateVWAPChart()">Generate VWAP Chart</button>
+        <button onclick="generatePullbackChart()">Generate Pullback Entry Chart</button>
+    </div>
+
+    <canvas id="canvas" width="1200" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawGrid() {
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+
+            // Vertical lines
+            for (let x = 0; x < canvas.width; x += 60) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // Horizontal lines
+            for (let y = 0; y < canvas.height; y += 60) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawCandlestick(x, open, high, low, close, width) {
+            const isGreen = close > open;
+            const color = isGreen ? '#10b981' : '#ef4444';
+
+            // Draw wick
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, high);
+            ctx.lineTo(x, low);
+            ctx.stroke();
+
+            // Draw body
+            ctx.fillStyle = color;
+            const bodyTop = Math.min(open, close);
+            const bodyHeight = Math.abs(close - open);
+            ctx.fillRect(x - width/2, bodyTop, width, bodyHeight);
+        }
+
+        function drawVolume(x, volume, maxVolume, color) {
+            const height = (volume / maxVolume) * 100;
+            ctx.fillStyle = color + '80'; // Add transparency
+            ctx.fillRect(x - 8, canvas.height - 100 - height, 16, height);
+        }
+
+        function drawLabel(x, y, text, color = '#000') {
+            ctx.fillStyle = color;
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(text, x, y);
+        }
+
+        function drawLine(points, color, width = 2) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+        }
+
+        function generateMomentumChart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawGrid();
+
+            // Title
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('Strong Momentum Example - Higher Highs & Higher Lows', 50, 40);
+
+            // Price data for uptrend with momentum
+            const candles = [
+                {open: 400, high: 410, low: 395, close: 408},
+                {open: 408, high: 415, low: 405, close: 412},
+                {open: 412, high: 425, low: 410, close: 420},
+                {open: 420, high: 435, low: 418, close: 432},
+                {open: 432, high: 440, low: 428, close: 435},
+                {open: 435, high: 445, low: 433, close: 442},
+                {open: 442, high: 455, low: 440, close: 450},
+                {open: 450, high: 465, low: 448, close: 460},
+                {open: 460, high: 468, low: 456, close: 465},
+                {open: 465, high: 478, low: 463, close: 475},
+                {open: 475, high: 490, low: 473, close: 485},
+                {open: 485, high: 495, low: 482, close: 490},
+                {open: 490, high: 505, low: 488, close: 500},
+                {open: 500, high: 515, low: 498, close: 510},
+                {open: 510, high: 520, low: 506, close: 515},
+            ];
+
+            const volumes = [100, 120, 180, 200, 150, 140, 220, 250, 180, 210, 280, 240, 260, 290, 220];
+            const maxVolume = Math.max(...volumes);
+
+            let startX = 100;
+            const spacing = 70;
+
+            // Draw candlesticks and volume
+            candles.forEach((candle, i) => {
+                const x = startX + (i * spacing);
+                drawCandlestick(x, candle.open, candle.high, candle.low, candle.close, 30);
+                drawVolume(x, volumes[i], maxVolume, candle.close > candle.open ? '#10b981' : '#ef4444');
+            });
+
+            // Draw trendline
+            drawLine([
+                {x: startX, y: 408},
+                {x: startX + (candles.length - 1) * spacing, y: 515}
+            ], '#8b5cf6', 3);
+
+            // Annotations
+            drawLabel(150, 450, 'Higher Lows', '#8b5cf6');
+            drawLabel(800, 200, 'Higher Highs', '#8b5cf6');
+            drawLabel(600, 350, 'Increasing Volume on Up Moves', '#10b981');
+
+            // Volume label
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.fillText('Volume', 20, canvas.height - 50);
+        }
+
+        function generateVWAPChart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawGrid();
+
+            // Title
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('VWAP Pullback Entry Setup', 50, 40);
+
+            const candles = [
+                {open: 400, high: 410, low: 395, close: 408},
+                {open: 408, high: 425, low: 405, close: 420},
+                {open: 420, high: 438, low: 418, close: 435},
+                {open: 435, high: 445, low: 430, close: 440},
+                {open: 440, high: 448, low: 432, close: 433},
+                {open: 433, high: 436, low: 425, close: 428},
+                {open: 428, high: 432, low: 420, close: 425},
+                {open: 425, high: 440, low: 424, close: 438},
+                {open: 438, high: 452, low: 436, close: 450},
+                {open: 450, high: 465, low: 448, close: 462},
+                {open: 462, high: 475, low: 460, close: 472},
+                {open: 472, high: 485, low: 470, close: 480},
+                {open: 480, high: 492, low: 478, close: 488},
+            ];
+
+            let startX = 100;
+            const spacing = 80;
+
+            // Draw candlesticks
+            candles.forEach((candle, i) => {
+                const x = startX + (i * spacing);
+                drawCandlestick(x, candle.open, candle.high, candle.low, candle.close, 35);
+            });
+
+            // Draw VWAP line
+            const vwapPoints = [];
+            for (let i = 0; i < candles.length; i++) {
+                const x = startX + (i * spacing);
+                const y = 430 - (i * 3); // Slight upward slope
+                vwapPoints.push({x, y});
+            }
+            drawLine(vwapPoints, '#f59e0b', 3);
+
+            // VWAP label
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('VWAP', vwapPoints[vwapPoints.length - 1].x + 10, vwapPoints[vwapPoints.length - 1].y);
+
+            // Annotations
+            drawLabel(450, 480, 'Pullback to VWAP', '#ef4444');
+            drawLabel(700, 300, 'Entry: Bounce off VWAP', '#10b981');
+
+            // Arrow for entry point
+            const entryX = startX + (7 * spacing);
+            const entryY = 425;
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.moveTo(entryX - 20, entryY - 40);
+            ctx.lineTo(entryX, entryY - 10);
+            ctx.lineTo(entryX + 20, entryY - 40);
+            ctx.fill();
+        }
+
+        function generatePullbackChart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawGrid();
+
+            // Title
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('First Pullback Entry Pattern', 50, 40);
+
+            const candles = [
+                {open: 400, high: 415, low: 398, close: 410},
+                {open: 410, high: 428, low: 408, close: 425},
+                {open: 425, high: 445, low: 423, close: 442},
+                {open: 442, high: 458, low: 440, close: 455},
+                {open: 455, high: 462, low: 448, close: 450},
+                {open: 450, high: 454, low: 444, close: 447},
+                {open: 447, high: 450, low: 442, close: 445},
+                {open: 445, high: 465, low: 444, close: 462},
+                {open: 462, high: 478, low: 460, close: 475},
+                {open: 475, high: 490, low: 473, close: 487},
+                {open: 487, high: 500, low: 485, close: 495},
+            ];
+
+            let startX = 120;
+            const spacing = 90;
+
+            // Draw candlesticks
+            candles.forEach((candle, i) => {
+                const x = startX + (i * spacing);
+                drawCandlestick(x, candle.open, candle.high, candle.low, candle.close, 40);
+            });
+
+            // Support level line
+            drawLine([
+                {x: startX + 3 * spacing, y: 445},
+                {x: startX + 7 * spacing, y: 445}
+            ], '#3b82f6', 2);
+
+            ctx.setLineDash([5, 5]);
+            drawLine([
+                {x: startX + 7 * spacing, y: 445},
+                {x: startX + 10 * spacing, y: 445}
+            ], '#3b82f6', 2);
+            ctx.setLineDash([]);
+
+            // Annotations
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 16px Arial';
+
+            // Phase 1
+            drawLabel(200, 350, 'Initial Move', '#10b981');
+
+            // Phase 2
+            drawLabel(450, 480, 'Consolidation/Pullback', '#f59e0b');
+
+            // Phase 3
+            drawLabel(800, 280, 'Second Leg Higher', '#10b981');
+
+            // Support line label
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillText('Support Level', startX + 4 * spacing, 465);
+
+            // Entry arrow
+            const entryX = startX + (7 * spacing);
+            const entryY = 445;
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.moveTo(entryX - 20, entryY - 50);
+            ctx.lineTo(entryX, entryY - 15);
+            ctx.lineTo(entryX + 20, entryY - 50);
+            ctx.fill();
+
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Entry', entryX - 20, entryY - 60);
+        }
+
+        function downloadCanvas(filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Auto-generate all charts on load
+        window.onload = function() {
+            generateMomentumChart();
+            setTimeout(() => {
+                downloadCanvas('momentum-chart.png');
+                setTimeout(() => {
+                    generateVWAPChart();
+                    setTimeout(() => {
+                        downloadCanvas('vwap-chart.png');
+                        setTimeout(() => {
+                            generatePullbackChart();
+                            setTimeout(() => {
+                                downloadCanvas('pullback-chart.png');
+                            }, 500);
+                        }, 500);
+                    }, 500);
+                }, 500);
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
