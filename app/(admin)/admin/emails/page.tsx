@@ -7,6 +7,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorMessage } from "@/components/ui/error-message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/lib/hooks/use-toast";
 import { useScheduledEmails } from "@/lib/api/hooks/useScheduledEmails";
 import {
   Mail,
@@ -18,6 +19,7 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Ban,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -27,13 +29,57 @@ export default function AdminEmailsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
+  const [cancellingIds, setCancellingIds] = useState<Set<string>>(new Set());
   const limit = 50;
+  const { toast } = useToast();
 
   const { data, isLoading, error, refetch } = useScheduledEmails({
     status: statusFilter === "all" ? undefined : statusFilter,
     limit,
     offset,
   });
+
+  const handleCancelEmail = async (emailId: string, recipientEmail: string) => {
+    if (!confirm(`Are you sure you want to cancel this email to ${recipientEmail}?`)) {
+      return;
+    }
+
+    setCancellingIds((prev) => new Set(prev).add(emailId));
+
+    try {
+      const response = await fetch(`/api/admin/scheduled-emails/${emailId}/cancel`, {
+        method: "POST",
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Email cancelled successfully",
+        });
+        refetch();
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to cancel email",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel email",
+        variant: "destructive",
+      });
+    } finally {
+      setCancellingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(emailId);
+        return next;
+      });
+    }
+  };
 
   const emails = data?.emails || [];
   const stats = data?.stats || {
@@ -308,6 +354,9 @@ export default function AdminEmailsPage() {
                     <th className="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Promo Code
                     </th>
+                    <th className="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
@@ -372,6 +421,34 @@ export default function AdminEmailsPage() {
                               {email.promoCode}
                             </Badge>
                           ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-4 text-sm">
+                          {email.status === "pending" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleCancelEmail(email.id, email.recipientEmail)
+                              }
+                              disabled={cancellingIds.has(email.id)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                              {cancellingIds.has(email.id) ? (
+                                <>
+                                  <LoadingSpinner className="h-4 w-4 mr-1" />
+                                  Cancelling...
+                                </>
+                              ) : (
+                                <>
+                                  <Ban className="h-4 w-4 mr-1" />
+                                  Cancel
+                                </>
+                              )}
+                            </Button>
+                          )}
+                          {email.status !== "pending" && (
                             <span className="text-gray-400">-</span>
                           )}
                         </td>

@@ -26,7 +26,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.text();
-    const url = request.url;
+
+    // Construct the URL that QStash expects
+    // QStash signs with the URL it was given when publishing
+    const url = `${process.env.APP_URL}/api/cron/send-scheduled-email`;
 
     // In development, skip signature verification if keys aren't configured
     if (
@@ -38,7 +41,11 @@ export async function POST(request: NextRequest) {
       const isValid = await verifyQStashSignature(signature, body, url);
 
       if (!isValid) {
-        logger.warn("Invalid QStash signature");
+        logger.warn("Invalid QStash signature", {
+          url,
+          hasSigningKey: !!process.env.QSTASH_CURRENT_SIGNING_KEY,
+          signaturePreview: signature.substring(0, 20) + "...",
+        });
         return NextResponse.json(
           { error: "Invalid signature" },
           { status: 401 }

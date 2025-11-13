@@ -143,9 +143,16 @@ export async function verifyQStashSignature(
       url,
     });
 
+    logger.info("QStash signature verified successfully");
     return true;
   } catch (error) {
-    logger.warn("QStash signature verification failed", { error });
+    const errorMsg = error instanceof Error ? error.message : "Unknown error";
+    logger.warn("QStash signature verification failed", { 
+      error: errorMsg,
+      url,
+      bodyLength: body.length,
+      hasNextSigningKey: !!nextSigningKey
+    });
     return false;
   }
 }

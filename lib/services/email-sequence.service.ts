@@ -123,8 +123,8 @@ _P.S. Still have questions? Reply to this email—I'll get back to you within th
         discountPercent: 30,
       },
       {
-        id: "day_14_final_offer",
-        delayDays: 14,
+        id: "day_10_final_offer",
+        delayDays: 10,
         subject: "One last thing before we say goodbye...",
         message: `Hi {{firstName}},
 
