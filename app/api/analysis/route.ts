@@ -123,41 +123,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Apply rate limiting: 10 analyses per hour per user
-    const { withRateLimit, RATE_LIMITS } = await import(
-      "@/lib/utils/rate-limit"
-    );
-    const rateLimitResult = await withRateLimit(
-      request,
-      RATE_LIMITS.analysis,
-      session.user.id
-    );
-
-    if (!rateLimitResult.success) {
-      // Notify Discord about failed analysis due to rate limiting
-      await discordService.notifyFailedAnalysis({
-        userId: session.user.id,
-        email: session.user.email,
-        error: `Rate limit exceeded (${rateLimitResult.remaining}/${rateLimitResult.limit} requests remaining)`,
-        failureType: "Rate Limit",
-      });
-
-      return NextResponse.json(
-        {
-          error: "Too many analysis requests. Please try again later.",
-          retryAfter: rateLimitResult.reset,
-        },
-        {
-          status: 429,
-          headers: {
-            "X-RateLimit-Limit": rateLimitResult.limit.toString(),
-            "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
-            "X-RateLimit-Reset": rateLimitResult.reset.toString(),
-          },
-        }
-      );
-    }
-
     // Get user details
     const userResult = await db
       .select()
