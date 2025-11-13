@@ -300,7 +300,10 @@ export function EmailSequenceModal({
                           • {selectedSequence.steps.length} emails will be scheduled for each user
                         </li>
                         <li>
-                          • Emails will be sent automatically at the specified times
+                          • Emails within 7 days will be scheduled immediately
+                        </li>
+                        <li>
+                          • Emails beyond 7 days will be scheduled automatically when they're within the 7-day window
                         </li>
                         <li>
                           • If a user subscribes, remaining emails will be cancelled

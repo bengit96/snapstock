@@ -231,6 +231,22 @@ export async function scheduleEmailSequence({
         continue;
       }
 
+      // Grant 2 free analyses for the "one_analysis_recovery" sequence
+      if (sequenceId === "one_analysis_recovery") {
+        await db
+          .update(users)
+          .set({
+            freeAnalysesLimit: 3, // Grant 2 more (1 + 2 = 3 total)
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, user.id));
+
+        logger.info("Granted 2 free analyses to user", {
+          userId: user.id,
+          sequenceId,
+        });
+      }
+
       // Schedule each step in the sequence
       for (const step of sequence.steps) {
         const stepDelayMs = step.delayDays * 24 * 60 * 60 * 1000;
@@ -313,6 +329,35 @@ export async function cancelSequenceForUser(
   sequenceId: string,
   reason: string = "user_subscribed"
 ): Promise<void> {
+  // Import cancelQStashMessage here to avoid circular dependencies
+  const { cancelQStashMessage } = await import("./qstash.service");
+
+  // Get all pending emails for this sequence
+  const pendingEmails = await db
+    .select()
+    .from(scheduledEmails)
+    .where(eq(scheduledEmails.userId, userId));
+
+  // Cancel each email in QStash if it has a message ID
+  for (const email of pendingEmails) {
+    if (email.qstashMessageId && email.status === "pending") {
+      try {
+        await cancelQStashMessage(email.qstashMessageId);
+        logger.info("Cancelled QStash message for email", {
+          emailId: email.id,
+          messageId: email.qstashMessageId,
+        });
+      } catch (error) {
+        logger.error("Failed to cancel QStash message", {
+          emailId: email.id,
+          messageId: email.qstashMessageId,
+          error,
+        });
+      }
+    }
+  }
+
+  // Update all emails in the database
   await db
     .update(scheduledEmails)
     .set({

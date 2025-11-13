@@ -481,6 +481,7 @@ export const scheduledEmails = pgTable(
     cancelledAt: timestamp("cancelled_at"),
     cancellationReason: text("cancellation_reason"), // 'user_subscribed', 'manual', etc.
     error: text("error"), // Error message if failed
+    qstashMessageId: text("qstash_message_id"), // QStash message ID for cancellation
 
     // Metadata
     metadata: jsonb("metadata"), // Additional context (e.g., what triggered this email)

@@ -7,7 +7,7 @@ export const APP_NAME = "SnapPChart";
 export const APP_DESCRIPTION =
   "AI-powered chart analysis for momentum traders. Get instant trade plans with precise entry, stop loss, and profit targets for stocks, forex, crypto, and futures.";
 export const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  process.env.APP_URL || "http://localhost:3000";
 
 // Social Links
 export const DISCORD_INVITE_URL = "https://discord.gg/HekJUQSSaE";

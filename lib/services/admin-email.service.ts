@@ -1,7 +1,8 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
+import { marked } from "marked";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@snappchart.app';
+const EMAIL_FROM = process.env.EMAIL_FROM || "noreply@snappchart.app";
 
 interface MarketingEmailOptions {
   to: string;
@@ -21,11 +22,15 @@ function generateMarketingEmailHTML(
   promoCode?: string,
   discountPercent?: number
 ): string {
-  const displayName = userName || 'there';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://snappchart.app';
+  const displayName = userName || "there";
+  const appUrl = process.env.APP_URL || "https://snappchart.app";
 
-  // Convert line breaks to HTML
-  const formattedMessage = message.replace(/\n/g, '<br>');
+  // Convert markdown to HTML
+  const formattedMessage = marked.parse(message, { 
+    async: false,
+    breaks: true,
+    gfm: true,
+  }) as string;
 
   return `
     <!DOCTYPE html>
@@ -47,7 +52,9 @@ function generateMarketingEmailHTML(
             ${formattedMessage}
           </div>
 
-          ${promoCode ? `
+          ${
+            promoCode
+              ? `
             <div style="background: linear-gradient(135deg, #f8f4ff 0%, #fff4f4 100%); padding: 30px; border-radius: 12px; text-align: center; margin: 35px 0; border: 2px solid #667eea; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.1);">
               <p style="font-size: 14px; color: #667eea; font-weight: 700; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 2px;">Your Exclusive Promo Code</p>
               <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
@@ -55,11 +62,15 @@ function generateMarketingEmailHTML(
                   ${promoCode}
                 </span>
               </div>
-              ${discountPercent ? `
+              ${
+                discountPercent
+                  ? `
                 <p style="font-size: 18px; color: #764ba2; font-weight: 600; margin: 15px 0 5px 0;">
                   Save ${discountPercent}% on any plan!
                 </p>
-              ` : ''}
+              `
+                  : ""
+              }
               <p style="font-size: 13px; color: #888; margin: 10px 0 0 0;">Copy this code and use it at checkout</p>
             </div>
 
@@ -68,13 +79,15 @@ function generateMarketingEmailHTML(
                 Claim Your Discount →
               </a>
             </div>
-          ` : `
+          `
+              : `
             <div style="text-align: center; margin: 35px 0;">
               <a href="${appUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 45px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
                 Visit SnapPChart →
               </a>
             </div>
-          `}
+          `
+          }
 
           <div style="background: #f9fafb; padding: 25px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #667eea;">
             <h3 style="margin-top: 0; color: #333; font-size: 18px; font-weight: 600;">What you get with SnapPChart:</h3>
@@ -130,16 +143,19 @@ export async function sendMarketingEmail(
     });
 
     if (error) {
-      console.error('Failed to send marketing email:', error);
-      return { success: false, error: error.message || 'Failed to send email' };
+      console.error("Failed to send marketing email:", error);
+      return { success: false, error: error.message || "Failed to send email" };
     }
 
     return { success: true, messageId: data?.id };
   } catch (error) {
-    console.error('Error in sendMarketingEmail:', error);
+    console.error("Error in sendMarketingEmail:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'An error occurred while sending email',
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while sending email",
     };
   }
 }

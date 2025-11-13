@@ -197,13 +197,22 @@ export default function AdminPage() {
               Manage users and view analytics
             </p>
           </div>
-          <Link
-            href="/admin/users"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
-          >
-            <Mail className="h-5 w-5" />
-            Email Users
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/admin/emails"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <Mail className="h-5 w-5" />
+              View Emails
+            </Link>
+            <Link
+              href="/admin/users"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <Mail className="h-5 w-5" />
+              Email Users
+            </Link>
+          </div>
         </div>
 
         {/* Overview Stats */}
