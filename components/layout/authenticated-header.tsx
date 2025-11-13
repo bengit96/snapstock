@@ -13,6 +13,7 @@ import { useBillingUsage } from "@/lib/api/hooks/useBilling";
 interface UsageData {
   analysesUsed: number;
   analysesLimit: number | null;
+  freeAnalysesLimit: number;
   currentPeriodEnd: string | null;
   subscriptionTier: string | null;
   subscriptionStatus: string | null;
