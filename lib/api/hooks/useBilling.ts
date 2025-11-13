@@ -31,16 +31,14 @@ export const useBillingUsage = () => {
       const { data } = await apiClient.get("/api/billing/usage");
       return data;
     },
-    // Poll every 30 seconds for users with active subscriptions
-    // This ensures the UI updates when webhooks process cancellations
-    refetchInterval: (query) => {
-      // Only poll if user has an active subscription that could be cancelled
-      const data = query.state.data as UsageData | undefined;
-      if (data?.subscriptionStatus === "active") {
-        return 30 * 1000; // 30 seconds
-      }
-      return false; // No polling for inactive users
-    },
+    // Always fetch fresh data
+    staleTime: 0, // Consider data stale immediately
+    gcTime: 0, // Don't cache in memory (formerly cacheTime)
+    refetchOnMount: 'always', // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnReconnect: true, // Refetch when reconnecting
+    // Poll every 10 seconds to catch updates quickly
+    refetchInterval: 10 * 1000, // 10 seconds
     refetchIntervalInBackground: true,
   });
 };

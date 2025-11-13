@@ -59,6 +59,19 @@ export function AuthenticatedHeader() {
   const isYearlyPlan = subscriptionTier === "yearly";
   const isAdmin = session?.user?.role === "admin";
 
+  // Get usage data
+  const analysesUsed = (billingData as UsageData)?.analysesUsed || 0;
+  const analysesLimit = (billingData as UsageData)?.analysesLimit;
+  const analysesRemaining =
+    analysesLimit === null
+      ? "Unlimited"
+      : Math.max(0, analysesLimit - analysesUsed);
+
+  // Determine if we should show the usage (only on analyze page or if running low)
+  const isAnalyzePage = pathname === "/dashboard/analyze";
+  const isRunningLow =
+    analysesLimit !== null && analysesLimit - analysesUsed <= 5;
+
   const tabs = [
     { name: "Home", href: "/home", icon: Home },
     { name: "Analyze", href: "/dashboard/analyze", icon: TrendingUp },
@@ -160,7 +173,7 @@ export function AuthenticatedHeader() {
             })}
           </nav>
 
-          {/* Right side - Upgrade button and User avatar */}
+          {/* Right side - Analyses count, Upgrade button and User avatar */}
           <div className="flex items-center gap-3">
             {/* Show loading spinner when session is loading */}
             {status === "loading" ? (
@@ -172,6 +185,53 @@ export function AuthenticatedHeader() {
               </div>
             ) : (
               <>
+                {/* Analyses Remaining Badge - Show on analyze page or when running low */}
+                {(isAnalyzePage || isRunningLow) && !isAdmin && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={cn(
+                      "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border",
+                      analysesLimit === null
+                        ? "bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800"
+                        : isRunningLow
+                        ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200 dark:border-orange-800"
+                        : "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800"
+                    )}
+                  >
+                    <TrendingUp
+                      className={cn(
+                        "w-4 h-4",
+                        analysesLimit === null
+                          ? "text-purple-600 dark:text-purple-400"
+                          : isRunningLow
+                          ? "text-orange-600 dark:text-orange-400"
+                          : "text-blue-600 dark:text-blue-400"
+                      )}
+                    />
+                    <div className="flex flex-col">
+                      <span
+                        className={cn(
+                          "text-xs font-semibold leading-none",
+                          analysesLimit === null
+                            ? "text-purple-700 dark:text-purple-300"
+                            : isRunningLow
+                            ? "text-orange-700 dark:text-orange-300"
+                            : "text-blue-700 dark:text-blue-300"
+                        )}
+                      >
+                        {analysesRemaining === "Unlimited"
+                          ? "Unlimited"
+                          : `${analysesRemaining} Left`}
+                      </span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                        {analysesLimit === null
+                          ? "Analyses"
+                          : `of ${analysesLimit} this month`}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
                 {/* Upgrade Button - Only show if not on yearly plan */}
                 {!isYearlyPlan && (
                   <motion.div
@@ -290,13 +350,13 @@ export function AuthenticatedHeader() {
                             </div>
                           )}
 
-                          {/* User info */}
+                          {/* User info with analysis count */}
                           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
                                 {avatarLetter}
                               </div>
-                              <div>
+                              <div className="flex-1">
                                 <div className="font-medium text-gray-900 dark:text-white">
                                   {username}
                                 </div>
@@ -305,6 +365,53 @@ export function AuthenticatedHeader() {
                                 </div>
                               </div>
                             </div>
+
+                            {/* Mobile analysis count */}
+                            {!isAdmin && (
+                              <div
+                                className={cn(
+                                  "mt-3 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm",
+                                  analysesLimit === null
+                                    ? "bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800"
+                                    : isRunningLow
+                                    ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200 dark:border-orange-800"
+                                    : "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800"
+                                )}
+                              >
+                                <TrendingUp
+                                  className={cn(
+                                    "w-4 h-4",
+                                    analysesLimit === null
+                                      ? "text-purple-600 dark:text-purple-400"
+                                      : isRunningLow
+                                      ? "text-orange-600 dark:text-orange-400"
+                                      : "text-blue-600 dark:text-blue-400"
+                                  )}
+                                />
+                                <div className="flex-1">
+                                  <div
+                                    className={cn(
+                                      "font-semibold text-xs",
+                                      analysesLimit === null
+                                        ? "text-purple-700 dark:text-purple-300"
+                                        : isRunningLow
+                                        ? "text-orange-700 dark:text-orange-300"
+                                        : "text-blue-700 dark:text-blue-300"
+                                    )}
+                                  >
+                                    {analysesRemaining === "Unlimited"
+                                      ? "Unlimited Analyses"
+                                      : `${analysesRemaining} analyses left`}
+                                  </div>
+                                  {analysesLimit !== null && (
+                                    <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                                      {analysesUsed} of {analysesLimit} used
+                                      this month
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </div>
 
                           {/* Menu items */}

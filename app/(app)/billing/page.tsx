@@ -207,7 +207,7 @@ export default function BillingPage() {
                 </div>
                 {!hasSubscription && (
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    1 free analysis available
+                    {freeAnalysesLimit} free analysis available
                   </p>
                 )}
               </div>
