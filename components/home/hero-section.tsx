@@ -51,17 +51,6 @@ export function HeroSection({ className }: HeroSectionProps) {
       <div className="absolute inset-0 bg-grid-gray-100/25 dark:bg-grid-gray-700/25 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
 
       <div className="container mx-auto text-center relative">
-        {/* Badge */}
-        {/* Free Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0, duration: 0.4 }}
-          className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold text-sm mb-6 shadow-lg"
-        >
-          ✨ Everyone Gets 1 FREE Analysis
-        </motion.div>
-
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
