@@ -7,10 +7,7 @@ import {
   getAllSequences,
   getSequencePreview,
 } from '@/lib/services/email-sequence.service'
-import { db } from '@/lib/db'
-import { scheduledEmails } from '@/lib/db/schema'
-import { scheduleEmail } from '@/lib/services/qstash.service'
-import { eq } from 'drizzle-orm'
+import { scheduleEmail as enqueueScheduledEmail } from '@/lib/services/qstash.service'
 
 export const dynamic = 'force-dynamic'
 
@@ -67,16 +64,10 @@ export async function POST(request: NextRequest) {
       customizations,
     })
 
-    // Now schedule each email with QStash
-    const scheduledEmailsFromDb = await db
-      .select()
-      .from(scheduledEmails)
-      .where(eq(scheduledEmails.status, 'pending'))
-
     let qstashScheduledCount = 0
     const qstashErrors: string[] = []
 
-    for (const email of scheduledEmailsFromDb) {
+    for (const email of result.emailRecords) {
       try {
         const now = new Date()
         const scheduledFor = new Date(email.scheduledFor)
@@ -85,7 +76,7 @@ export async function POST(request: NextRequest) {
           Math.floor((scheduledFor.getTime() - now.getTime()) / 1000)
         )
 
-        await scheduleEmail({
+        await enqueueScheduledEmail({
           emailId: email.id,
           delaySeconds,
         })

@@ -161,12 +161,22 @@ interface ScheduleSequenceParams {
     promoCode?: string
     discountPercent?: number
   }
+  triggeredBy?: 'manual' | 'auto'
+  metadata?: Record<string, unknown>
+}
+
+export interface ScheduledEmailRecord {
+  id: string
+  userId: string
+  scheduledFor: Date
+  stepId: string
 }
 
 interface ScheduleSequenceResult {
   success: boolean
   scheduledCount: number
   errors: Array<{ userId: string; error: string }>
+  emailRecords: ScheduledEmailRecord[]
 }
 
 /**
@@ -176,6 +186,8 @@ export async function scheduleEmailSequence({
   sequenceId,
   userIds,
   customizations,
+  triggeredBy = 'manual',
+  metadata,
 }: ScheduleSequenceParams): Promise<ScheduleSequenceResult> {
   const sequence = EMAIL_SEQUENCES[sequenceId]
   if (!sequence) {
@@ -186,6 +198,7 @@ export async function scheduleEmailSequence({
     success: true,
     scheduledCount: 0,
     errors: [],
+    emailRecords: [],
   }
 
   // Fetch users
@@ -223,7 +236,7 @@ export async function scheduleEmailSequence({
         const promoCode = customizations?.promoCode || step.promoCode
         const discountPercent = customizations?.discountPercent || step.discountPercent
 
-        await db.insert(scheduledEmails).values({
+        const inserted = await db.insert(scheduledEmails).values({
           userId: user.id,
           emailType: `sequence_${sequenceId}_${step.id}`,
           recipientEmail: user.email,
@@ -238,8 +251,23 @@ export async function scheduleEmailSequence({
             userName: user.name,
             message: step.message,
             discountPercent,
+            triggeredBy,
+            ...(metadata ?? {}),
           },
+        }).returning({
+          id: scheduledEmails.id,
+          userId: scheduledEmails.userId,
+          scheduledFor: scheduledEmails.scheduledFor,
         })
+
+        if (inserted[0]) {
+          result.emailRecords.push({
+            id: inserted[0].id,
+            userId: inserted[0].userId,
+            scheduledFor: inserted[0].scheduledFor,
+            stepId: step.id,
+          })
+        }
       }
 
       result.scheduledCount++
