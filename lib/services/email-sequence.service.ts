@@ -3,40 +3,40 @@
  * Manages multi-step email campaigns with QStash scheduling
  */
 
-import { db } from '@/lib/db'
-import { users, scheduledEmails } from '@/lib/db/schema'
-import { eq, inArray } from 'drizzle-orm'
-import { logger } from '@/lib/utils/logger'
+import { db } from "@/lib/db";
+import { users, scheduledEmails } from "@/lib/db/schema";
+import { eq, inArray } from "drizzle-orm";
+import { logger } from "@/lib/utils/logger";
 
 export interface EmailSequenceStep {
-  id: string
-  delayDays: number
-  subject: string
-  message: string
-  promoCode?: string
-  discountPercent?: number
+  id: string;
+  delayDays: number;
+  subject: string;
+  message: string;
+  promoCode?: string;
+  discountPercent?: number;
 }
 
 export interface EmailSequence {
-  id: string
-  name: string
-  description: string
-  steps: EmailSequenceStep[]
-  targetSegment: 'one_time_users' | 'never_used' | 'exhausted_free' | 'custom'
+  id: string;
+  name: string;
+  description: string;
+  steps: EmailSequenceStep[];
+  targetSegment: "one_time_users" | "never_used" | "exhausted_free" | "custom";
 }
 
 // Predefined sequences
 export const EMAIL_SEQUENCES: Record<string, EmailSequence> = {
-  ONE_ANALYSIS_RECOVERY: {
-    id: 'one_analysis_recovery',
-    name: 'One Analysis Wonder Recovery',
-    description: 'Re-engage users who did 1 free analysis and stopped',
-    targetSegment: 'one_time_users',
+  one_analysis_recovery: {
+    id: "one_analysis_recovery",
+    name: "One Analysis Wonder Recovery",
+    description: "Re-engage users who did 1 free analysis and stopped",
+    targetSegment: "one_time_users",
     steps: [
       {
-        id: 'day_0_free_analyses',
+        id: "day_0_free_analyses",
         delayDays: 0,
-        subject: '{{firstName}}, here\'s 2 more free analyses on us',
+        subject: "{{firstName}}, here's 2 more free analyses on us",
         message: `Hi {{firstName}},
 
 I noticed you analyzed one chart with Snapstock but haven't been back since.
@@ -65,13 +65,13 @@ Ben
 Founder, Snapstock
 
 _P.S. Hit reply if you have questions about pricing or want me to personally review one of your charts—I read every email._`,
-        promoCode: 'SNAP30',
+        promoCode: "SNAP30",
         discountPercent: 30,
       },
       {
-        id: 'day_3_check_in',
+        id: "day_3_check_in",
         delayDays: 3,
-        subject: 'Did you get a chance to use your free analyses?',
+        subject: "Did you get a chance to use your free analyses?",
         message: `Hi {{firstName}},
 
 Just checking in—did you get a chance to use the 2 free analyses I sent over?
@@ -92,13 +92,13 @@ Questions? Just hit reply—I'm here to help.
 
 Ben
 Founder, Snapstock`,
-        promoCode: 'SNAP30',
+        promoCode: "SNAP30",
         discountPercent: 30,
       },
       {
-        id: 'day_7_urgency',
+        id: "day_7_urgency",
         delayDays: 7,
-        subject: 'Your SNAP30 code expires tonight',
+        subject: "Your SNAP30 code expires tonight",
         message: `Hi {{firstName}},
 
 Quick heads up—your **SNAP30** discount code (30% off) expires at midnight tonight.
@@ -119,13 +119,13 @@ Ben
 Founder, Snapstock
 
 _P.S. Still have questions? Reply to this email—I'll get back to you within the hour._`,
-        promoCode: 'SNAP30',
+        promoCode: "SNAP30",
         discountPercent: 30,
       },
       {
-        id: 'day_14_final_offer',
+        id: "day_14_final_offer",
         delayDays: 14,
-        subject: 'One last thing before we say goodbye...',
+        subject: "One last thing before we say goodbye...",
         message: `Hi {{firstName}},
 
 I wanted to reach out one last time before I stop sending these emails.
@@ -152,32 +152,32 @@ _P.S. If you do want to give it another try, I'll personally set you up with a c
       },
     ],
   },
-}
+};
 
 interface ScheduleSequenceParams {
-  sequenceId: string
-  userIds: string[]
+  sequenceId: string;
+  userIds: string[];
   customizations?: {
-    promoCode?: string
-    discountPercent?: number
-  }
-  triggeredBy?: 'manual' | 'auto'
-  metadata?: Record<string, unknown>
-  startDelayHours?: number
+    promoCode?: string;
+    discountPercent?: number;
+  };
+  triggeredBy?: "manual" | "auto";
+  metadata?: Record<string, unknown>;
+  startDelayHours?: number;
 }
 
 export interface ScheduledEmailRecord {
-  id: string
-  userId: string
-  scheduledFor: Date
-  stepId: string
+  id: string;
+  userId: string;
+  scheduledFor: Date;
+  stepId: string;
 }
 
 interface ScheduleSequenceResult {
-  success: boolean
-  scheduledCount: number
-  errors: Array<{ userId: string; error: string }>
-  emailRecords: ScheduledEmailRecord[]
+  success: boolean;
+  scheduledCount: number;
+  errors: Array<{ userId: string; error: string }>;
+  emailRecords: ScheduledEmailRecord[];
 }
 
 /**
@@ -187,13 +187,13 @@ export async function scheduleEmailSequence({
   sequenceId,
   userIds,
   customizations,
-  triggeredBy = 'manual',
+  triggeredBy = "manual",
   metadata,
   startDelayHours = 0,
 }: ScheduleSequenceParams): Promise<ScheduleSequenceResult> {
-  const sequence = EMAIL_SEQUENCES[sequenceId]
+  const sequence = EMAIL_SEQUENCES[sequenceId];
   if (!sequence) {
-    throw new Error(`Sequence ${sequenceId} not found`)
+    throw new Error(`Sequence ${sequenceId} not found`);
   }
 
   const result: ScheduleSequenceResult = {
@@ -201,7 +201,7 @@ export async function scheduleEmailSequence({
     scheduledCount: 0,
     errors: [],
     emailRecords: [],
-  }
+  };
 
   // Fetch users
   const targetUsers = await db
@@ -212,55 +212,61 @@ export async function scheduleEmailSequence({
       subscriptionStatus: users.subscriptionStatus,
     })
     .from(users)
-    .where(inArray(users.id, userIds))
+    .where(inArray(users.id, userIds));
 
-  logger.info('Scheduling email sequence', {
+  logger.info("Scheduling email sequence", {
     sequenceId,
     totalUsers: targetUsers.length,
     steps: sequence.steps.length,
-  })
+  });
 
-  const now = new Date()
-  const startDelayMs = startDelayHours * 60 * 60 * 1000
+  const now = new Date();
+  const startDelayMs = startDelayHours * 60 * 60 * 1000;
 
   for (const user of targetUsers) {
     try {
       // Skip if user is already subscribed
-      if (user.subscriptionStatus === 'active') {
-        logger.info('Skipping user - already subscribed', { userId: user.id })
-        continue
+      if (user.subscriptionStatus === "active") {
+        logger.info("Skipping user - already subscribed", { userId: user.id });
+        continue;
       }
 
       // Schedule each step in the sequence
       for (const step of sequence.steps) {
-        const stepDelayMs = step.delayDays * 24 * 60 * 60 * 1000
-        const scheduledFor = new Date(now.getTime() + startDelayMs + stepDelayMs)
+        const stepDelayMs = step.delayDays * 24 * 60 * 60 * 1000;
+        const scheduledFor = new Date(
+          now.getTime() + startDelayMs + stepDelayMs
+        );
 
         // Apply customizations or use defaults
-        const promoCode = customizations?.promoCode || step.promoCode
-        const discountPercent = customizations?.discountPercent || step.discountPercent
+        const promoCode = customizations?.promoCode || step.promoCode;
+        const discountPercent =
+          customizations?.discountPercent || step.discountPercent;
 
-        const inserted = await db.insert(scheduledEmails).values({
-          userId: user.id,
-          emailType: `sequence_${sequenceId}_${step.id}`,
-          recipientEmail: user.email,
-          subject: step.subject,
-          scheduledFor,
-          status: 'pending',
-          promoCode,
-          metadata: {
-            sequenceId,
-            stepId: step.id,
-            stepDelayDays: step.delayDays,
-            userName: user.name,
-            message: step.message,
-            discountPercent,
-            triggeredBy,
-            ...(metadata ?? {}),
-          },
-        }).returning({
-          id: scheduledEmails.id,
-        })
+        const inserted = await db
+          .insert(scheduledEmails)
+          .values({
+            userId: user.id,
+            emailType: `sequence_${sequenceId}_${step.id}`,
+            recipientEmail: user.email,
+            subject: step.subject,
+            scheduledFor,
+            status: "pending",
+            promoCode,
+            metadata: {
+              sequenceId,
+              stepId: step.id,
+              stepDelayDays: step.delayDays,
+              userName: user.name,
+              message: step.message,
+              discountPercent,
+              triggeredBy,
+              ...(metadata ?? {}),
+            },
+          })
+          .returning({
+            id: scheduledEmails.id,
+          });
 
         if (inserted[0]) {
           result.emailRecords.push({
@@ -268,35 +274,35 @@ export async function scheduleEmailSequence({
             userId: user.id,
             scheduledFor,
             stepId: step.id,
-          })
+          });
         }
       }
 
-      result.scheduledCount++
-      logger.info('Scheduled sequence for user', {
+      result.scheduledCount++;
+      logger.info("Scheduled sequence for user", {
         userId: user.id,
         email: user.email,
         steps: sequence.steps.length,
-      })
+      });
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-      result.errors.push({ userId: user.id, error: errorMsg })
-      logger.error('Failed to schedule sequence for user', {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      result.errors.push({ userId: user.id, error: errorMsg });
+      logger.error("Failed to schedule sequence for user", {
         userId: user.id,
         error: errorMsg,
-      })
+      });
     }
   }
 
-  result.success = result.errors.length === 0
+  result.success = result.errors.length === 0;
 
-  logger.info('Email sequence scheduling completed', {
+  logger.info("Email sequence scheduling completed", {
     sequenceId,
     scheduledCount: result.scheduledCount,
     errorCount: result.errors.length,
-  })
+  });
 
-  return result
+  return result;
 }
 
 /**
@@ -305,31 +311,30 @@ export async function scheduleEmailSequence({
 export async function cancelSequenceForUser(
   userId: string,
   sequenceId: string,
-  reason: string = 'user_subscribed'
+  reason: string = "user_subscribed"
 ): Promise<void> {
   await db
     .update(scheduledEmails)
     .set({
-      status: 'cancelled',
+      status: "cancelled",
       cancelledAt: new Date(),
       cancellationReason: reason,
     })
-    .where(eq(scheduledEmails.userId, userId))
+    .where(eq(scheduledEmails.userId, userId));
 
-  logger.info('Cancelled sequence for user', { userId, sequenceId, reason })
+  logger.info("Cancelled sequence for user", { userId, sequenceId, reason });
 }
 
 /**
  * Get preview data for a sequence
  */
 export function getSequencePreview(sequenceId: string): EmailSequence | null {
-  return EMAIL_SEQUENCES[sequenceId] || null
+  return EMAIL_SEQUENCES[sequenceId] || null;
 }
 
 /**
  * Get all available sequences
  */
 export function getAllSequences(): EmailSequence[] {
-  return Object.values(EMAIL_SEQUENCES)
+  return Object.values(EMAIL_SEQUENCES);
 }
-
