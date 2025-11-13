@@ -163,6 +163,7 @@ interface ScheduleSequenceParams {
   }
   triggeredBy?: 'manual' | 'auto'
   metadata?: Record<string, unknown>
+  startDelayHours?: number
 }
 
 export interface ScheduledEmailRecord {
@@ -188,6 +189,7 @@ export async function scheduleEmailSequence({
   customizations,
   triggeredBy = 'manual',
   metadata,
+  startDelayHours = 0,
 }: ScheduleSequenceParams): Promise<ScheduleSequenceResult> {
   const sequence = EMAIL_SEQUENCES[sequenceId]
   if (!sequence) {
@@ -219,6 +221,7 @@ export async function scheduleEmailSequence({
   })
 
   const now = new Date()
+  const startDelayMs = startDelayHours * 60 * 60 * 1000
 
   for (const user of targetUsers) {
     try {
@@ -230,7 +233,8 @@ export async function scheduleEmailSequence({
 
       // Schedule each step in the sequence
       for (const step of sequence.steps) {
-        const scheduledFor = new Date(now.getTime() + step.delayDays * 24 * 60 * 60 * 1000)
+        const stepDelayMs = step.delayDays * 24 * 60 * 60 * 1000
+        const scheduledFor = new Date(now.getTime() + startDelayMs + stepDelayMs)
 
         // Apply customizations or use defaults
         const promoCode = customizations?.promoCode || step.promoCode
@@ -256,15 +260,13 @@ export async function scheduleEmailSequence({
           },
         }).returning({
           id: scheduledEmails.id,
-          userId: scheduledEmails.userId,
-          scheduledFor: scheduledEmails.scheduledFor,
         })
 
         if (inserted[0]) {
           result.emailRecords.push({
             id: inserted[0].id,
-            userId: inserted[0].userId,
-            scheduledFor: inserted[0].scheduledFor,
+            userId: user.id,
+            scheduledFor,
             stepId: step.id,
           })
         }

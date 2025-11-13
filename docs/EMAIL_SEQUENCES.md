@@ -108,24 +108,7 @@ Click **"Schedule for X Users"** to:
 - **Day 7:** Urgency - discount code expires tonight
 - **Day 14:** Final feedback request
 
-### Automated Trigger (Optional)
-
-You can let the platform trigger this sequence automatically:
-
-- Endpoint: `POST /api/cron/auto-sequences/one-analysis`
-- Trigger: Users with exactly **one** analysis, no active subscription, first analysis ≥ 24h ago
-- Safety: Skips users already scheduled or subscribed; marks emails with `autoTriggered` metadata
-
-**Recommended schedule:** run hourly or daily via QStash cron. Example payload:
-
-```bash
-curl -X POST "https://yourdomain.com/api/cron/auto-sequences/one-analysis" \
-  -H "Content-Type: application/json" \
-  -H "Upstash-Signature: <provided-by-qstash>" \
-  -d '{}'
-```
-
-Add `?dryRun=1` to preview eligible users without scheduling.
+This recovery flow is also **auto-enrolled** when a free user completes their **first** analysis. The system schedules the first email 24 hours after the analysis and queues the remaining steps via QStash. If the user upgrades before any email sends, the pending emails are cancelled automatically.
 
 ## Creating New Sequences
 

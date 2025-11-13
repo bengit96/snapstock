@@ -6,6 +6,8 @@ import { analyzeChartWithAI } from "@/lib/openai";
 import { discordService } from "@/lib/services/discord.service";
 import { analyticsService } from "@/lib/services/analytics.service";
 import { emailNotificationService } from "@/lib/services/email-notification.service";
+import { scheduleEmailSequence } from "@/lib/services/email-sequence.service";
+import { scheduleEmail as enqueueScheduledEmail } from "@/lib/services/qstash.service";
 import { eq, and, gte } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { requireAuth } from "@/lib/utils/security";
@@ -338,37 +340,55 @@ export async function POST(request: NextRequest) {
         })
         .where(eq(users.id, session.user.id));
 
-      // Schedule promo email for 1 day later (only on first trial usage)
+      // Schedule recovery email sequence 24 hours later (first analysis only)
       if (newFreeAnalysesUsed === 1) {
         try {
-          const { scheduleTrialPromoEmail } = await import(
-            "@/lib/services/scheduled-email.service"
-          );
+          const sequenceResult = await scheduleEmailSequence({
+            sequenceId: "one_analysis_recovery",
+            userIds: [session.user.id],
+            triggeredBy: "auto",
+            startDelayHours: 24,
+            metadata: {
+              autoTriggered: true,
+              trigger: "first_free_analysis",
+              analysisId: savedAnalysis.id,
+            },
+          });
 
-          // Use a default promo code (you can make this dynamic)
-          const promoCode = "TRIAL25";
+          const nowForDelay = new Date();
+          const qstashErrors: Array<{ emailId: string; error: string }> = [];
 
-          const emailResult = await scheduleTrialPromoEmail(
-            session.user.id,
-            user.email,
-            user.name,
-            promoCode
-          );
+          for (const email of sequenceResult.emailRecords) {
+            try {
+              const delaySeconds = Math.max(
+                0,
+                Math.floor((email.scheduledFor.getTime() - nowForDelay.getTime()) / 1000)
+              );
 
-          if (emailResult.success) {
-            logger.info("Trial promo email scheduled", {
-              userId: session.user.id,
-              emailId: emailResult.emailId,
-              scheduledFor: "24 hours",
-            });
-          } else {
-            logger.error("Failed to schedule trial promo email", emailResult.error, {
-              userId: session.user.id,
-            });
+              await enqueueScheduledEmail({
+                emailId: email.id,
+                delaySeconds,
+              });
+            } catch (queueError) {
+              const errorMessage =
+                queueError instanceof Error ? queueError.message : "Unknown error";
+              qstashErrors.push({ emailId: email.id, error: errorMessage });
+              logger.error("Failed to enqueue recovery sequence email", {
+                userId: session.user.id,
+                emailId: email.id,
+                error: errorMessage,
+              });
+            }
           }
-        } catch (emailError) {
-          // Don't fail the analysis if email scheduling fails
-          logger.error("Error scheduling trial promo email", emailError, {
+
+          logger.info("Recovery email sequence scheduled", {
+            userId: session.user.id,
+            scheduledEmails: sequenceResult.emailRecords.length,
+            qstashErrors: qstashErrors.length,
+          });
+        } catch (sequenceError) {
+          // Don't fail the analysis if sequence scheduling fails
+          logger.error("Error scheduling recovery email sequence", sequenceError, {
             userId: session.user.id,
           });
         }
