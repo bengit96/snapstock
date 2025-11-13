@@ -65,6 +65,26 @@ export async function handleSubscriptionChange(
     if (user.referredBy) {
       await referralService.markAsConverted(user.id)
     }
+
+    // Cancel any pending trial promo emails
+    try {
+      const { cancelScheduledEmailsForUser } = await import(
+        '@/lib/services/scheduled-email.service'
+      )
+
+      const cancelResult = await cancelScheduledEmailsForUser(
+        user.id,
+        'trial_promo',
+        'user_subscribed'
+      )
+
+      if (cancelResult.success && cancelResult.cancelledCount > 0) {
+        console.log(`[Subscription] Cancelled ${cancelResult.cancelledCount} trial promo emails for user: ${user.id}`)
+      }
+    } catch (error) {
+      console.error('[Subscription] Error cancelling scheduled emails:', error)
+      // Don't fail the webhook if email cancellation fails
+    }
   }
 
   console.log(`[Subscription] Successfully ${eventType} for user: ${user.id}`)

@@ -328,13 +328,51 @@ export async function POST(request: NextRequest) {
 
     // Update free analyses count for free users (skip for admin)
     if (!isAdmin && isFreeUser) {
+      const newFreeAnalysesUsed = (user.freeAnalysesUsed || 0) + 1;
+
       await db
         .update(users)
         .set({
-          freeAnalysesUsed: (user.freeAnalysesUsed || 0) + 1,
+          freeAnalysesUsed: newFreeAnalysesUsed,
           updatedAt: new Date(),
         })
         .where(eq(users.id, session.user.id));
+
+      // Schedule promo email for 1 day later (only on first trial usage)
+      if (newFreeAnalysesUsed === 1) {
+        try {
+          const { scheduleTrialPromoEmail } = await import(
+            "@/lib/services/scheduled-email.service"
+          );
+
+          // Use a default promo code (you can make this dynamic)
+          const promoCode = "TRIAL25";
+
+          const emailResult = await scheduleTrialPromoEmail(
+            session.user.id,
+            user.email,
+            user.name,
+            promoCode
+          );
+
+          if (emailResult.success) {
+            logger.info("Trial promo email scheduled", {
+              userId: session.user.id,
+              emailId: emailResult.emailId,
+              scheduledFor: "24 hours",
+            });
+          } else {
+            logger.error("Failed to schedule trial promo email", emailResult.error, {
+              userId: session.user.id,
+            });
+          }
+        } catch (emailError) {
+          // Don't fail the analysis if email scheduling fails
+          logger.error("Error scheduling trial promo email", emailError, {
+            userId: session.user.id,
+          });
+        }
+      }
     }
 
     // Track analytics

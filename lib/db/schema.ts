@@ -449,3 +449,49 @@ export const discordNotifications = pgTable(
     createdAtIdx: index("discord_created_at_idx").on(table.createdAt),
   })
 );
+
+// Scheduled Emails (for trial follow-up, promo codes, etc.)
+export const scheduledEmails = pgTable(
+  "scheduled_emails",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+
+    // Email details
+    emailType: text("email_type").notNull(), // 'trial_promo', 'welcome', 'usage_reminder', etc.
+    recipientEmail: text("recipient_email").notNull(),
+    subject: text("subject").notNull(),
+
+    // Promo code (if applicable)
+    promoCode: text("promo_code"),
+
+    // Scheduling
+    scheduledFor: timestamp("scheduled_for").notNull(),
+    status: text("status")
+      .$type<"pending" | "sent" | "cancelled" | "failed">()
+      .default("pending")
+      .notNull(),
+
+    // Tracking
+    sentAt: timestamp("sent_at"),
+    cancelledAt: timestamp("cancelled_at"),
+    cancellationReason: text("cancellation_reason"), // 'user_subscribed', 'manual', etc.
+    error: text("error"), // Error message if failed
+
+    // Metadata
+    metadata: jsonb("metadata"), // Additional context (e.g., what triggered this email)
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("scheduled_emails_user_id_idx").on(table.userId),
+    statusIdx: index("scheduled_emails_status_idx").on(table.status),
+    scheduledForIdx: index("scheduled_emails_scheduled_for_idx").on(table.scheduledFor),
+    emailTypeIdx: index("scheduled_emails_email_type_idx").on(table.emailType),
+  })
+);

@@ -18,7 +18,9 @@ import {
   Clock,
   TrendingDown,
   DollarSign,
+  Mail,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminPage() {
   // Use React Query hooks to fetch data
@@ -195,6 +197,13 @@ export default function AdminPage() {
               Manage users and view analytics
             </p>
           </div>
+          <Link
+            href="/admin/users"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <Mail className="h-5 w-5" />
+            Email Users
+          </Link>
         </div>
 
         {/* Overview Stats */}

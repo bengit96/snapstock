@@ -57,6 +57,26 @@ export async function handleCheckoutCompleted(
     await referralService.markAsConverted(session.metadata.userId)
   }
 
+  // Cancel any pending trial promo emails
+  try {
+    const { cancelScheduledEmailsForUser } = await import(
+      '@/lib/services/scheduled-email.service'
+    )
+
+    const cancelResult = await cancelScheduledEmailsForUser(
+      session.metadata.userId,
+      'trial_promo',
+      'user_subscribed'
+    )
+
+    if (cancelResult.success && cancelResult.cancelledCount > 0) {
+      console.log(`[Checkout] Cancelled ${cancelResult.cancelledCount} trial promo emails for user: ${session.metadata.userId}`)
+    }
+  } catch (error) {
+    console.error('[Checkout] Error cancelling scheduled emails:', error)
+    // Don't fail the webhook if email cancellation fails
+  }
+
   // Send Discord notification
   await discordService.notifyPayment({
     userId: session.metadata.userId,

@@ -1,6 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
 import apiClient from '../client'
 
+type ApiSuccessResponse<T> = {
+  success: true
+  data: T
+  message?: string
+}
+
+const extractResponseData = <T>(response: ApiSuccessResponse<T> | undefined): T => {
+  if (!response || response.success !== true || !response.data) {
+    throw new Error('Invalid response structure from server')
+  }
+
+  return response.data
+}
+
 interface User {
   id: string
   email: string
@@ -85,8 +99,11 @@ export const useAdminUsers = () => {
   return useQuery<AdminData>({
     queryKey: ['admin', 'users'],
     queryFn: async () => {
-      const { data } = await apiClient.get('/api/admin/users')
-      return data
+      const response = await apiClient.get<ApiSuccessResponse<AdminData>>(
+        '/api/admin/users'
+      )
+
+      return extractResponseData(response.data)
     },
   })
 }
@@ -96,8 +113,11 @@ export const useAdminAnalytics = () => {
   return useQuery<AnalyticsData>({
     queryKey: ['admin', 'analytics'],
     queryFn: async () => {
-      const { data } = await apiClient.get('/api/admin/analytics')
-      return data
+      const response = await apiClient.get<ApiSuccessResponse<AnalyticsData>>(
+        '/api/admin/analytics'
+      )
+
+      return extractResponseData(response.data)
     },
   })
 }

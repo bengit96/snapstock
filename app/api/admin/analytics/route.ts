@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { users, chartAnalyses, analyticsEvents } from '@/lib/db/schema'
-import { count, sql, eq, and, gte, lte, desc, isNull } from 'drizzle-orm'
+import { count, sql, eq, and, gte, desc } from 'drizzle-orm'
+import { ApiResponse } from '@/lib/utils/api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,23 +12,25 @@ export async function GET() {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return ApiResponse.unauthorized('Unauthorized')
     }
 
     if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Forbidden - Admin access required' },
-        { status: 403 }
-      )
+      return ApiResponse.forbidden('Forbidden - Admin access required')
     }
 
     // Calculate date ranges
     const now = new Date()
     const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+    const toDate = (value: Date | string | null | undefined) => {
+      if (!value) return null
+      if (value instanceof Date) return value
+
+      const parsed = new Date(value)
+      return Number.isNaN(parsed.getTime()) ? null : parsed
+    }
 
     // 1. USER LIFECYCLE SEGMENTS
 
@@ -168,7 +170,7 @@ export async function GET() {
       .from(users)
 
     const userCreationMap = new Map(
-      userCreationDates.map(u => [u.id, u.createdAt])
+      userCreationDates.map(u => [u.id, toDate(u.createdAt)])
     )
 
     let totalTimeToFirstGen = 0
@@ -176,8 +178,10 @@ export async function GET() {
 
     for (const analysis of firstAnalyses) {
       const signupDate = userCreationMap.get(analysis.userId)
-      if (signupDate && analysis.firstAnalysis) {
-        const timeDiff = analysis.firstAnalysis.getTime() - new Date(signupDate).getTime()
+      const firstAnalysisDate = toDate(analysis.firstAnalysis)
+
+      if (signupDate && firstAnalysisDate) {
+        const timeDiff = firstAnalysisDate.getTime() - signupDate.getTime()
         totalTimeToFirstGen += timeDiff
         usersWithFirstGen++
       }
@@ -232,7 +236,7 @@ export async function GET() {
       .groupBy(chartAnalyses.userId)
 
     const lastActivityMap = new Map(
-      lastActivities.map(a => [a.userId, a.lastActivity])
+      lastActivities.map(a => [a.userId, toDate(a.lastActivity)])
     )
 
     // Categorize users by segment
@@ -318,7 +322,7 @@ export async function GET() {
     }))
 
     // Return comprehensive analytics
-    return NextResponse.json({
+    return ApiResponse.success({
       summary: {
         totalUsers,
         paidUsers,
@@ -347,9 +351,6 @@ export async function GET() {
     })
   } catch (error) {
     console.error('Error fetching admin analytics:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return ApiResponse.serverError('Failed to fetch admin analytics')
   }
 }
