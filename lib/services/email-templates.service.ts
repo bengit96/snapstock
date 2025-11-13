@@ -1,7 +1,7 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@snappchart.app';
+const EMAIL_FROM = process.env.EMAIL_FROM || "noreply@snappchart.app";
 
 export interface EmailTemplate {
   subject: string;
@@ -16,10 +16,16 @@ export function generateTrialPromoEmail(
   promoCode: string,
   discountPercent: number = 25
 ): EmailTemplate {
-  const displayName = userName || 'there';
+  const displayName = userName || "there";
+  const firstName = userName?.split(" ")[0] || null;
+
+  // Create subject line with graceful fallback
+  const subject = firstName
+    ? `${firstName}, here's ${discountPercent}% off to continue your SnapPChart journey`
+    : `Here's ${discountPercent}% off to continue your SnapPChart journey`;
 
   return {
-    subject: `${displayName}, here's ${discountPercent}% off to continue your SnapPChart journey`,
+    subject,
     html: `
       <!DOCTYPE html>
       <html>
@@ -51,7 +57,9 @@ export function generateTrialPromoEmail(
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.APP_URL || 'https://snappchart.app'}/billing" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 16px; display: inline-block;">
+              <a href="${
+                process.env.APP_URL || "https://snappchart.app"
+              }/billing" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 16px; display: inline-block;">
                 Claim Your Discount
               </a>
             </div>
@@ -103,16 +111,19 @@ export async function sendEmail(
     });
 
     if (error) {
-      console.error('Failed to send email:', error);
-      return { success: false, error: error.message || 'Failed to send email' };
+      console.error("Failed to send email:", error);
+      return { success: false, error: error.message || "Failed to send email" };
     }
 
     return { success: true, messageId: data?.id };
   } catch (error) {
-    console.error('Error in sendEmail:', error);
+    console.error("Error in sendEmail:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'An error occurred while sending email',
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while sending email",
     };
   }
 }
@@ -126,6 +137,10 @@ export async function sendTrialPromoEmail(
   promoCode: string,
   discountPercent?: number
 ): Promise<{ success: boolean; error?: string; messageId?: string }> {
-  const template = generateTrialPromoEmail(userName, promoCode, discountPercent);
+  const template = generateTrialPromoEmail(
+    userName,
+    promoCode,
+    discountPercent
+  );
   return sendEmail(email, template.subject, template.html);
 }

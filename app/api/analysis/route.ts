@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { chartAnalyses, userActivity, users } from "@/lib/db/schema";
+import {
+  chartAnalyses,
+  userActivity,
+  users,
+  scheduledEmails,
+} from "@/lib/db/schema";
 import { analyzeChart } from "@/lib/trading/analysis";
 import { analyzeChartWithAI } from "@/lib/openai";
 import { discordService } from "@/lib/services/discord.service";
@@ -8,7 +13,7 @@ import { analyticsService } from "@/lib/services/analytics.service";
 import { emailNotificationService } from "@/lib/services/email-notification.service";
 import { scheduleEmailSequence } from "@/lib/services/email-sequence.service";
 import { scheduleEmail as enqueueScheduledEmail } from "@/lib/services/qstash.service";
-import { eq, and, gte } from "drizzle-orm";
+import { eq, and, gte, like } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { requireAuth } from "@/lib/utils/security";
 import { ApiResponse } from "@/lib/utils/api-response";
@@ -76,7 +81,10 @@ export async function POST(request: NextRequest) {
         await discordService.notifyFailedAnalysis({
           userId: session.user.id,
           email: session.user.email,
-          error: uploadError instanceof Error ? uploadError.message : "Failed to upload image to blob storage",
+          error:
+            uploadError instanceof Error
+              ? uploadError.message
+              : "Failed to upload image to blob storage",
           failureType: "File Upload",
         });
 
@@ -343,54 +351,90 @@ export async function POST(request: NextRequest) {
       // Schedule recovery email sequence 24 hours later (first analysis only)
       if (newFreeAnalysesUsed === 1) {
         try {
-          const sequenceResult = await scheduleEmailSequence({
-            sequenceId: "one_analysis_recovery",
-            userIds: [session.user.id],
-            triggeredBy: "auto",
-            startDelayHours: 24,
-            metadata: {
-              autoTriggered: true,
-              trigger: "first_free_analysis",
-              analysisId: savedAnalysis.id,
-            },
-          });
+          // Check if user already has pending emails in this sequence
+          const existingSequenceEmails = await db
+            .select()
+            .from(scheduledEmails)
+            .where(
+              and(
+                eq(scheduledEmails.userId, session.user.id),
+                eq(scheduledEmails.status, "pending"),
+                like(
+                  scheduledEmails.emailType,
+                  "sequence_one_analysis_recovery_%"
+                )
+              )
+            )
+            .limit(1);
 
-          const nowForDelay = new Date();
-          const qstashErrors: Array<{ emailId: string; error: string }> = [];
-
-          for (const email of sequenceResult.emailRecords) {
-            try {
-              const delaySeconds = Math.max(
-                0,
-                Math.floor((email.scheduledFor.getTime() - nowForDelay.getTime()) / 1000)
-              );
-
-              await enqueueScheduledEmail({
-                emailId: email.id,
-                delaySeconds,
-              });
-            } catch (queueError) {
-              const errorMessage =
-                queueError instanceof Error ? queueError.message : "Unknown error";
-              qstashErrors.push({ emailId: email.id, error: errorMessage });
-              logger.error("Failed to enqueue recovery sequence email", {
+          // Only schedule if user is not already in the sequence
+          if (existingSequenceEmails.length > 0) {
+            logger.info(
+              "User already enrolled in recovery sequence, skipping",
+              {
                 userId: session.user.id,
-                emailId: email.id,
-                error: errorMessage,
-              });
-            }
-          }
+                existingEmailId: existingSequenceEmails[0].id,
+              }
+            );
+          } else {
+            const sequenceResult = await scheduleEmailSequence({
+              sequenceId: "one_analysis_recovery",
+              userIds: [session.user.id],
+              triggeredBy: "auto",
+              startDelayHours: 24,
+              metadata: {
+                autoTriggered: true,
+                trigger: "first_free_analysis",
+                analysisId: savedAnalysis.id,
+              },
+            });
 
-          logger.info("Recovery email sequence scheduled", {
-            userId: session.user.id,
-            scheduledEmails: sequenceResult.emailRecords.length,
-            qstashErrors: qstashErrors.length,
-          });
+            const nowForDelay = new Date();
+            const qstashErrors: Array<{ emailId: string; error: string }> = [];
+
+            for (const email of sequenceResult.emailRecords) {
+              try {
+                const delaySeconds = Math.max(
+                  0,
+                  Math.floor(
+                    (email.scheduledFor.getTime() - nowForDelay.getTime()) /
+                      1000
+                  )
+                );
+
+                await enqueueScheduledEmail({
+                  emailId: email.id,
+                  delaySeconds,
+                });
+              } catch (queueError) {
+                const errorMessage =
+                  queueError instanceof Error
+                    ? queueError.message
+                    : "Unknown error";
+                qstashErrors.push({ emailId: email.id, error: errorMessage });
+                logger.error("Failed to enqueue recovery sequence email", {
+                  userId: session.user.id,
+                  emailId: email.id,
+                  error: errorMessage,
+                });
+              }
+            }
+
+            logger.info("Recovery email sequence scheduled", {
+              userId: session.user.id,
+              scheduledEmails: sequenceResult.emailRecords.length,
+              qstashErrors: qstashErrors.length,
+            });
+          }
         } catch (sequenceError) {
           // Don't fail the analysis if sequence scheduling fails
-          logger.error("Error scheduling recovery email sequence", sequenceError, {
-            userId: session.user.id,
-          });
+          logger.error(
+            "Error scheduling recovery email sequence",
+            sequenceError,
+            {
+              userId: session.user.id,
+            }
+          );
         }
       }
     }
@@ -417,8 +461,14 @@ export async function POST(request: NextRequest) {
     console.log("Analysis ID:", savedAnalysis.id);
     console.log("Stock Symbol:", aiAnalysis.stockSymbol || "Unknown");
     console.log("Grade:", analysisResult.grade);
-    console.log("Recommendation:", analysisResult.shouldEnter ? "ENTER" : "SKIP");
-    console.log("AI Confidence:", aiAnalysis.confidence ? `${aiAnalysis.confidence}%` : "N/A");
+    console.log(
+      "Recommendation:",
+      analysisResult.shouldEnter ? "ENTER" : "SKIP"
+    );
+    console.log(
+      "AI Confidence:",
+      aiAnalysis.confidence ? `${aiAnalysis.confidence}%` : "N/A"
+    );
     console.log("Type:", isFreeUser ? "Free Trial" : "Paid");
     console.log("Chart URL:", imageUrl);
     console.log("Secure Chart URL:", secureImageUrl);

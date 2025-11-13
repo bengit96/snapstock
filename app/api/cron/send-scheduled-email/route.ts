@@ -140,10 +140,24 @@ export async function POST(request: NextRequest) {
       .replace(/\{\{dashboardUrl\}\}/g, dashboardUrl)
       .replace(/\{\{checkoutUrl\}\}/g, checkoutUrl);
 
+    // Handle subject line with graceful fallback for missing names
+    let personalizedSubject = scheduledEmail.subject;
+    if (user.name) {
+      personalizedSubject = personalizedSubject.replace(
+        /\{\{firstName\}\}/g,
+        firstName
+      );
+    } else {
+      // Remove awkward "there," from subject when no name
+      personalizedSubject = personalizedSubject
+        .replace(/\{\{firstName\}\},\s*/g, "")
+        .replace(/\{\{firstName\}\}/g, "");
+    }
+
     const result = await sendMarketingEmail({
       to: scheduledEmail.recipientEmail,
       userName: user.name,
-      subject: scheduledEmail.subject.replace(/\{\{firstName\}\}/g, firstName),
+      subject: personalizedSubject,
       message: personalizedMessage,
       promoCode: scheduledEmail.promoCode || undefined,
       discountPercent,

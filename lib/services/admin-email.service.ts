@@ -26,7 +26,7 @@ function generateMarketingEmailHTML(
   const appUrl = process.env.APP_URL || "https://snappchart.app";
 
   // Convert markdown to HTML
-  const formattedMessage = marked.parse(message, { 
+  const formattedMessage = marked.parse(message, {
     async: false,
     breaks: true,
     gfm: true,
@@ -46,8 +46,6 @@ function generateMarketingEmailHTML(
         </div>
 
         <div style="background: white; padding: 40px 30px; border-left: 1px solid #e1e1e1; border-right: 1px solid #e1e1e1;">
-          <h2 style="margin-top: 0; color: #333; font-size: 22px;">Hey ${displayName}!</h2>
-
           <div style="font-size: 16px; color: #555; line-height: 1.8;">
             ${formattedMessage}
           </div>
