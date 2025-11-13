@@ -79,7 +79,10 @@ export async function POST(request: NextRequest) {
     let deferredCount = 0;
     const qstashErrors: string[] = [];
 
-    for (const email of result.emailRecords) {
+    // Process emails with 2-second delay between each to avoid rate limits
+    for (let i = 0; i < result.emailRecords.length; i++) {
+      const email = result.emailRecords[i];
+
       try {
         const now = new Date();
         const scheduledFor = new Date(email.scheduledFor);
@@ -140,6 +143,15 @@ export async function POST(request: NextRequest) {
             error: dbError,
           });
         }
+      }
+
+      // Add 2-second delay between emails (except for the last one)
+      if (i < result.emailRecords.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        logger.info("Waiting 2 seconds before scheduling next email", {
+          current: i + 1,
+          total: result.emailRecords.length,
+        });
       }
     }
 

@@ -20,6 +20,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Ban,
+  RefreshCw,
+  Send,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,6 +32,7 @@ export default function AdminEmailsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
   const [cancellingIds, setCancellingIds] = useState<Set<string>>(new Set());
+  const [reschedulingIds, setReschedulingIds] = useState<Set<string>>(new Set());
   const limit = 50;
   const { toast } = useToast();
 
@@ -74,6 +77,52 @@ export default function AdminEmailsPage() {
       });
     } finally {
       setCancellingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(emailId);
+        return next;
+      });
+    }
+  };
+
+  const handleRescheduleEmail = async (emailId: string, recipientEmail: string) => {
+    if (!confirm(`Reschedule this email to ${recipientEmail} to send immediately?`)) {
+      return;
+    }
+
+    setReschedulingIds((prev) => new Set(prev).add(emailId));
+
+    try {
+      const response = await fetch(`/api/admin/scheduled-emails/${emailId}/reschedule`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}), // Send empty body to trigger "now"
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: result.data?.message || "Email rescheduled successfully",
+        });
+        refetch();
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to reschedule email",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reschedule email",
+        variant: "destructive",
+      });
+    } finally {
+      setReschedulingIds((prev) => {
         const next = new Set(prev);
         next.delete(emailId);
         return next;
@@ -425,32 +474,61 @@ export default function AdminEmailsPage() {
                           )}
                         </td>
                         <td className="px-4 py-4 text-sm">
-                          {email.status === "pending" && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                handleCancelEmail(email.id, email.recipientEmail)
-                              }
-                              disabled={cancellingIds.has(email.id)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                            >
-                              {cancellingIds.has(email.id) ? (
-                                <>
-                                  <LoadingSpinner className="h-4 w-4 mr-1" />
-                                  Cancelling...
-                                </>
-                              ) : (
-                                <>
-                                  <Ban className="h-4 w-4 mr-1" />
-                                  Cancel
-                                </>
-                              )}
-                            </Button>
-                          )}
-                          {email.status !== "pending" && (
-                            <span className="text-gray-400">-</span>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {(email.status === "pending" || email.status === "failed") && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleRescheduleEmail(email.id, email.recipientEmail)
+                                  }
+                                  disabled={reschedulingIds.has(email.id)}
+                                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                  title="Send now"
+                                >
+                                  {reschedulingIds.has(email.id) ? (
+                                    <>
+                                      <LoadingSpinner className="h-4 w-4 mr-1" />
+                                      Sending...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Send className="h-4 w-4 mr-1" />
+                                      Send Now
+                                    </>
+                                  )}
+                                </Button>
+                                {email.status === "pending" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      handleCancelEmail(email.id, email.recipientEmail)
+                                    }
+                                    disabled={cancellingIds.has(email.id)}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                    title="Cancel email"
+                                  >
+                                    {cancellingIds.has(email.id) ? (
+                                      <>
+                                        <LoadingSpinner className="h-4 w-4 mr-1" />
+                                        Cancelling...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Ban className="h-4 w-4 mr-1" />
+                                        Cancel
+                                      </>
+                                    )}
+                                  </Button>
+                                )}
+                              </>
+                            )}
+                            {email.status !== "pending" && email.status !== "failed" && (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
