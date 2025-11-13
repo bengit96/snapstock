@@ -56,6 +56,7 @@ export async function getUserBillingPeriod(
       subscriptionStatus: users.subscriptionStatus,
       currentPeriodStart: users.currentPeriodStart,
       subscriptionEndDate: users.subscriptionEndDate,
+      freeAnalysesLimit: users.freeAnalysesLimit,
     })
     .from(users)
     .where(eq(users.id, userId))
@@ -72,9 +73,11 @@ export async function getUserBillingPeriod(
     | "lifetime"
     | null;
   const periodStart = getBillingPeriodStart(user);
+  
+  // Get limit based on subscription tier or free limit
   const analysesLimit = tier
     ? SUBSCRIPTION_LIMITS[tier]?.monthlyAnalyses ?? null
-    : null;
+    : user.freeAnalysesLimit || 1; // Free users get their freeAnalysesLimit (default 1)
 
   return {
     periodStart,

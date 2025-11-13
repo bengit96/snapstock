@@ -30,6 +30,7 @@ import {
   Shield,
   HeadphonesIcon,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SupportModal } from "@/components/support/support-modal";
@@ -48,11 +49,15 @@ export function AuthenticatedHeader() {
   const avatarLetter = username[0].toUpperCase();
 
   // Always fetch fresh billing data instead of relying on cached session
-  const { data: billingData } = useBillingUsage();
+  const {
+    data: billingData,
+    isLoading: billingLoading,
+    isError: billingError,
+  } = useBillingUsage();
 
   // Use fresh billing data for subscription status
-  const subscriptionTier = (billingData as any)?.subscriptionTier;
-  const subscriptionStatus = (billingData as any)?.subscriptionStatus;
+  const subscriptionTier = billingData?.subscriptionTier;
+  const subscriptionStatus = billingData?.subscriptionStatus;
   const hasSubscription =
     subscriptionTier &&
     subscriptionTier !== "free" &&
@@ -60,18 +65,33 @@ export function AuthenticatedHeader() {
   const isYearlyPlan = subscriptionTier === "yearly";
   const isAdmin = session?.user?.role === "admin";
 
-  // Get usage data
-  const analysesUsed = (billingData as UsageData)?.analysesUsed || 0;
-  const analysesLimit = (billingData as UsageData)?.analysesLimit;
-  const analysesRemaining =
-    analysesLimit === null
-      ? "Unlimited"
-      : Math.max(0, analysesLimit - analysesUsed);
+  // Get usage data - handle loading/error states
+  const analysesUsed = billingData?.analysesUsed || 0;
+  const analysesLimit = billingData?.analysesLimit ?? null;
+  const freeAnalysesLimit = billingData?.freeAnalysesLimit || 1;
+
+  // Calculate remaining based on user type
+  const analysesRemaining = (() => {
+    if (billingLoading) return "...";
+    if (billingError) return "?";
+
+    // For free users without a subscription
+    if (!hasSubscription && !subscriptionTier) {
+      return Math.max(0, freeAnalysesLimit - analysesUsed);
+    }
+
+    // For paid users
+    if (analysesLimit === null) return "Unlimited";
+    return Math.max(0, analysesLimit - analysesUsed);
+  })();
 
   // Determine if we should show the usage (only on analyze page or if running low)
   const isAnalyzePage = pathname === "/dashboard/analyze";
   const isRunningLow =
-    analysesLimit !== null && analysesLimit - analysesUsed <= 5;
+    analysesLimit !== null &&
+    analysesLimit > 0 &&
+    analysesLimit - analysesUsed <= 5 &&
+    !billingLoading;
 
   const tabs = [
     { name: "Home", href: "/home", icon: Home },
@@ -193,40 +213,60 @@ export function AuthenticatedHeader() {
                     animate={{ opacity: 1, scale: 1 }}
                     className={cn(
                       "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border",
-                      analysesLimit === null
+                      billingError
+                        ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                        : analysesLimit === null && !billingLoading
                         ? "bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800"
                         : isRunningLow
                         ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200 dark:border-orange-800"
                         : "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800"
                     )}
                   >
-                    <TrendingUp
-                      className={cn(
-                        "w-4 h-4",
-                        analysesLimit === null
-                          ? "text-purple-600 dark:text-purple-400"
-                          : isRunningLow
-                          ? "text-orange-600 dark:text-orange-400"
-                          : "text-blue-600 dark:text-blue-400"
-                      )}
-                    />
+                    {billingLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+                    ) : billingError ? (
+                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    ) : (
+                      <TrendingUp
+                        className={cn(
+                          "w-4 h-4",
+                          analysesLimit === null
+                            ? "text-purple-600 dark:text-purple-400"
+                            : isRunningLow
+                            ? "text-orange-600 dark:text-orange-400"
+                            : "text-blue-600 dark:text-blue-400"
+                        )}
+                      />
+                    )}
                     <div className="flex flex-col">
                       <span
                         className={cn(
                           "text-xs font-semibold leading-none",
-                          analysesLimit === null
+                          billingError
+                            ? "text-red-700 dark:text-red-300"
+                            : analysesLimit === null && !billingLoading
                             ? "text-purple-700 dark:text-purple-300"
                             : isRunningLow
                             ? "text-orange-700 dark:text-orange-300"
                             : "text-blue-700 dark:text-blue-300"
                         )}
                       >
-                        {analysesRemaining === "Unlimited"
+                        {billingLoading
+                          ? "Loading..."
+                          : billingError
+                          ? "Error"
+                          : analysesRemaining === "Unlimited"
                           ? "Unlimited"
-                          : `${analysesRemaining} Left`}
+                          : typeof analysesRemaining === "number"
+                          ? `${analysesRemaining} Left`
+                          : analysesRemaining}
                       </span>
                       <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                        {analysesLimit === null
+                        {billingLoading
+                          ? "Fetching data..."
+                          : billingError
+                          ? "Can't load usage"
+                          : analysesLimit === null
                           ? "Analyses"
                           : `of ${analysesLimit} this month`}
                       </span>
@@ -372,42 +412,71 @@ export function AuthenticatedHeader() {
                               <div
                                 className={cn(
                                   "mt-3 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm",
-                                  analysesLimit === null
+                                  billingError
+                                    ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                                    : analysesLimit === null && !billingLoading
                                     ? "bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800"
                                     : isRunningLow
                                     ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200 dark:border-orange-800"
                                     : "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800"
                                 )}
                               >
-                                <TrendingUp
-                                  className={cn(
-                                    "w-4 h-4",
-                                    analysesLimit === null
-                                      ? "text-purple-600 dark:text-purple-400"
-                                      : isRunningLow
-                                      ? "text-orange-600 dark:text-orange-400"
-                                      : "text-blue-600 dark:text-blue-400"
-                                  )}
-                                />
+                                {billingLoading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+                                ) : billingError ? (
+                                  <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                ) : (
+                                  <TrendingUp
+                                    className={cn(
+                                      "w-4 h-4",
+                                      analysesLimit === null
+                                        ? "text-purple-600 dark:text-purple-400"
+                                        : isRunningLow
+                                        ? "text-orange-600 dark:text-orange-400"
+                                        : "text-blue-600 dark:text-blue-400"
+                                    )}
+                                  />
+                                )}
                                 <div className="flex-1">
                                   <div
                                     className={cn(
                                       "font-semibold text-xs",
-                                      analysesLimit === null
+                                      billingError
+                                        ? "text-red-700 dark:text-red-300"
+                                        : analysesLimit === null &&
+                                          !billingLoading
                                         ? "text-purple-700 dark:text-purple-300"
                                         : isRunningLow
                                         ? "text-orange-700 dark:text-orange-300"
                                         : "text-blue-700 dark:text-blue-300"
                                     )}
                                   >
-                                    {analysesRemaining === "Unlimited"
+                                    {billingLoading
+                                      ? "Loading..."
+                                      : billingError
+                                      ? "Error loading data"
+                                      : analysesRemaining === "Unlimited"
                                       ? "Unlimited Analyses"
-                                      : `${analysesRemaining} analyses left`}
+                                      : typeof analysesRemaining === "number"
+                                      ? `${analysesRemaining} analyses left`
+                                      : analysesRemaining}
                                   </div>
-                                  {analysesLimit !== null && (
+                                  {!billingLoading &&
+                                    !billingError &&
+                                    analysesLimit !== null && (
+                                      <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                                        {analysesUsed} of {analysesLimit} used
+                                        this month
+                                      </div>
+                                    )}
+                                  {billingLoading && (
                                     <div className="text-[10px] text-gray-500 dark:text-gray-400">
-                                      {analysesUsed} of {analysesLimit} used
-                                      this month
+                                      Fetching usage data...
+                                    </div>
+                                  )}
+                                  {billingError && (
+                                    <div className="text-[10px] text-red-500 dark:text-red-400">
+                                      Tap to refresh
                                     </div>
                                   )}
                                 </div>
