@@ -69,8 +69,8 @@ _P.S. Hit reply if you have questions about pricing or want me to personally rev
         discountPercent: 30,
       },
       {
-        id: "day_3_check_in",
-        delayDays: 3,
+        id: "day_2_check_in",
+        delayDays: 2,
         subject: "Did you get a chance to use your free analyses?",
         message: `Hi {{firstName}},
 
@@ -96,12 +96,12 @@ Founder, Snapstock`,
         discountPercent: 30,
       },
       {
-        id: "day_7_urgency",
-        delayDays: 7,
-        subject: "Your SNAP30 code expires tonight",
+        id: "day_5_urgency",
+        delayDays: 5,
+        subject: "Your SNAP30 code expires soon",
         message: `Hi {{firstName}},
 
-Quick heads up—your **SNAP30** discount code (30% off) expires at midnight tonight.
+Quick heads up—your **SNAP30** discount code (30% off) expires in 2 days.
 
 If you've been on the fence about upgrading to Snapstock Pro, now's the time to lock in the savings.
 
@@ -110,9 +110,9 @@ If you've been on the fence about upgrading to Snapstock Pro, now's the time to 
 • Advanced momentum & pullback models
 • Priority support from our trading team
 
-👉 **[Activate SNAP30 before midnight]({{checkoutUrl}}?promo=SNAP30)**
+👉 **[Activate SNAP30 now]({{checkoutUrl}}?promo=SNAP30)**
 
-After tonight, this code disappears and the price goes back to full rate.
+After that, this code disappears and the price goes back to full rate.
 
 See you in the terminal,
 Ben
@@ -123,8 +123,8 @@ _P.S. Still have questions? Reply to this email—I'll get back to you within th
         discountPercent: 30,
       },
       {
-        id: "day_10_final_offer",
-        delayDays: 10,
+        id: "day_7_final_offer",
+        delayDays: 7,
         subject: "One last thing before we say goodbye...",
         message: `Hi {{firstName}},
 
