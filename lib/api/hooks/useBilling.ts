@@ -5,6 +5,7 @@ import { toast } from "sonner";
 interface UsageData {
   analysesUsed: number;
   analysesLimit: number | null;
+  freeAnalysesLimit: number;
   currentPeriodEnd: string | null;
   subscriptionTier: string | null;
   subscriptionStatus: string | null;

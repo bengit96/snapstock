@@ -49,6 +49,7 @@ export async function GET() {
         ? analysesUsed
         : userData.freeAnalysesUsed || 0,
       analysesLimit: billingInfo.analysesLimit,
+      freeAnalysesLimit: userData.freeAnalysesLimit || 1, // Include free analyses limit for free users
       currentPeriodEnd: billingInfo.periodEnd,
       subscriptionTier: userData.subscriptionTier || null,
       subscriptionStatus: userData.subscriptionStatus,

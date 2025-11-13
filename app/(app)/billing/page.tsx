@@ -104,7 +104,7 @@ export default function BillingPage() {
       : "Unlimited";
 
   const freeAnalysesUsed = usageData?.analysesUsed || 0;
-  const freeAnalysesLimit = 1; // Default free limit
+  const freeAnalysesLimit = usageData?.freeAnalysesLimit || 1; // Get dynamic limit from API (can be 1, 3, etc.)
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-900 dark:to-purple-900/20">
