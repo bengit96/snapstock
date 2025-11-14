@@ -70,7 +70,8 @@ export function Footer() {
       links: [
         { href: '/blog', label: 'Blog' },
         { href: '/about', label: 'About Us' },
-        { href: '/contact', label: 'Contact' }
+        { href: '/contact', label: 'Contact' },
+        { href: '/recommended-trade-setup', label: 'Recommended Trade Setup' }
       ]
     },
     {
