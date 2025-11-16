@@ -113,7 +113,7 @@ export default function TermsPage() {
 
           <h2>8. Subscription and Payments</h2>
           <ul>
-            <li><strong>Free Trial:</strong> New users receive 1 free chart analysis upon registration</li>
+            <li><strong>Free Trial:</strong> New users receive 5 free chart analyses upon registration</li>
             <li><strong>Paid Subscriptions:</strong> Continued use requires a paid subscription</li>
             <li><strong>Billing:</strong> Subscriptions are billed in advance on a monthly, yearly, or one-time basis</li>
             <li><strong>Cancellation:</strong> You may cancel at any time through your account settings</li>

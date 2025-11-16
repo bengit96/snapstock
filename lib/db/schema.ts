@@ -43,7 +43,7 @@ export const users = pgTable("users", {
 
   // Usage limits (for free tier)
   freeAnalysesUsed: integer("free_analyses_used").default(0),
-  freeAnalysesLimit: integer("free_analyses_limit").default(1), // 1 free analysis
+  freeAnalysesLimit: integer("free_analyses_limit").default(5), // 5 free analyses
 
   // Legal acceptance
   acceptedTerms: boolean("accepted_terms").default(false),

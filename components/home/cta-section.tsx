@@ -16,7 +16,7 @@ export function CTASection({
   title = 'Ready to Transform Your Trading?',
   description = 'Join traders worldwide using SnapPChart to analyze momentum setups across all markets. Get your first analysis free—no credit card required.',
   buttonText = 'Generate Your Free Analysis',
-  subtext = 'One free analysis to try it out. Then subscribe for continued access.'
+  subtext = '5 free analyses to try it out. Then subscribe for continued access.'
 }: CTASectionProps) {
   const { handleGetStarted } = useGetStarted()
 

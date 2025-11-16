@@ -61,8 +61,8 @@ export function AnalysisLimitModal({
             <DialogDescription className="text-center text-base">
               {isFreeUser ? (
                 <>
-                  You've used your free analysis. Upgrade now to unlock
-                  unlimited stock analysis and advanced insights!
+                  You've used all {analysesLimit} free analyses! Ready to unlock unlimited
+                  stock analysis and never miss another A-grade setup?
                 </>
               ) : (
                 <>

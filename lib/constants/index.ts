@@ -142,7 +142,7 @@ export const PRICING_PLANS = [
     period: "forever",
     description: "Perfect for trying out the platform",
     features: [
-      "1 chart analysis",
+      "5 chart analyses",
       "AI-powered analysis",
       "Basic trade recommendations",
     ],

@@ -29,36 +29,39 @@ export interface EmailSequence {
 export const EMAIL_SEQUENCES: Record<string, EmailSequence> = {
   one_analysis_recovery: {
     id: "one_analysis_recovery",
-    name: "One Analysis Wonder Recovery",
-    description: "Re-engage users who did 1 free analysis and stopped",
+    name: "Free Trial Recovery",
+    description: "Re-engage users who used some/all of their 5 free analyses but didn't convert",
     targetSegment: "one_time_users",
     steps: [
       {
-        id: "day_0_free_analyses",
+        id: "day_0_discount_offer",
         delayDays: 0,
-        subject: "{{firstName}}, here's 2 more free analyses on us",
+        subject: "{{firstName}}, you've used your 5 free analyses - here's 30% off",
         message: `Hi {{firstName}},
 
-I noticed you analyzed one chart with Snapstock but haven't been back since.
+I noticed you've gone through your 5 free chart analyses with Snapstock.
 
-**Here's the truth:** Most traders who stop after 1 analysis tell us they weren't sure if the tool was worth paying for yet. That's totally fair.
+**Here's my question:** Did they help you make better trading decisions?
 
-So here's what I'm doing for you:
+If the answer is yes, I have good news:
 
-**→ 2 more FREE analyses (no card required)**
+**→ Get 30% off your first month with code SNAP30**
 
-Upload 2 more charts this week and see if Snapstock helps you spot better entries, avoid bad setups, or just trade with more confidence. If it clicks, great. If not, no worries.
+Most traders who upgrade tell us Snapstock pays for itself after avoiding just ONE bad trade. At $13.99/month with your discount (normally $19.99), you get:
 
-👉 **[Claim my 2 free analyses]({{dashboardUrl}})**
+✓ **100 analyses per month** - never run out when the market lines up
+✓ **Advanced momentum & pullback models** - spot A-grade setups faster
+✓ **Trade history tracking** - review what worked and what didn't
+✓ **Priority support** - get help when you need it
 
-And if you do decide to upgrade after that? Use code **SNAP30** to lock in 30% off your first month (valid through Sunday).
+👉 **[Upgrade with SNAP30 (30% off)]({{checkoutUrl}}?promo=SNAP30)**
 
-**Why traders who upgrade say it's worth it:**
+**Why traders who upgraded say it's worth it:**
 - "Saved me from a $800 loss on a fake breakout" — Mike T.
 - "Cut my chart review time from 20 min to under 2 min" — Sarah K.
 - "Finally stopped second-guessing my entries" — James L.
 
-No pressure—just wanted to make sure price wasn't the only thing holding you back.
+This code expires in 72 hours, so don't miss out.
 
 See you in the terminal,
 Ben
@@ -71,22 +74,24 @@ _P.S. Hit reply if you have questions about pricing or want me to personally rev
       {
         id: "day_2_check_in",
         delayDays: 2,
-        subject: "Did you get a chance to use your free analyses?",
+        subject: "Your SNAP30 code expires in 24 hours",
         message: `Hi {{firstName}},
 
-Just checking in—did you get a chance to use the 2 free analyses I sent over?
+Quick reminder: your **30% off code (SNAP30)** expires tomorrow.
 
-I know the market's been moving fast lately, and I didn't want you to miss out on having Snapstock in your corner for the next setup.
+I know the market's been moving fast lately, and I didn't want you to miss out on having Snapstock in your corner for your next setup.
 
-**Quick reminder of what you get:**
-✓ AI-powered momentum & pullback signals
+**What you get with the upgrade:**
+✓ AI-powered momentum & pullback signals (unlimited)
 ✓ Exact entry/exit zones with risk/reward ratios
 ✓ Side-by-side strength/weakness breakdowns
+✓ Trade history to track your performance
 
-If you haven't used them yet, they're still waiting for you in your dashboard:
-👉 **[Go to my dashboard]({{dashboardUrl}})**
+Just $13.99/month with SNAP30 (normally $19.99).
 
-And your **SNAP30** code (30% off) is still active if you decide to upgrade.
+👉 **[Claim your 30% discount now]({{checkoutUrl}}?promo=SNAP30)**
+
+Once this code expires, it's gone for good.
 
 Questions? Just hit reply—I'm here to help.
 
@@ -229,22 +234,6 @@ export async function scheduleEmailSequence({
       if (user.subscriptionStatus === "active") {
         logger.info("Skipping user - already subscribed", { userId: user.id });
         continue;
-      }
-
-      // Grant 2 free analyses for the "one_analysis_recovery" sequence
-      if (sequenceId === "one_analysis_recovery") {
-        await db
-          .update(users)
-          .set({
-            freeAnalysesLimit: 3, // Grant 2 more (1 + 2 = 3 total)
-            updatedAt: new Date(),
-          })
-          .where(eq(users.id, user.id));
-
-        logger.info("Granted 2 free analyses to user", {
-          userId: user.id,
-          sequenceId,
-        });
       }
 
       // Schedule each step in the sequence

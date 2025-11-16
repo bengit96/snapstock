@@ -78,7 +78,7 @@ export function PricingSection() {
             Simple, Transparent Pricing
           </h2>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
-            Everyone gets 1 free analysis. Ready for more? Choose the plan that
+            Everyone gets 5 free analyses. Ready for more? Choose the plan that
             fits your trading style.
           </p>
         </motion.div>

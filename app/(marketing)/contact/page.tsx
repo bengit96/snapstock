@@ -22,7 +22,7 @@ const faqs = [
   {
     question: "How does the free analysis work?",
     answer:
-      "New users get one free chart analysis to try out the platform. Simply upload a chart screenshot, create an account, and receive your AI-powered analysis. After your free analysis, you can subscribe for unlimited access.",
+      "New users get 5 free chart analyses to try out the platform. Simply upload a chart screenshot, create an account, and receive your AI-powered analysis. After your free analyses, you can subscribe for unlimited access.",
   },
   {
     question: "What types of charts can I analyze?",
@@ -162,9 +162,9 @@ export default function ContactPage() {
                   How does the free analysis work?
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  New users get one free chart analysis to try out the platform.
+                  New users get 5 free chart analyses to try out the platform.
                   Simply upload a chart screenshot, create an account, and
-                  receive your AI-powered analysis. After your free analysis,
+                  receive your AI-powered analysis. After your free analyses,
                   you can subscribe for unlimited access.
                 </p>
               </div>
