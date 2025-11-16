@@ -213,23 +213,8 @@ export async function POST(request: NextRequest) {
     console.log("overallReason:", aiAnalysis.overallReason);
     console.log("=========================");
 
-    // Check if it's a valid chart
-    if (!aiAnalysis.isValidChart) {
-      // Notify Discord about failed analysis due to invalid chart
-      await discordService.notifyFailedAnalysis({
-        userId: session.user.id,
-        email: user.email,
-        error: `Invalid chart detected (confidence: ${aiAnalysis.confidence}%) - Not a valid LIVE stock chart`,
-        failureType: "Invalid Chart",
-        chartUrl: imageUrl,
-      });
-
-      return ApiResponse.badRequest("Invalid chart", {
-        message:
-          "The uploaded image does not appear to be a valid LIVE stock chart. Please ensure: (1) It's a chart from a trading platform, (2) It shows CURRENT/LIVE price action (not historical data from weeks/months ago), (3) It has visible price action, volume bars, technical indicators and x and y axis",
-        confidence: aiAnalysis.confidence,
-      });
-    }
+    // Chart validation disabled - analyze directly regardless of validity
+    // This allows analysis to proceed even if AI flags the chart as invalid
 
     // Run trading strategy analysis on the detected signals
     const analysisResult = analyzeChart({
