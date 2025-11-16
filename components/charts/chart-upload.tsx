@@ -1,22 +1,28 @@
-'use client'
+"use client";
 
-import { useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { ErrorMessage } from '@/components/ui/error-message'
-import { Upload, Brain, Sparkles } from 'lucide-react'
-import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
-import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { Upload, Brain, Sparkles } from "lucide-react";
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChartUploadProps {
-  onDrop: (files: File[]) => void
-  uploadedImage?: string | null
-  isUploading?: boolean
-  error?: string | null
-  onErrorDismiss?: () => void
-  className?: string
+  onDrop: (files: File[]) => void;
+  uploadedImage?: string | null;
+  isUploading?: boolean;
+  error?: string | null;
+  onErrorDismiss?: () => void;
+  className?: string;
 }
 
 export function ChartUpload({
@@ -25,24 +31,24 @@ export function ChartUpload({
   isUploading = false,
   error,
   onErrorDismiss,
-  className
+  className,
 }: ChartUploadProps) {
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        onDrop(acceptedFiles)
+        onDrop(acceptedFiles);
       }
     },
     [onDrop]
-  )
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     accept: ACCEPTED_IMAGE_TYPES,
     maxFiles: 1,
     maxSize: MAX_FILE_SIZE,
-    disabled: isUploading
-  })
+    disabled: isUploading,
+  });
 
   return (
     <Card className={className}>
@@ -58,13 +64,24 @@ export function ChartUpload({
           {/* Axis Visibility Warning */}
           <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
             <p className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1 flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
               </svg>
               X & Y Axis Must Be Visible
             </p>
             <p className="text-xs text-amber-800 dark:text-amber-200">
-              Ensure both axes (time and price) are clearly visible for accurate analysis
+              Ensure both axes (time and price) are clearly visible for accurate
+              analysis
             </p>
           </div>
 
@@ -112,10 +129,12 @@ export function ChartUpload({
         <div
           {...getRootProps()}
           className={cn(
-            'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all',
-            isDragActive && 'border-purple-500 bg-purple-50 dark:bg-purple-900/20',
-            !isDragActive && 'border-gray-300 dark:border-gray-700 hover:border-purple-400',
-            isUploading && 'opacity-50 cursor-not-allowed'
+            "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all",
+            isDragActive &&
+              "border-purple-500 bg-purple-50 dark:bg-purple-900/20",
+            !isDragActive &&
+              "border-gray-300 dark:border-gray-700 hover:border-purple-400",
+            isUploading && "opacity-50 cursor-not-allowed"
           )}
         >
           <input {...getInputProps()} />
@@ -157,7 +176,7 @@ export function ChartUpload({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 /**
@@ -169,14 +188,14 @@ function UploadPrompt({ isDragActive }: { isDragActive: boolean }) {
       <Upload className="mx-auto h-12 w-12 text-gray-400" />
       <div>
         <p className="text-lg font-medium">
-          {isDragActive ? 'Drop the chart here' : 'Drag & drop a stock chart'}
+          {isDragActive ? "Drop the chart here" : "Drag & drop a stock chart"}
         </p>
         <p className="text-sm text-gray-500 mt-1">
           or click to select from your computer
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -184,10 +203,10 @@ function UploadPrompt({ isDragActive }: { isDragActive: boolean }) {
  */
 function UploadedImagePreview({
   image,
-  isAnalyzing
+  isAnalyzing,
 }: {
-  image: string
-  isAnalyzing: boolean
+  image: string;
+  isAnalyzing: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -208,5 +227,5 @@ function UploadedImagePreview({
         </p>
       )}
     </div>
-  )
+  );
 }

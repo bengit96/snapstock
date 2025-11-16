@@ -190,7 +190,7 @@ export default function ProtectedAnalyzePage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-md mx-auto mt-4"
+                className="max-w-md mx-auto mt-4 space-y-3"
               >
                 <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl p-6 shadow-lg">
                   <div className="flex items-start gap-3 mb-4">
@@ -237,6 +237,39 @@ export default function ProtectedAnalyzePage() {
                     </svg>
                     Try Again with Another Chart
                   </button>
+                </div>
+
+                {/* Helpful tip for failed analysis */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-blue-600 dark:text-blue-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                        💡 Tip: Crop Your Image
+                      </h4>
+                      <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                        For better analysis results, crop your screenshot to{" "}
+                        <strong>only include the chart area</strong>. Remove any
+                        sidebars, headers, navigation bars, and other non-chart
+                        elements. The AI works best when focused solely on the
+                        price action and indicators.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
