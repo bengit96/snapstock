@@ -76,10 +76,8 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
       bullishSignals.some((s) => s.id === signal.id && s.confidence >= 50)
   ).map((signal) => ({
     ...signal,
-    confidence:
-      bullishSignals.find((s) => s.id === signal.id)?.confidence || 0,
-    explanation: bullishSignals.find((s) => s.id === signal.id)
-      ?.explanation,
+    confidence: bullishSignals.find((s) => s.id === signal.id)?.confidence || 0,
+    explanation: bullishSignals.find((s) => s.id === signal.id)?.explanation,
   }));
 
   let activeBearishSignals = TRADING_SIGNALS.filter(
@@ -88,10 +86,8 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
       bearishSignals.some((s) => s.id === signal.id && s.confidence >= 50)
   ).map((signal) => ({
     ...signal,
-    confidence:
-      bearishSignals.find((s) => s.id === signal.id)?.confidence || 0,
-    explanation: bearishSignals.find((s) => s.id === signal.id)
-      ?.explanation,
+    confidence: bearishSignals.find((s) => s.id === signal.id)?.confidence || 0,
+    explanation: bearishSignals.find((s) => s.id === signal.id)?.explanation,
   }));
 
   // Step 1: Resolve direct signal conflicts (e.g., macd-green vs macd-red)
@@ -211,10 +207,8 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
     noGoSignals.some((s) => s.id === condition.id && s.confidence >= 50)
   ).map((condition) => ({
     ...condition,
-    confidence: noGoSignals.find((s) => s.id === condition.id)
-      ?.confidence,
-    explanation: noGoSignals.find((s) => s.id === condition.id)
-      ?.explanation,
+    confidence: noGoSignals.find((s) => s.id === condition.id)?.confidence,
+    explanation: noGoSignals.find((s) => s.id === condition.id)?.explanation,
   }));
 
   // Calculate total score (START FROM 50 BASELINE, then add/deduct points)
@@ -339,7 +333,9 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
             category: "bearish" as const,
             confluenceCategory: "risk_management",
             confidence: 95,
-            explanation: `Risk/reward ratio is ${riskRewardRatio.toFixed(1)}:1 (below minimum 2:1 requirement)`,
+            explanation: `Risk/reward ratio is ${riskRewardRatio.toFixed(
+              1
+            )}:1 (below minimum 2:1 requirement)`,
             active: true,
             key: "poor-risk-reward",
             conflictsWith: [],
@@ -350,7 +346,9 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
           activeBearishSignals.push(poorRiskRewardSignal);
 
           // Recalculate score with this new signal
-          const bearishPenalty = Math.abs(poorRiskRewardSignal.points) * (poorRiskRewardSignal.confidence / 100);
+          const bearishPenalty =
+            Math.abs(poorRiskRewardSignal.points) *
+            (poorRiskRewardSignal.confidence / 100);
           bearishScore += bearishPenalty;
           totalScore -= bearishPenalty;
 
@@ -364,33 +362,39 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
 
     // Check for red volume spikes mentioned in trade thesis or overall reason
     const textToCheck = [
-      input.tradeThesis || '',
-      input.overallReason || '',
-      input.plainLanguageAnalysis || ''
-    ].join(' ').toLowerCase();
+      input.tradeThesis || "",
+      input.overallReason || "",
+      input.plainLanguageAnalysis || "",
+    ]
+      .join(" ")
+      .toLowerCase();
 
     const redVolumePatterns = [
-      'red volume spike',
-      'large red volume',
-      'high red volume',
-      'selling pressure',
-      'heavy selling',
-      'strong selling volume',
-      'significant red volume',
-      'massive red volume',
-      'red volume bar'
+      "red volume spike",
+      "large red volume",
+      "high red volume",
+      "selling pressure",
+      "heavy selling",
+      "strong selling volume",
+      "significant red volume",
+      "massive red volume",
+      "red volume bar",
     ];
 
-    const hasRedVolumeSpike = redVolumePatterns.some(pattern =>
+    const hasRedVolumeSpike = redVolumePatterns.some((pattern) =>
       textToCheck.includes(pattern)
     );
 
     // If red volume spike is mentioned but not already in bearish signals
-    if (hasRedVolumeSpike && !activeBearishSignals.some(s =>
-      s.id === 'red-volume-spike' ||
-      s.id === 'heavy-sell-vol' ||
-      s.id === 'weak-volume'
-    )) {
+    if (
+      hasRedVolumeSpike &&
+      !activeBearishSignals.some(
+        (s) =>
+          s.id === "red-volume-spike" ||
+          s.id === "heavy-sell-vol" ||
+          s.id === "weak-volume"
+      )
+    ) {
       const redVolumeSpikeSignal = {
         id: "red-volume-spike",
         name: "Red Volume Spike Detected",
@@ -399,7 +403,8 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
         category: "bearish" as const,
         confluenceCategory: "volume",
         confidence: 90,
-        explanation: "Large red volume spikes indicate institutional selling or strong rejection at this level",
+        explanation:
+          "Large red volume spikes indicate institutional selling or strong rejection at this level",
         active: true,
         key: "red-volume-spike",
         conflictsWith: [],
@@ -410,7 +415,9 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
       activeBearishSignals.push(redVolumeSpikeSignal);
 
       // Recalculate score with this new signal
-      const bearishPenalty = Math.abs(redVolumeSpikeSignal.points) * (redVolumeSpikeSignal.confidence / 100);
+      const bearishPenalty =
+        Math.abs(redVolumeSpikeSignal.points) *
+        (redVolumeSpikeSignal.confidence / 100);
       bearishScore += bearishPenalty;
       totalScore -= bearishPenalty;
 
@@ -469,23 +476,42 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
     // AI provided a detailed description - use it as is
     chartSummary = input.chartDescription;
   } else if (hasNoGo) {
-    const conditionNames = activeNoGoConditions.map(c => c.name).join(" and ");
+    const conditionNames = activeNoGoConditions
+      .map((c) => c.name)
+      .join(" and ");
     chartSummary = `This chart shows significant risk factors including ${conditionNames}. These conditions suggest caution and may indicate an unfavorable trading environment.`;
   } else if (grade === "A+" || grade === "A") {
-    const bullishNames = activeBullishSignals.slice(0, 2).map(s => s.name).join(" and ");
-    chartSummary = `This chart displays strong bullish momentum with ${activeBullishSignals.length} positive signal${activeBullishSignals.length > 1 ? 's' : ''}, including ${bullishNames}. `;
+    const bullishNames = activeBullishSignals
+      .slice(0, 2)
+      .map((s) => s.name)
+      .join(" and ");
+    chartSummary = `This chart displays strong bullish momentum with ${
+      activeBullishSignals.length
+    } positive signal${
+      activeBullishSignals.length > 1 ? "s" : ""
+    }, including ${bullishNames}. `;
     if (confluenceCount >= 2) {
       chartSummary += `Multiple technical indicators are aligning (${confluenceCount} confluence areas), which strengthens the bullish case. `;
     }
     if (activeBearishSignals.length > 0) {
-      chartSummary += `While there are ${activeBearishSignals.length} bearish signal${activeBearishSignals.length > 1 ? 's' : ''} present, the bullish signals are stronger and more dominant.`;
+      chartSummary += `While there are ${
+        activeBearishSignals.length
+      } bearish signal${
+        activeBearishSignals.length > 1 ? "s" : ""
+      } present, the bullish signals are stronger and more dominant.`;
     } else {
       chartSummary += `The absence of significant bearish signals further supports the positive outlook.`;
     }
   } else if (grade === "B+" || grade === "B") {
-    chartSummary = `This chart shows a moderately positive setup with ${activeBullishSignals.length} bullish signal${activeBullishSignals.length > 1 ? 's' : ''}. `;
+    chartSummary = `This chart shows a moderately positive setup with ${
+      activeBullishSignals.length
+    } bullish signal${activeBullishSignals.length > 1 ? "s" : ""}. `;
     if (activeBearishSignals.length > 0) {
-      chartSummary += `However, there are ${activeBearishSignals.length} bearish signal${activeBearishSignals.length > 1 ? 's' : ''} that may limit the upside potential. `;
+      chartSummary += `However, there are ${
+        activeBearishSignals.length
+      } bearish signal${
+        activeBearishSignals.length > 1 ? "s" : ""
+      } that may limit the upside potential. `;
     }
     chartSummary += `Consider this a decent opportunity with moderate risk.`;
   } else if (grade === "C+" || grade === "C") {
@@ -499,8 +525,15 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
   } else {
     // D or F
     if (activeBearishSignals.length > 0) {
-      const bearishNames = activeBearishSignals.slice(0, 2).map(s => s.name).join(" and ");
-      chartSummary = `This chart is showing bearish characteristics with ${activeBearishSignals.length} negative signal${activeBearishSignals.length > 1 ? 's' : ''}, including ${bearishNames}. `;
+      const bearishNames = activeBearishSignals
+        .slice(0, 2)
+        .map((s) => s.name)
+        .join(" and ");
+      chartSummary = `This chart is showing bearish characteristics with ${
+        activeBearishSignals.length
+      } negative signal${
+        activeBearishSignals.length > 1 ? "s" : ""
+      }, including ${bearishNames}. `;
     } else {
       chartSummary = `This chart lacks sufficient positive signals to support a strong trading thesis. `;
     }
