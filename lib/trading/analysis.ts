@@ -64,28 +64,33 @@ export interface StrategyAnalysisInput {
 }
 
 export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
+  // Ensure signal arrays exist (fallback to empty arrays if undefined)
+  const bullishSignals = input.bullishSignals || [];
+  const bearishSignals = input.bearishSignals || [];
+  const noGoSignals = input.noGoSignals || [];
+
   // Get active signals with their confidence scores
   let activeBullishSignals = TRADING_SIGNALS.filter(
     (signal) =>
       signal.category === "bullish" &&
-      input.bullishSignals.some((s) => s.id === signal.id && s.confidence >= 50)
+      bullishSignals.some((s) => s.id === signal.id && s.confidence >= 50)
   ).map((signal) => ({
     ...signal,
     confidence:
-      input.bullishSignals.find((s) => s.id === signal.id)?.confidence || 0,
-    explanation: input.bullishSignals.find((s) => s.id === signal.id)
+      bullishSignals.find((s) => s.id === signal.id)?.confidence || 0,
+    explanation: bullishSignals.find((s) => s.id === signal.id)
       ?.explanation,
   }));
 
   let activeBearishSignals = TRADING_SIGNALS.filter(
     (signal) =>
       signal.category === "bearish" &&
-      input.bearishSignals.some((s) => s.id === signal.id && s.confidence >= 50)
+      bearishSignals.some((s) => s.id === signal.id && s.confidence >= 50)
   ).map((signal) => ({
     ...signal,
     confidence:
-      input.bearishSignals.find((s) => s.id === signal.id)?.confidence || 0,
-    explanation: input.bearishSignals.find((s) => s.id === signal.id)
+      bearishSignals.find((s) => s.id === signal.id)?.confidence || 0,
+    explanation: bearishSignals.find((s) => s.id === signal.id)
       ?.explanation,
   }));
 
@@ -203,12 +208,12 @@ export function analyzeChart(input: StrategyAnalysisInput): AnalysisResult {
   );
 
   const activeNoGoConditions = NO_GO_CONDITIONS.filter((condition) =>
-    input.noGoSignals.some((s) => s.id === condition.id && s.confidence >= 50)
+    noGoSignals.some((s) => s.id === condition.id && s.confidence >= 50)
   ).map((condition) => ({
     ...condition,
-    confidence: input.noGoSignals.find((s) => s.id === condition.id)
+    confidence: noGoSignals.find((s) => s.id === condition.id)
       ?.confidence,
-    explanation: input.noGoSignals.find((s) => s.id === condition.id)
+    explanation: noGoSignals.find((s) => s.id === condition.id)
       ?.explanation,
   }));
 
