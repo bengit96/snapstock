@@ -36,14 +36,14 @@ export const EMAIL_SEQUENCES: Record<string, EmailSequence> = {
       {
         id: "day_0_discount_offer",
         delayDays: 0,
-        subject: "{{firstName}}, you've used your 5 free analyses - here's 30% off",
+        subject: "{{firstName}}, here's 30% off for trying Snapstock",
         message: `Hi {{firstName}},
 
-I noticed you've gone through your 5 free chart analyses with Snapstock.
+Thanks for trying out Snapstock! I wanted to reach out personally.
 
-**Here's my question:** Did they help you make better trading decisions?
+**Here's my question:** Did the analysis help you make better trading decisions?
 
-If the answer is yes, I have good news:
+If the answer is yes, I have good news for you:
 
 **→ Get 30% off your first month with code SNAP30**
 
@@ -56,18 +56,15 @@ Most traders who upgrade tell us Snapstock pays for itself after avoiding just O
 
 👉 **[Upgrade with SNAP30 (30% off)]({{checkoutUrl}}?promo=SNAP30)**
 
-**Why traders who upgraded say it's worth it:**
-- "Saved me from a $800 loss on a fake breakout" — Mike T.
-- "Cut my chart review time from 20 min to under 2 min" — Sarah K.
-- "Finally stopped second-guessing my entries" — James L.
-
 This code expires in 72 hours, so don't miss out.
+
+**If the analysis didn't meet your expectations, I want to hear about it.** Hit reply and let me know what we could improve—your feedback helps me build a better product for traders like you.
 
 See you in the terminal,
 Ben
 Founder, Snapstock
 
-_P.S. Hit reply if you have questions about pricing or want me to personally review one of your charts—I read every email._`,
+_P.S. Questions about pricing or want me to personally review one of your charts? Just reply—I read every email._`,
         promoCode: "SNAP30",
         discountPercent: 30,
       },
