@@ -37,7 +37,6 @@ interface EnvConfig {
 }
 
 type RequiredEnvKey = keyof EnvConfig;
-type OptionalEnvKey = Exclude<keyof EnvConfig, RequiredEnvKey>;
 
 /**
  * Validate that all required environment variables are set
@@ -69,19 +68,6 @@ export function validateEnv(): void {
 }
 
 /**
- * Get environment variable with type safety
- */
-export function getEnv<K extends RequiredEnvKey>(key: K): EnvConfig[K];
-export function getEnv<K extends OptionalEnvKey>(
-  key: K
-): EnvConfig[K] | undefined;
-export function getEnv<K extends keyof EnvConfig>(
-  key: K
-): EnvConfig[K] | undefined {
-  return process.env[key] as EnvConfig[K] | undefined;
-}
-
-/**
  * Get required environment variable or throw
  */
 export function requireEnv<K extends RequiredEnvKey>(key: K): EnvConfig[K] {
@@ -90,40 +76,4 @@ export function requireEnv<K extends RequiredEnvKey>(key: K): EnvConfig[K] {
     throw new Error(`Required environment variable ${key} is not set`);
   }
   return value as EnvConfig[K];
-}
-
-/**
- * Get optional environment variable with default
- */
-export function getEnvWithDefault<K extends OptionalEnvKey>(
-  key: K,
-  defaultValue: EnvConfig[K]
-): EnvConfig[K] {
-  return (process.env[key] as EnvConfig[K] | undefined) ?? defaultValue;
-}
-
-// Run validation on module load in non-test environments
-// Only validate in server-side contexts (not in middleware edge runtime)
-if (process.env.NODE_ENV !== "test" && typeof window === "undefined") {
-  try {
-    // Only validate in production or when explicitly requested
-    // In development, we want more lenient error handling
-    if (
-      process.env.NODE_ENV === "production" ||
-      process.env.VALIDATE_ENV === "true"
-    ) {
-      validateEnv();
-    }
-  } catch (error) {
-    // Only throw in production - in development, we want clearer error messages
-    if (process.env.NODE_ENV === "production") {
-      throw error;
-    }
-    // In development, log warning but don't crash
-    // eslint-disable-next-line no-console
-    console.warn(
-      "⚠️  Environment validation warning:",
-      (error as Error).message
-    );
-  }
 }

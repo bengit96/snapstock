@@ -22,7 +22,6 @@ function generateMarketingEmailHTML(
   promoCode?: string,
   discountPercent?: number
 ): string {
-  const displayName = userName || "there";
   const appUrl = process.env.APP_URL || "https://snappchart.app";
 
   // Convert markdown to HTML

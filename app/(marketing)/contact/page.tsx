@@ -1,7 +1,6 @@
 "use client";
 
 import { Navigation } from "@/components/layout/navigation";
-import { Footer } from "@/components/layout/footer";
 import { Mail, MessageSquare, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import {
